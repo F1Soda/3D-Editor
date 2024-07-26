@@ -1,3 +1,8 @@
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+
 import glm
 import struct
 import scene as scene_m
@@ -6,8 +11,6 @@ import moderngl as mgl
 import Scripts.Source.Render.library as library_m
 import Scripts.Source.Render.gizmos as gizmos_m
 import Scripts.Source.General.index_manager as index_manager_m
-
-import sys
 
 WIN_SIZE = (1600, 900)
 
