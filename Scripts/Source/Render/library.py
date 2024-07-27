@@ -64,12 +64,11 @@ def _init_shaders(ctx):
 
 
 def get_segment_vao(ctx, start, end, color=(0, 1, 0)):
-    buffer_format = '3f 3f'
+    buffer_format = '3f'
     data = np.array([start, end], dtype='f4')
-    data = np.hstack([data, np.array([color, color], dtype='f4')])
     vbo = ctx.buffer(data)
     vao = ctx.vertex_array(shader_programs['word_axis_gizmo'].bin_program,
-                           [(vbo, buffer_format, 'in_position', 'in_color')])
+                           [(vbo, buffer_format, 'in_position')])
     return vao
 
 
@@ -91,6 +90,7 @@ def init(ctx):
 
     # Materials
     materials['red'] = _init_unlit_material(ctx, (1, 0, 0))
+    materials['orange'] = _init_unlit_material(ctx, (1, 0.6, 0))
     materials['green'] = _init_unlit_material(ctx, (0, 1, 0))
     materials['blue'] = _init_unlit_material(ctx, (0, 0, 1))
     materials['magenta'] = _init_unlit_material(ctx, (1, 0, 1))
@@ -98,4 +98,3 @@ def init(ctx):
     materials['gray'] = _init_unlit_material(ctx, (0.5, 0.5, 0.5))
     materials['black'] = _init_unlit_material(ctx, (0, 0, 0))
     materials['white'] = _init_unlit_material(ctx, (1, 1, 1))
-

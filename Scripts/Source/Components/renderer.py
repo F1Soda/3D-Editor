@@ -31,7 +31,7 @@ class Renderer(component_m.Component):
 
         # Other
         self.mesh = mesh
-        self.material = material
+        self._material = material
         self.transformation = self.rely_object.transformation
         self.vao = self.get_vao(material.shader_program, mesh)
         self.material.camera_component = camera_component
@@ -54,6 +54,27 @@ class Renderer(component_m.Component):
         self.update()
         self.vao.render()
 
+    @property
+    def material(self):
+        return self._material
+
+    @material.setter
+    def material(self, value):
+        self._material = value
+        self.vao.release()
+        self.vao = self.get_vao(self._material.shader_program, self.mesh)
+
+    def change_material_with_saving_vao(self, material):
+        self._material = material
+        vao = self.vao
+        self.vao = self.get_vao(self._material.shader_program, self.mesh)
+        return vao
+
+    def set_vao_and_material(self, vao, material):
+        self.vao.release()
+        self._material = material
+        self.vao = vao
+
     def delete(self):
         self.rely_object = None
         self.transformation = None
@@ -64,5 +85,5 @@ class Renderer(component_m.Component):
         self.scene = None
         self.ctx = None
         self.vao = None
-        self.material = None
+        self._material = None
         self.mesh = None
