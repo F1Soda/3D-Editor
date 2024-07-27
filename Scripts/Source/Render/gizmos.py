@@ -9,14 +9,23 @@ class Gizmos:
         def __init__(self, ctx, start, end, color, camera, size=3.0):
             self.id = index_manager_m.IndexManager.get_id()
             self.ctx = ctx
-            self.start = start
-            self.size = self.default_size = size
-            self.end = end
+            self.start = glm.vec3(*start)
+            self._size = self.default_size = size
+            self.end = glm.vec3(*end)
             self._color = glm.vec3(color)
             self.shader = library.shader_programs['word_axis_gizmo']
             self.shader['color'].write(self._color)
             self.vao = library.get_segment_vao(ctx, start, end, color)
             self.camera = camera
+
+        @property
+        def size(self):
+            return self._size
+
+        @size.setter
+        def size(self, value):
+            self._size = value
+            self.ctx.line_width = value
 
         @property
         def color(self):

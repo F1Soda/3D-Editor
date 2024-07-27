@@ -33,5 +33,6 @@ class IndexManager:
     @staticmethod
     def get_id_by_color(color: tuple):
         return int(color[0] * 256) + int(color[1] * 256) * 256 + int(color[2] * 256) * 256 * 256
+
         # OLD
         # return color[0] * 255 + color[1] * 255 + color[2] * 255

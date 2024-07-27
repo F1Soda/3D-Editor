@@ -56,11 +56,11 @@ class Scene:
         # plane.transformation.scale = (10_000, 1, 10_000)
 
     def init_gizmo(self):
-        axis = gizmos_m.Gizmos.Segment(self.ctx, (0, 0, 0), (1, 0, 0), (1, 0, 0), self.camera_component, size=9)
+        axis = gizmos_m.Gizmos.Segment(self.ctx, (0, 0, 0), (1, 0, 0), (1, 0, 0), self.camera_component, size=3)
         self.gizmo_objects[axis.id] = axis
-        axis = gizmos_m.Gizmos.Segment(self.ctx, (0, 0, 0), (0, 1, 0), (0, 1, 0), self.camera_component, size=9)
+        axis = gizmos_m.Gizmos.Segment(self.ctx, (0, 0, 0), (0, 1, 0), (0, 1, 0), self.camera_component, size=3)
         self.gizmo_objects[axis.id] = axis
-        axis = gizmos_m.Gizmos.Segment(self.ctx, (0, 0, 0), (0, 0, 1), (0, 0, 1), self.camera_component, size=9)
+        axis = gizmos_m.Gizmos.Segment(self.ctx, (0, 0, 0), (0, 0, 1), (0, 0, 1), self.camera_component, size=3)
         self.gizmo_objects[axis.id] = axis
 
     def draw_gizmos_transformation_axis(self, transformation):

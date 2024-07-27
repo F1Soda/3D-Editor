@@ -1,26 +1,53 @@
 import pygame as pg
+import Scripts.Source.General.object_picker as object_picker_m
+import enum
+
+
+class MouseButtonState(enum.Enum):
+    Idle = 0
+    Pressed = 1
+    Hold = 2
+    Released = 3
 
 
 class InputManager:
-    _mouse_pressed = False
-    _mouse_buttons = (False, False, False)
+    # Mouse
+    mouse_states = [MouseButtonState.Idle, MouseButtonState.Idle, MouseButtonState.Idle]
+    past_mouse_buttons = (False, False, False)
+    mouse_position = (0, 0)
 
-    @property
-    def mouse_pressed(self):
-        return self._mouse_pressed
-
-    @property
-    def mouse_buttons(self):
-        return self._mouse_buttons
+    # Other
+    _app = None
 
     @staticmethod
-    def update():
+    def init(app):
+        InputManager._app = app
+
+    @staticmethod
+    def update_mouse_status():
         mouse_buttons = pg.mouse.get_pressed()
 
-        if mouse_buttons[0] and not InputManager._mouse_buttons[0]:
-            InputManager._mouse_pressed = True
+        for i in range(3):
+            if mouse_buttons[i]:
+                if InputManager.mouse_states[i] == MouseButtonState.Idle:
+                    InputManager.mouse_states[i] = MouseButtonState.Pressed
+                elif InputManager.mouse_states[i] == MouseButtonState.Pressed:
+                    InputManager.mouse_states[i] = MouseButtonState.Hold
+            if not mouse_buttons[i]:
+                if InputManager.past_mouse_buttons[i]:
+                    InputManager.mouse_states[i] = MouseButtonState.Released
+                else:
+                    InputManager.mouse_states[i] = MouseButtonState.Idle
 
-        if not mouse_buttons[0] and InputManager._mouse_buttons[0]:
-            InputManager._mouse_pressed = False
+        InputManager.past_mouse_buttons = mouse_buttons
+        InputManager.mouse_position = pg.mouse.get_pos()
 
-        InputManager._mouse_buttons = mouse_buttons
+    @staticmethod
+    def process():
+        InputManager.update_mouse_status()
+        if InputManager.mouse_states[0] == MouseButtonState.Pressed:
+            object_picker_m.ObjectPicker.process_left_click(InputManager.mouse_position)
+        if InputManager.mouse_states[0] == MouseButtonState.Released:
+            object_picker_m.ObjectPicker.process_release_left_mouse_button()
+        if InputManager.mouse_states[0] == MouseButtonState.Hold:
+            object_picker_m.ObjectPicker.process_hold_left_mouse_button(InputManager.mouse_position)
