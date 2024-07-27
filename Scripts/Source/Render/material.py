@@ -76,5 +76,5 @@ class Material:
         self.shader_program.destroy()
         self.shader_program = None
         for shader_property in self.properties:
-            shader_property.material = None
+            shader_property._material = None
             shader_property.value = None

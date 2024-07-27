@@ -6,6 +6,7 @@ import moderngl as mgl
 import Scripts.Source.Render.library as library_m
 import Scripts.Source.Render.gizmos as gizmos_m
 import Scripts.Source.General.index_manager as index_manager_m
+import Scripts.Source.General.input_manager as input_manager_m
 
 import sys
 
@@ -38,6 +39,19 @@ class GraphicsEngine:
         self.pick_fbo = self.ctx.framebuffer(
             color_attachments=[self.ctx.renderbuffer(self.WIN_SIZE)]
         )
+
+        # # Select by mouse FBO
+        # select_texture = self.ctx.texture(self.WIN_SIZE, 3, dtype='f4')
+        # select_texture.repeat_x, select_texture.repeat_y = False, False
+        #
+        # self.selected_fbo = self.ctx.framebuffer(
+        #     color_attachments=[select_texture]
+        # )
+
+        self.last_picked_obj_id = 0
+        self.last_picked_obj_material = None
+        self.last_picked_obj_transformation = None
+        self.active_axis = None
 
         # Library
         library_m.init(self.ctx)
@@ -79,27 +93,80 @@ class GraphicsEngine:
         self.ctx.screen.use()
         self.ctx.clear(color=(0.08, 0.16, 0.18, 1))
         self.scene.apply_components()
-        self.gizmos.update()
         self.render_gizmos()
         pg.display.flip()
 
     def render_gizmos(self):
         self.ctx.disable(mgl.DEPTH_TEST)
         self.gizmos.draw_word_axis()
+        if self.last_picked_obj_transformation:
+            self.scene.draw_gizmos_transformation_axis(self.last_picked_obj_transformation)
         self.ctx.enable(mgl.DEPTH_TEST)
 
     def picking_pass(self):
         self.pick_fbo.use()
         self.ctx.clear(0.0, 0.0, 0.0)
-        for obj in self.scene.objects:
+        for obj in self.scene.objects.values():
             renderer = obj.get_component_by_name('Renderer')
             if renderer is None:
                 continue
-            past_color = renderer.material['color'].value
+            past_color = renderer._material['color'].value
             pick_color = index_manager_m.IndexManager.get_color_by_id(obj.id)
-            renderer.material['color'].value = glm.vec3(pick_color)
+            renderer._material['color'].value = glm.vec3(pick_color)
             renderer.apply()
-            renderer.material['color'].value = past_color
+            renderer._material['color'].value = past_color
+
+        for gizmo_obj in self.scene.gizmo_objects.values():
+            past_color = gizmo_obj.color
+            gizmo_obj.color = index_manager_m.IndexManager.get_color_by_id(gizmo_obj.id)
+            gizmo_obj.vao.render(mgl.LINES)
+            gizmo_obj.color = past_color
+
+        if pg.mouse.get_pressed()[0]:
+            self.process_left_click()
+
+    def process_left_click(self):
+        object_id = self.get_object_id_at_mouse()
+        if object_id != 0:
+            gizmos_axis = self.scene.gizmo_objects.get(object_id)
+            if gizmos_axis:
+                self.process_click_transformation_gizmos(gizmos_axis)
+            else:
+                self.process_click_object(object_id)
+        else:
+            self.process_click_nowhere()
+
+    def process_click_transformation_gizmos(self, axis):
+        if self.active_axis and self.active_axis.size != axis.size:
+            self.active_axis.set_default_size()
+        self.active_axis = axis
+        self.active_axis.size = 7.0
+
+    def process_click_object(self, object_id):
+        if self.active_axis:
+            self.active_axis.set_default_size()
+            self.active_axis = None
+        if object_id != self.last_picked_obj_id:
+            if self.last_picked_obj_id != 0:
+                renderer = self.scene.objects[self.last_picked_obj_id].get_component_by_name('Renderer')
+                renderer.material = self.last_picked_obj_material
+                renderer.update()
+            self.last_picked_obj_id = object_id
+            renderer = self.scene.objects[object_id].get_component_by_name('Renderer')
+            self.last_picked_obj_material = renderer.material
+            renderer.material = library_m.materials['gray']
+            self.last_picked_obj_transformation = renderer.transformation
+
+    def process_click_nowhere(self):
+        if self.active_axis:
+            self.active_axis.set_default_size()
+            self.active_axis = None
+        if self.last_picked_obj_id != 0:
+            renderer = self.scene.objects[self.last_picked_obj_id].get_component_by_name('Renderer')
+            renderer.material = self.last_picked_obj_material
+            self.last_picked_obj_material = None
+            self.last_picked_obj_transformation = None
+            self.last_picked_obj_id = 0
 
     def get_object_id_at_mouse(self):
         x, y = pg.mouse.get_pos()
@@ -123,8 +190,6 @@ class GraphicsEngine:
             self.scene.update()
             self.render()
             self.picking_pass()
-            if pg.mouse.get_pressed()[0]:
-                print(self.get_object_id_at_mouse())
             self.delta_time = self.clock.tick(120)
 
 

@@ -11,6 +11,9 @@ class Transformation(component_m.Component):
         self._pos = glm.vec3(*pos)
         self._rot = glm.vec3(*rot)
         self._scale = glm.vec3(*scale)
+        self.m_t = None
+        self.m_tr = None
+        # self.m_s = None
         self.m_model = self.get_model_matrix()
 
     @property
@@ -55,12 +58,12 @@ class Transformation(component_m.Component):
         m_model = glm.mat4()
 
         # position
-        m_model = glm.translate(m_model, self.pos)
+        m_model = self.m_t = glm.translate(m_model, self.pos)
 
         # rotation
         m_model = glm.rotate(m_model, rot.x, glm.vec3(1, 0, 0))
         m_model = glm.rotate(m_model, rot.y, glm.vec3(0, 1, 0))
-        m_model = glm.rotate(m_model, rot.z, glm.vec3(0, 0, 1))
+        m_model = self.m_tr = glm.rotate(m_model, rot.z, glm.vec3(0, 0, 1))
 
         # scale
         m_model = glm.scale(m_model, self._scale)
