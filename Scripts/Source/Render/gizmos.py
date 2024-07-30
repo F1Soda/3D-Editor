@@ -2,6 +2,7 @@ import Scripts.Source.Render.library as library
 import moderngl as mgl
 import glm
 import Scripts.Source.General.index_manager as index_manager_m
+import Scripts.GUI.GUI as gui_m
 
 
 class Gizmos:
@@ -75,11 +76,18 @@ class Gizmos:
     def get_model_matrix_for_world_axis(self):
         m_model = glm.mat4()
         near = self.camera.near
-        size = near / 4
-        m_model = glm.translate(m_model, self.camera.transformation.pos + self.camera.forward * (
-                self.camera.near + 1) + self.camera.right * (
-                                        self.camera.right_bound - 1 / 4 * size / self.camera.right_bound) -
-                                self.camera.up * (self.camera.top_bound - 1 / 7 * size / self.camera.top_bound))
+        diagonal = pow(self.ctx.screen.width * self.ctx.screen.width +
+                       self.ctx.screen.height * self.ctx.screen.height, 0.5)
+        size = near / diagonal * 150
+        up = self.camera.up
+        right = self.camera.right
+        forward = self.camera.forward
+        m_model = glm.translate(m_model, self.camera.transformation.pos
+                                + forward * (self.camera.near + 1)
+                                + right * (self.camera.right_bound * (gui_m.LEFT_INSPECTOR_CORNER - 0.5) * 2)
+                                - up * (self.camera.top_bound)
+                                + (up - right) * size
+                                )
 
         m_model = glm.scale(m_model, (size, size, size))
         return m_model

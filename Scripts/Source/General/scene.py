@@ -86,6 +86,13 @@ class Scene:
         self.objects[plane.id] = plane
         return plane
 
+    def process_window_resize(self, new_size):
+        self.camera_component.process_window_resize(new_size)
+        for obj in self.objects.values():
+            renderer = obj.get_component_by_name("Renderer")
+            if renderer:
+                renderer.update_projection_matrix(self.camera_component.m_proj)
+
     def _create_name(self) -> str:
         index = 0
         while True:

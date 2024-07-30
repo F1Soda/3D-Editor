@@ -13,7 +13,7 @@ class Camera(component_m.Component):
                  enable=True):
         super().__init__(NAME, DESCRIPTION, rely_object, enable)
         self.app = app
-        self.aspect_ratio = app.WIN_SIZE[0] / app.WIN_SIZE[1]
+        self.aspect_ratio = app.win_size[0] / app.win_size[1]
 
         # right-handed system
         self.forward = glm.vec3(0, 0, -1)
@@ -26,12 +26,18 @@ class Camera(component_m.Component):
         self.fov = fov
         self.near = near
         self.far = far
-        self.top_bound = self.near * glm.tan(glm.radians(fov))
+        self.top_bound = self.near * glm.tan(glm.radians(fov / 2))
         self.right_bound = self.aspect_ratio * self.top_bound
 
         # Matrix
         self.m_view = self.get_view_matrix()
         self.m_proj = self.get_projection_matrix()
+        self.m_ortho = self.get_orthographic_matrix()
+
+    def process_window_resize(self, new_size):
+        self.aspect_ratio = new_size[0] / new_size[1]
+        self.m_proj = self.get_projection_matrix()
+        self.right_bound = self.aspect_ratio * self.top_bound
         self.m_ortho = self.get_orthographic_matrix()
 
     def update(self):
@@ -42,6 +48,9 @@ class Camera(component_m.Component):
 
     def get_projection_matrix(self) -> glm.mat4x4:
         return glm.perspective(glm.radians(self.fov), self.aspect_ratio, self.near, self.far)
+
+    def get_orthographic_matrix(self):
+        return glm.ortho(-self.right_bound, self.right_bound, -self.top_bound, self.top_bound, self.near, self.far)
 
     @property
     def transformation(self) -> transformation_m.Transformation:
@@ -57,6 +66,3 @@ class Camera(component_m.Component):
         self._transformation = None
         self.rely_object = None
         self.app = None
-
-    def get_orthographic_matrix(self):
-        return glm.ortho(-self.right_bound, self.right_bound, -self.top_bound, self.top_bound, self.near, self.far)

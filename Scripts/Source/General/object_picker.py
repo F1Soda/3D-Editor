@@ -20,7 +20,15 @@ class ObjectPicker:
     def init(app):
         ObjectPicker._app = app
         ObjectPicker._pick_fbo = app.ctx.framebuffer(
-            color_attachments=[app.ctx.renderbuffer(app.WIN_SIZE)]
+            color_attachments=[app.ctx.renderbuffer(app.win_size)]
+        )
+
+    @staticmethod
+    def process_window_resize(new_size):
+        if ObjectPicker._pick_fbo:
+            ObjectPicker._pick_fbo.release()
+        ObjectPicker._pick_fbo = ObjectPicker._app.ctx.framebuffer(
+            color_attachments=[ObjectPicker._app.ctx.renderbuffer((int(new_size.x), int(new_size.y)))]
         )
 
     @staticmethod
@@ -103,14 +111,17 @@ class ObjectPicker:
             renderer.apply()
             renderer._material['color'].value = past_color
 
-        for gizmo_obj in ObjectPicker._app.scene.gizmo_objects.values():
-            past_color = gizmo_obj.color
-            past_size = gizmo_obj.size
-            gizmo_obj.size = 20
-            gizmo_obj.color = index_manager_m.IndexManager.get_color_by_id(gizmo_obj.id)
-            gizmo_obj.vao.render(mgl.LINES)
-            gizmo_obj.color = past_color
-            gizmo_obj.size = past_size
+        if ObjectPicker._last_picked_obj_id != 0:
+            for gizmo_obj in ObjectPicker._app.scene.gizmo_objects.values():
+                past_color = gizmo_obj.color
+                past_size = gizmo_obj.size
+                gizmo_obj.size = 20
+                gizmo_obj.color = index_manager_m.IndexManager.get_color_by_id(gizmo_obj.id)
+                gizmo_obj.vao.render(mgl.LINES)
+                gizmo_obj.color = past_color
+                gizmo_obj.size = past_size
+
+        ObjectPicker._app.ctx.screen.use()
 
     @staticmethod
     def get_dot_with_axis_and_mouse_pos(axis, mouse_pos, m_model):

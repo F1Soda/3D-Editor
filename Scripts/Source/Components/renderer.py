@@ -43,6 +43,9 @@ class Renderer(component_m.Component):
     def update(self):
         self.material.update(self.transformation)
 
+    def update_projection_matrix(self, m_proj):
+        self.material.update_projection_matrix(m_proj)
+
     def get_model_matrix(self) -> glm.mat4x4:
         return glm.mat4() if self.transformation is None else self.transformation.m_model
 
