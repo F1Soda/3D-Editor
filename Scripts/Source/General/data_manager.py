@@ -1,9 +1,9 @@
 import pygame as pg
-import utils
+import Scripts.Source.General.utils as utils_m
 
 
 class DataManager:
-    letter_width = []
+    letters_width = []
 
     @staticmethod
     def parse_letter_widths(file_path):
@@ -21,11 +21,11 @@ class DataManager:
 
     @staticmethod
     def init():
-        DataManager.letter_width = DataManager.parse_letter_widths('Data/letter_width.txt')
+        DataManager.letters_width = DataManager.parse_letter_widths('Data/letter_width.txt')
 
     @staticmethod
     def update_letters_width():
-        DataManager.letter_widths = utils.calculate_width_letters('textures/Verdana_B_alpha.png')
+        DataManager.letter_widths = utils_m.calculate_width_letters('textures/Verdana_B_alpha.png')
         with open('Data/letter_width.txt', 'w') as f:
             for idx, width in enumerate(DataManager.letter_widths):
                 f.write(f"Letter {idx}: {width}\n")

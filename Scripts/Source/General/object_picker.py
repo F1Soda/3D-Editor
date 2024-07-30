@@ -20,7 +20,7 @@ class ObjectPicker:
     def init(app):
         ObjectPicker._app = app
         ObjectPicker._pick_fbo = app.ctx.framebuffer(
-            color_attachments=[app.ctx.renderbuffer(app.win_size)]
+            color_attachments=[app.ctx.renderbuffer((int(app.win_size.x), int(app.win_size.y)))]
         )
 
     @staticmethod
@@ -32,23 +32,24 @@ class ObjectPicker:
         )
 
     @staticmethod
-    def get_object_id_at_pos(x, y):
-        y = ObjectPicker._app.height - y
-        pixel = ObjectPicker._pick_fbo.read(attachment=0, viewport=(x, y, 1, 1), dtype='f1')
+    def get_object_id_at_pos(pos: glm.vec2):
+        pixel = ObjectPicker._pick_fbo.read(attachment=0, viewport=(int(pos.x), int(pos.y), 1, 1), dtype='f1')
 
         return index_manager_m.IndexManager.get_id_by_color(utils.bytes_to_normalized_tuple(pixel))
 
     @staticmethod
     def process_left_click(mouse_position):
-        object_id = ObjectPicker.get_object_id_at_pos(*mouse_position)
+        object_id = ObjectPicker.get_object_id_at_pos(mouse_position)
         if object_id != 0:
             gizmos_axis = ObjectPicker._app.scene.gizmo_objects.get(object_id)
             if gizmos_axis:
                 ObjectPicker.process_click_transformation_gizmos(gizmos_axis, mouse_position)
             else:
                 ObjectPicker.process_click_object(object_id)
+            return True
         else:
             ObjectPicker.process_click_nowhere()
+            return False
 
     @staticmethod
     def process_click_transformation_gizmos(axis, mouse_pos):
@@ -96,6 +97,8 @@ class ObjectPicker:
         if axis:
             axis.set_default_size()
             ObjectPicker.active_axis = None
+            return True
+        return False
 
     @staticmethod
     def picking_pass():
@@ -138,10 +141,10 @@ class ObjectPicker:
         ndc_p1 = p1 / p1.w
 
         # Screen coordinates:
-        screen_p0 = glm.vec2((ndc_p0.x + 1.0) * ObjectPicker._app.width,
-                             (1.0 - ndc_p0.y) * ObjectPicker._app.height) * 0.5
-        screen_p1 = glm.vec2((ndc_p1.x + 1.0) * ObjectPicker._app.width,
-                             (1.0 - ndc_p1.y) * ObjectPicker._app.height) * 0.5
+        screen_p0 = glm.vec2((ndc_p0.x + 1.0) * ObjectPicker._app.win_size[0],
+                             (ndc_p0.y) * ObjectPicker._app.win_size[1]) * 0.5
+        screen_p1 = glm.vec2((ndc_p1.x + 1.0) * ObjectPicker._app.win_size[0],
+                             (ndc_p1.y) * ObjectPicker._app.win_size[1]) * 0.5
 
         dot = glm.dot(mouse_pos - screen_p0, glm.normalize(screen_p1 - screen_p0))
         return dot
@@ -150,11 +153,11 @@ class ObjectPicker:
     def process_hold_left_mouse_button(current_pos):
         axis = ObjectPicker.active_axis
         if axis is None:
-            return
-        # y = ObjectPicker._app.height - current_pos[1]
+            return False
 
-        dot = ObjectPicker.get_dot_with_axis_and_mouse_pos(axis, glm.vec2(current_pos[0], current_pos[1]),
+        dot = ObjectPicker.get_dot_with_axis_and_mouse_pos(axis, current_pos,
                                                            ObjectPicker._last_picked_obj_m_model)
         difference = dot - ObjectPicker._last_mouse_dot
         ObjectPicker._last_mouse_dot = dot
         ObjectPicker.last_picked_obj_transformation.pos += (axis.end - axis.start) * difference / 100
+        return True

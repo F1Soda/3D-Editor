@@ -16,13 +16,13 @@ WIN_SIZE = (1600, 900)
 
 
 class GraphicsEngine:
+    win_size = glm.vec2()
+
     def __init__(self, width=1600, height=900):
         pg.init()
 
         # Window size
-        self.width = width
-        self.height = height
-        self.win_size = (width, height)
+        GraphicsEngine.win_size = glm.vec2(width, height)
 
         # Settings GL
         pg.display.gl_set_attribute(pg.GL_CONTEXT_MAJOR_VERSION, 3)
@@ -57,14 +57,14 @@ class GraphicsEngine:
         # Gizmos
         self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene.camera.get_component_by_name("Camera"))
 
+        # GUI
+        self.gui = GUI_m.GUI(self, WIN_SIZE)
+
         # Input Manager
         input_manager_m.InputManager.init(self)
 
         # ObjectPicker
         object_picker_m.ObjectPicker.init(self)
-
-        # GUI
-        self.gui = GUI_m.GUI(self, WIN_SIZE)
 
     def check_events(self):
         '''
@@ -80,16 +80,15 @@ class GraphicsEngine:
                 self.process_window_resize(event)
 
     def process_window_resize(self, event):
-        self.width, self.height = event.size
-        self.win_size = glm.vec2(self.width, self.height)
+        GraphicsEngine.win_size = glm.vec2(event.size)
 
-        pg.display.set_mode((self.width, self.height), flags=pg.OPENGL | pg.DOUBLEBUF | pg.RESIZABLE)
+        pg.display.set_mode((self.win_size.x, self.win_size.y), flags=pg.OPENGL | pg.DOUBLEBUF | pg.RESIZABLE)
 
         self.gui.process_window_resize(self.win_size)
         self.scene.process_window_resize(self.win_size)
         object_picker_m.ObjectPicker.process_window_resize(self.win_size)
 
-        self.ctx.viewport = (0, 0, self.width, self.height)
+        self.ctx.viewport = (0, 0, self.win_size.x, self.win_size.y)
 
     def update_time(self):
         self.time = pg.time.get_ticks() * 0.001

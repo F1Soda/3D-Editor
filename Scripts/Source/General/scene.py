@@ -1,5 +1,5 @@
 import typing
-
+import enum
 import glm
 
 import Scripts.Source.Components.components as components
@@ -20,6 +20,12 @@ class Scene:
         self.camera = self._create_camera()
         self.init_gizmo()
         self.load()
+
+    def change_render_mode(self):
+        for obj in self.objects.values():
+            renderer = obj.get_component_by_name("Renderer")
+            if renderer:
+                renderer.change_render_mode()
 
     def _create_camera(self) -> object_m.Object:
         cam = object_m.Object(self, "Camera", [])
