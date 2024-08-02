@@ -1,6 +1,7 @@
 import typing
 import moderngl
 import numpy as np
+import Scripts.Source.General.utils as utils
 
 
 class Mesh:
@@ -26,13 +27,8 @@ class Mesh:
         self._vbo = self.get_vbo()
         return self._vbo
 
-    @staticmethod
-    def get_data(vertices, indices) -> np.ndarray:
-        data = [vertices[ind] for triangle in indices for ind in triangle]
-        return np.array(data, dtype='f4')
-
     def create_vertex_data(self) -> np.ndarray:
-        vertex_data = self.get_data(self.vertices, self.indices)
+        vertex_data = utils.get_data_elements_by_indices(self.vertices, self.indices)
         # tex_coord_data = self.get_data(self.tex_coord, self.tex_coord_indices)
         # normals = np.array(self.normals, dtype='f4')
         # vertex_data = np.hstack([normals, vertex_data])

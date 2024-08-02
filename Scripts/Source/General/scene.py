@@ -1,5 +1,5 @@
 import typing
-
+import enum
 import glm
 
 import Scripts.Source.Components.components as components
@@ -20,6 +20,12 @@ class Scene:
         self.camera = self._create_camera()
         self.init_gizmo()
         self.load()
+
+    def change_render_mode(self):
+        for obj in self.objects.values():
+            renderer = obj.get_component_by_name("Renderer")
+            if renderer:
+                renderer.change_render_mode()
 
     def _create_camera(self) -> object_m.Object:
         cam = object_m.Object(self, "Camera", [])
@@ -85,6 +91,13 @@ class Scene:
             components.Renderer(self.ctx, plane, library_m.meshes['plane'], library_m.materials['unlit']))
         self.objects[plane.id] = plane
         return plane
+
+    def process_window_resize(self, new_size):
+        self.camera_component.process_window_resize(new_size)
+        for obj in self.objects.values():
+            renderer = obj.get_component_by_name("Renderer")
+            if renderer:
+                renderer.update_projection_matrix(self.camera_component.m_proj)
 
     def _create_name(self) -> str:
         index = 0

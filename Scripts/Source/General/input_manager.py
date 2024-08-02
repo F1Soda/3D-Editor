@@ -1,6 +1,7 @@
 import pygame as pg
-import Scripts.Source.General.object_picker as object_picker_m
+import Scripts.Source.General.utils as utils_m
 import enum
+import glm
 
 
 class MouseButtonState(enum.Enum):
@@ -14,14 +15,22 @@ class InputManager:
     # Mouse
     mouse_states = [MouseButtonState.Idle, MouseButtonState.Idle, MouseButtonState.Idle]
     past_mouse_buttons = (False, False, False)
-    mouse_position = (0, 0)
+    mouse_position = glm.vec2(0, 0)
+    handle_left_click_event = utils_m.PriorityEventDelegate()
+    handle_left_hold_event = utils_m.PriorityEventDelegate()
+    handle_left_release_event = utils_m.PriorityEventDelegate()
+    handle_right_click_event = utils_m.PriorityEventDelegate()
+    handle_right_hold_event = utils_m.PriorityEventDelegate()
+    handle_right_release_event = utils_m.PriorityEventDelegate()
 
     # Other
     _app = None
+    _gui = None
 
     @staticmethod
     def init(app):
         InputManager._app = app
+        InputManager._gui = app.gui
 
     @staticmethod
     def update_mouse_status():
@@ -40,14 +49,28 @@ class InputManager:
                     InputManager.mouse_states[i] = MouseButtonState.Idle
 
         InputManager.past_mouse_buttons = mouse_buttons
-        InputManager.mouse_position = pg.mouse.get_pos()
+        InputManager.mouse_position = glm.vec2(pg.mouse.get_pos())
+        InputManager.mouse_position.y = InputManager._app.win_size.y - InputManager.mouse_position.y
 
     @staticmethod
     def process():
         InputManager.update_mouse_status()
-        if InputManager.mouse_states[0] == MouseButtonState.Pressed:
-            object_picker_m.ObjectPicker.process_left_click(InputManager.mouse_position)
-        if InputManager.mouse_states[0] == MouseButtonState.Released:
-            object_picker_m.ObjectPicker.process_release_left_mouse_button()
-        if InputManager.mouse_states[0] == MouseButtonState.Hold:
-            object_picker_m.ObjectPicker.process_hold_left_mouse_button(InputManager.mouse_position)
+        mouse_pos = InputManager.mouse_position
+        mouse_states = InputManager.mouse_states
+        if mouse_states[0] == MouseButtonState.Pressed:
+            InputManager.handle_left_click_event(mouse_pos)
+
+        if mouse_states[0] == MouseButtonState.Hold:
+            InputManager.handle_left_hold_event(mouse_pos)
+
+        if mouse_states[0] == MouseButtonState.Released:
+            InputManager.handle_left_release_event(mouse_pos)
+
+        if mouse_states[2] == MouseButtonState.Pressed:
+            InputManager.handle_right_click_event(mouse_pos)
+
+        if mouse_states[2] == MouseButtonState.Hold:
+            InputManager.handle_right_hold_event(mouse_pos)
+
+        if mouse_states[2] == MouseButtonState.Released:
+            InputManager.handle_right_release_event(mouse_pos)

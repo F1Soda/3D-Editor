@@ -6,9 +6,15 @@ import Scripts.Source.Render.mesh as mesh_m
 import Scripts.Source.Render.material as material_m
 import glm
 import moderngl
+import enum
 
 NAME = 'Renderer'
 DESCRIPTION = 'Отвечает за отрисовку'
+
+
+class RenderMode(enum.Enum):
+    Solid = 0,
+    Wireframe = 1
 
 
 class Renderer(component_m.Component):
@@ -29,6 +35,9 @@ class Renderer(component_m.Component):
         self.light_component = self.scene.light.get_component_by_type(light_m.Light)
         self.light_transform = self.scene.light.transformation
 
+        # Settings
+        self.rendering_mode = RenderMode.Solid
+
         # Other
         self.mesh = mesh
         self._material = material
@@ -36,12 +45,20 @@ class Renderer(component_m.Component):
         self.vao = self.get_vao(material.shader_program, mesh)
         self.material.camera_component = camera_component
         self.material.camera_transformation = camera_component.transformation
+        self.default_line_width = 3.0
+        self.default_point_size = 4.0
         self.ctx.line_width = 3.0
         self.ctx.point_size = 4.0
         self.material.initialize()
 
+    def change_render_mode(self):
+        self.rendering_mode = RenderMode.Wireframe if self.rendering_mode == RenderMode.Solid else RenderMode.Solid
+
     def update(self):
         self.material.update(self.transformation)
+
+    def update_projection_matrix(self, m_proj):
+        self.material.update_projection_matrix(m_proj)
 
     def get_model_matrix(self) -> glm.mat4x4:
         return glm.mat4() if self.transformation is None else self.transformation.m_model
@@ -52,7 +69,12 @@ class Renderer(component_m.Component):
 
     def apply(self):
         self.update()
-        self.vao.render()
+        if self.rendering_mode == RenderMode.Solid:
+            self.vao.render()
+        else:
+            self.ctx.line_width = self.default_line_width
+            self.ctx.point_size = self.default_point_size
+            self.vao.render(moderngl.LINES)
 
     @property
     def material(self):

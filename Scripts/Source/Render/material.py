@@ -1,7 +1,7 @@
 import copy
 
 import moderngl
-import Scripts.Source.Render.shaderprogram as shader_program_m
+import Scripts.Source.Render.shader_program as shader_program_m
 
 import enum
 
@@ -66,6 +66,10 @@ class Material:
     def _update_properties_uniforms(self):
         for key, value in self.properties.items():
             self.shader_program[key].write(value.value)
+
+    def update_projection_matrix(self, m_proj):
+        if self.shader_program.get('m_proj'):
+            self.shader_program.get('m_proj').write(m_proj)
 
     def update(self, transform_object):
         self._update_base_uniforms(transform_object)
