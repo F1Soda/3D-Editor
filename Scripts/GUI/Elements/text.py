@@ -40,13 +40,11 @@ class Text(element_m.Element):
         # List with width for all letters
         self.letters_width = data_manager_m.DataManager.letters_width
 
-        self.evaluate_text_size()
-        self.position.evaluate_values_by_absolute()
-
         # Properties
         self._relative_size = None
 
     def process_window_resize(self, new_size: glm.vec2):
+        self.abs_quad_size = self.abs_quad_size * new_size/self.win_size
         super().process_window_resize(new_size)
         # self.size = self.win_size * (self.relative_right_top - self.relative_left_bottom)
 
@@ -58,8 +56,13 @@ class Text(element_m.Element):
             x = index % 16
             letter_width = self.letters_width[y * 16 + x]
             size.x += self.abs_quad_size.x * (letter_width + self.space_between)
-        self.position.absolute.size = size
-        self.position.absolute.transform(self.position.rely_element_position.absolute.left_bottom)
+        past_center = copy.copy(self.position.relative.center)
+        self.position.relative.size = size / self.rely_element.position.absolute.size
+        self.position.relative.center = past_center
+
+    def update_position(self):
+        self.evaluate_text_size()
+        self.position.evaluate_values_by_relative()
 
     def render(self):
         self.shader_program['color'] = self.color

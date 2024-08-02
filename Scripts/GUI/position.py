@@ -10,10 +10,6 @@ class Position:
             self._center = self._left_bottom + self.size / 2
 
         @property
-        def was_changed(self):
-            return self._was_changed
-
-        @property
         def left_bottom(self):
             return self._left_bottom
 
@@ -114,10 +110,6 @@ class Position:
             self.relative._left_bottom = (self.absolute.left_bottom - rely_pos.absolute.left_bottom) / rely_pos.size
             self.relative.right_top = (rely_pos.absolute.right_top - self.absolute.right_top) / rely_pos.size
 
-        self.relative._was_changed = False
-        self.relative_window._was_changed = False
-        self.absolute._was_changed = False
-
         self.m_gui = self.get_m_gui()
 
     def evaluate_values_by_absolute(self):
@@ -133,10 +125,6 @@ class Position:
         # Relative Window
         self.relative_window._left_bottom = self.absolute.left_bottom / self.win_size
         self.relative_window.right_top = self.absolute.right_top / self.win_size
-
-        self.relative._was_changed = False
-        self.relative_window._was_changed = False
-        self.absolute._was_changed = False
 
         self.m_gui = self.get_m_gui()
 

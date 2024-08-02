@@ -10,6 +10,7 @@ import Scripts.Source.Render.gizmos as gizmos_m
 import Scripts.Source.General.input_manager as input_manager_m
 import Scripts.Source.General.object_picker as object_picker_m
 
+
 import sys
 
 WIN_SIZE = (1600, 900)
@@ -52,13 +53,16 @@ class GraphicsEngine:
         self.clock = pg.time.Clock()
         self.time = 0
         self.delta_time = 0
+
+        # GUI
+        self.gui = GUI_m.GUI(self, WIN_SIZE)
+
         self.scene = scene_m.Scene(self)
 
         # Gizmos
         self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene.camera.get_component_by_name("Camera"))
 
-        # GUI
-        self.gui = GUI_m.GUI(self, WIN_SIZE)
+
 
         # Input Manager
         input_manager_m.InputManager.init(self)

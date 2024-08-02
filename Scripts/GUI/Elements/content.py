@@ -1,5 +1,6 @@
-import element as element_m
-import block as block_m
+import Scripts.GUI.Elements.element as element_m
+import Scripts.GUI.Elements.block as block_m
+import copy
 import glm
 
 
@@ -9,31 +10,52 @@ class Content(element_m.Element):
 
         self.background = block_m.Block(f"{name}_block", self, win_size, color)
         self.background.position.relative.right_top = glm.vec2(1)
+        self.background.position.evaluate_values_by_relative()
         self.elements_size = []
+        self.active = False
 
     def add(self, element):
         new_size_y = self.position.absolute.size.y + element.position.absolute.size.y
-        for i in range(len(self.elements)):
-            size_y = self.elements_size[i].y / new_size_y
 
-            self.elements[i].position.relative.size = glm.vec2(self.elements[i].position.relative.size.x, size_y)
-
-        self.background.elements.append(element)
-        element.rely_element = self.background
-        element.position.rely_element_position = self.background.position
-        element.position.absolute.left_bottom = glm.vec2(self.background.position.absolute.left_bottom.x,
-                                                         self.background.position.absolute.right_top.y)
-
-        self.position.absolute.size.x = max(self.position.absolute.size.x, element.position.absolute.size.x)
-        self.position.absolute.size.y += element.position.absolute.size.y
+        # Self and Background settings
+        past_center = copy.copy(self.position.absolute.center)
+        self.position.absolute.size = glm.vec2(max(self.position.absolute.size.x, element.position.absolute.size.x),
+                                               new_size_y)
+        self.position.absolute.center = past_center
         self.position.evaluate_values_by_absolute()
         self.background.position.evaluate_values_by_relative()
 
-        element.position.absolute.right_top = self.background.position.absolute.right_top
+        for i in range(len(self.background.elements)):
+            size_y = self.elements_size[i].y / new_size_y
+
+            self.background.elements[i].position.relative.size = glm.vec2(
+                self.background.elements[i].position.relative.size.x, size_y)
+            self.background.elements[i].position.evaluate_values_by_relative()
+
+        # Element settings
+        element.rely_element = self.background
+        element.position.rely_element_position = self.background.position
+        if len(self.background.elements) == 0:
+            element.position.absolute.left_bottom = copy.copy(self.background.position.absolute.left_bottom)
+        else:
+            element.position.absolute.left_bottom = glm.vec2(self.background.position.absolute.left_bottom.x,
+                                                             self.background.elements[-1].position.absolute.right_top.y)
+
+        element.position.absolute.right_top = copy.copy(self.background.position.absolute.right_top)
         element.position.evaluate_values_by_absolute()
+        for inner_elements in element.elements:
+            inner_elements.update_position()
+
+        self.background.elements.append(element)
+
         self.elements_size.append(element.position.absolute.size)
-        for element in self.elements:
-            element.position.evaluate_values_by_relative()
 
     def render(self):
-        self.background.render()
+        if self.active:
+            self.background.render()
+
+    def contains(self, name):
+        for element in self.background.elements:
+            if element.name == name:
+                return True
+        return False

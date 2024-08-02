@@ -18,6 +18,7 @@ class Element:
         self.recalculate_size_by = Pivot.LeftBottom
 
         self.position = position_m.Position(self.win_size)
+        self.active = True
 
         if self.rely_element:
             self.rely_element.elements.append(self)
@@ -34,6 +35,11 @@ class Element:
         for element in self.elements:
             element.process_window_resize(new_size)
 
+    def update_position(self):
+        self.position.evaluate_values_by_relative()
+        for element in self.elements:
+            element.update_position()
+
     def add(self, element):
         self.elements.append(element)
 
@@ -49,20 +55,26 @@ class Element:
 
     def find_clicked_element(self, mouse_pos: glm.vec2):
         for element in self.elements:
-            if element.position.check_if_clicked(mouse_pos):
+            if element.active and element.position.check_if_clicked(mouse_pos):
                 return element.find_clicked_element(mouse_pos)
         return self
 
     def handle_left_click(self, pos: glm.vec2):
         ...
 
-    def handle_right_click(self, pos: glm.vec2):
-        ...
-
     def handle_left_release(self, pos: glm.vec2):
         ...
 
     def handle_left_hold(self, pos: glm.vec2):
+        ...
+
+    def handle_right_click(self, pos: glm.vec2):
+        ...
+
+    def handle_right_hold(self, pos: glm.vec2):
+        ...
+
+    def handle_right_release(self, pos: glm.vec2):
         ...
 
     def __str__(self):

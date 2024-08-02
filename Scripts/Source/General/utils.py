@@ -136,3 +136,21 @@ def rainbow_color(t):
     b = max(0, min(1, 2 - abs(hue * 6 - 4)))
 
     return glm.vec4(r, g, b, 1)
+
+
+class PriorityEventDelegate:
+    def __init__(self):
+        self.__event_followers = []
+
+    def __iadd__(self, ehandler):
+        self.__event_followers.append(ehandler)
+        return self
+
+    def __isub__(self, ehandler):
+        self.__event_followers.remove(ehandler)
+        return self
+
+    def __call__(self, *args, **kwargs):
+        for follower in self.__event_followers:
+            if follower(*args, **kwargs):
+                return

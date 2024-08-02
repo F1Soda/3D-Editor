@@ -1,6 +1,7 @@
 import glm
 import moderngl as mgl
 import Scripts.Source.General.index_manager as index_manager_m
+import Scripts.Source.General.input_manager as input_manager_m
 import Scripts.Source.Render.library as library_m
 import utils
 
@@ -22,6 +23,10 @@ class ObjectPicker:
         ObjectPicker._pick_fbo = app.ctx.framebuffer(
             color_attachments=[app.ctx.renderbuffer((int(app.win_size.x), int(app.win_size.y)))]
         )
+
+        input_manager_m.InputManager.handle_left_click_event += ObjectPicker.process_left_click
+        input_manager_m.InputManager.handle_left_hold_event += ObjectPicker.process_hold_left_mouse_button
+        input_manager_m.InputManager.handle_left_release_event += ObjectPicker.process_release_left_mouse_button
 
     @staticmethod
     def process_window_resize(new_size):
@@ -92,7 +97,7 @@ class ObjectPicker:
             ObjectPicker._last_picked_obj_id = 0
 
     @staticmethod
-    def process_release_left_mouse_button():
+    def process_release_left_mouse_button(mouse_pos):
         axis = ObjectPicker.active_axis
         if axis:
             axis.set_default_size()

@@ -24,6 +24,8 @@ class Button(element_m.Element):
         self.text = None
         self.background = None
 
+        self.init_button()
+
     def init_button(self):
         self.background = block_m.Block(f"{self.name}_background", self, self.win_size, self.color)
 

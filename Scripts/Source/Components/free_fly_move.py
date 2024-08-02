@@ -1,8 +1,11 @@
+import copy
+
 import Scripts.Source.Components.component as component_m
 import Scripts.Source.General.main as main_m
 import Scripts.Source.General.object as object_m
 import Scripts.Source.Components.camera as camera_m
 import Scripts.Source.Components.transformation as transformation_m
+import Scripts.Source.General.input_manager as input_manager_m
 import glm
 import pygame as pg
 
@@ -22,6 +25,9 @@ class FreeFlyMove(component_m.Component):
         self.camera_component = rely_object.get_component_by_name('Camera')  # type: camera_m.Camera
 
         self.RIGHT_MOUSE_BUTTON_RELEASED = False
+        input_manager_m.InputManager.handle_right_hold_event += self._handle_right_hold
+        input_manager_m.InputManager.handle_right_release_event += self._handle_right_release
+        self._rel_pos = (0, 0)
 
     def _move(self):
         keys = pg.key.get_pressed()
@@ -40,17 +46,32 @@ class FreeFlyMove(component_m.Component):
         if keys[pg.K_e]:
             self.transformation.pos -= self.camera_component.up * velocity
 
-    def _rotate(self):
-        if pg.mouse.get_pressed()[2]:  # Right click
-            if not self.RIGHT_MOUSE_BUTTON_RELEASED:
-                self.RIGHT_MOUSE_BUTTON_RELEASED = True
-                rel_x, rel_y = pg.mouse.get_rel()
+    def _rotate(self, mouse_pos):
+        # mouse_pos = input_manager_m.InputManager.mouse_position
+        # mouse_states = input_manager_m.InputManager.mouse_states
+        if not self.RIGHT_MOUSE_BUTTON_RELEASED:
+            self.RIGHT_MOUSE_BUTTON_RELEASED = True
             rel_x, rel_y = pg.mouse.get_rel()
-            self.transformation.rot.y += rel_x * SENSITIVITY
-            self.transformation.rot.x -= rel_y * SENSITIVITY
-            self.transformation.rot.x = max(-89, min(89, self.transformation.rot.x))
-        else:
-            self.RIGHT_MOUSE_BUTTON_RELEASED = False
+        rel_x, rel_y = pg.mouse.get_rel()
+        self.transformation.rot.y += rel_x * SENSITIVITY
+        self.transformation.rot.x -= rel_y * SENSITIVITY
+        self.transformation.rot.x = max(-89, min(89, self.transformation.rot.x))
+
+    def _handle_right_hold(self, mouse_pos):
+        if not self.RIGHT_MOUSE_BUTTON_RELEASED:
+            self.RIGHT_MOUSE_BUTTON_RELEASED = True
+            self._rel_pos = mouse_pos
+        rel_x = mouse_pos.x - self._rel_pos.x
+        rel_y = self._rel_pos.y - mouse_pos.y
+        self.transformation.rot.y += rel_x * SENSITIVITY
+        self.transformation.rot.x -= rel_y * SENSITIVITY
+        self.transformation.rot.x = max(-89, min(89, self.transformation.rot.x))
+        self._rel_pos = copy.copy(mouse_pos)
+        return True
+
+    def _handle_right_release(self, mouse_pos):
+        self.RIGHT_MOUSE_BUTTON_RELEASED = False
+        return True
 
     def _update_camera_vectors(self):
         x, y = glm.radians(self.transformation.rot.y), glm.radians(self.transformation.rot.x)
@@ -65,7 +86,7 @@ class FreeFlyMove(component_m.Component):
 
     def update(self):
         self._move()
-        self._rotate()
+        # self._rotate()
         self._update_camera_vectors()
 
     @property
