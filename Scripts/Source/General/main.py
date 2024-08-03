@@ -10,7 +10,6 @@ import Scripts.Source.Render.gizmos as gizmos_m
 import Scripts.Source.General.input_manager as input_manager_m
 import Scripts.Source.General.object_picker as object_picker_m
 
-
 import sys
 
 WIN_SIZE = (1600, 900)
@@ -62,26 +61,11 @@ class GraphicsEngine:
         # Gizmos
         self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene.camera.get_component_by_name("Camera"))
 
-
-
         # Input Manager
         input_manager_m.InputManager.init(self)
 
         # ObjectPicker
         object_picker_m.ObjectPicker.init(self)
-
-    def check_events(self):
-        '''
-        На данный момент проверяет только выход из приложения
-        :return:
-        '''
-        for event in pg.event.get():
-            if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
-                pg.quit()
-                self.scene.delete()
-                sys.exit()
-            elif event.type == pg.VIDEORESIZE:
-                self.process_window_resize(event)
 
     def process_window_resize(self, event):
         GraphicsEngine.win_size = glm.vec2(event.size)
@@ -127,16 +111,20 @@ class GraphicsEngine:
             self.scene.draw_gizmos_transformation_axis(object_picker_m.ObjectPicker.last_picked_obj_transformation)
         self.ctx.enable(mgl.DEPTH_TEST)
 
+    def exit(self):
+        pg.quit()
+        self.scene.delete()
+        sys.exit()
+
     def run(self):
         while True:
+            self.delta_time = self.clock.tick(120)
             self.update_title()
             self.update_time()
-            self.check_events()
             self.scene.update()
             self.render()
             object_picker_m.ObjectPicker.picking_pass()
             input_manager_m.InputManager.process()
-            self.delta_time = self.clock.tick(120)
 
 
 if __name__ == '__main__':

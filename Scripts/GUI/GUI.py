@@ -1,10 +1,12 @@
 import copy
 
+import Scripts.GUI.Elements.element as element_m
 import Scripts.GUI.Elements.block as block_m
 import Scripts.GUI.Elements.text as text_m
 import Scripts.Source.General.input_manager as input_manager_m
 import Scripts.GUI.Elements.button as button_m
 import Scripts.GUI.Elements.content as content_m
+import Scripts.GUI.Elements.input_field as input_field_m
 import Scripts.Source.General.utils as utils_m
 import glm
 
@@ -46,6 +48,10 @@ HEADER_BOTTOM = 0.95
 LEFT_INSPECTOR_CORNER = 0.75
 DIVISION_BETWEEN_INSPECTOR_AND_HIERARCHY = 0.5
 
+DEV_MODE = False
+
+Pivot = element_m.Pivot
+
 
 class GUI:
     def __init__(self, app, win_size):
@@ -61,6 +67,10 @@ class GUI:
         input_manager_m.InputManager.handle_left_hold_event += self.handle_left_hold
         input_manager_m.InputManager.handle_left_release_event += self.handle_left_release
 
+        input_manager_m.InputManager.handle_keyboard_press += self.handle_keyboard_press
+
+        self.text_header = None
+
         self._init_main_block()
 
         #
@@ -72,6 +82,7 @@ class GUI:
 
         self.last_clicked_element = None
         self.active_sub_menu = None
+        self.active_input_field = None
 
     def _init_main_block(self):
         self.main_block = block_m.Block("Main Block", None, self.win_size)
@@ -79,14 +90,19 @@ class GUI:
         self.main_block.position.relative_window.right_top = glm.vec2(1)
         self.main_block.position.evaluate_values_by_relative_window()
 
-        # content_element = block_m.Block("Element_1", None, self.win_size, (1, 1, 1, 0.5))
-        # content_element.position.relative_window.size = glm.vec2(0.1, 0.05)
-        # content_element.position.evaluate_values_by_relative_window()
-        # content.add(content_element)
+        input_field = input_field_m.InputField("Input Field", self.main_block, self.win_size, self)
 
-        self._init_inspector()
-        self._init_hierarchy()
-        self._init_header()
+        input_field.position.relative.center = glm.vec2(0.5)
+        input_field.position.relative.size = glm.vec2(0.05, 0.05)
+        input_field.update_position()
+        input_field.text.position.relative.left_bottom = glm.vec2(0.05,
+                                                                  0.5 - input_field.text.position.relative.size.y / 2)
+        input_field.text.text = ""
+
+        if not DEV_MODE:
+            self._init_inspector()
+            self._init_hierarchy()
+            self._init_header()
 
     def _init_inspector(self):
         inspector = block_m.Block("Inspector", self.main_block, self.win_size, (0.1, 0.3, 0.1, 0.5))
@@ -100,10 +116,11 @@ class GUI:
                                   centered_x=True,
                                   centered_y=True,
                                   font_size=2,
-                                  space_between=0.1
+                                  space_between=0.1,
+                                  pivot=Pivot.Center
                                   )
         text_header.position.relative.center = glm.vec2(0.5, 0.95)
-        text_header.position.evaluate_values_by_relative()
+        text_header.update_position()
 
     def _init_hierarchy(self):
         self.hierarchy = block_m.Block("Hierarchy", self.main_block, self.win_size, color=(0.3, 0.1, 0.1, 0.5))
@@ -116,10 +133,11 @@ class GUI:
                                   centered_x=True,
                                   centered_y=True,
                                   font_size=2,
-                                  space_between=0.1
+                                  space_between=0.1,
+                                  pivot=Pivot.Center
                                   )
         text_header.position.relative.center = glm.vec2(0.5, 0.95)
-        text_header.position.evaluate_values_by_relative()
+        text_header.update_position()
 
         def custom_right_click_handle(pos: glm.vec2):
             self.hierarchy_sub_menu.active = True
@@ -174,7 +192,8 @@ class GUI:
                                        centered_x=True,
                                        centered_y=True,
                                        font_size=2,
-                                       space_between=0.1
+                                       space_between=0.1,
+                                       pivot=Pivot.Center
                                        )
         self.text_header.position.relative.center = glm.vec2(0.5, 0.5)
         self.text_header.update_position()
@@ -234,7 +253,8 @@ class GUI:
         self.main_block.process_window_resize(new_size)
 
     def render(self):
-        self.text_header.color = utils_m.rainbow_color(self.app.time)
+        if self.text_header:
+            self.text_header.color = utils_m.rainbow_color(self.app.time)
         self.main_block.render()
 
     def find_clicked_element(self, mouse_pos: glm.vec2):
@@ -247,7 +267,11 @@ class GUI:
         if self.active_sub_menu:
             self.active_sub_menu.active = False
             self.active_sub_menu = None
-
+        if self.active_input_field:
+            if element.name == self.active_input_field.name:
+                return
+            else:
+                self.active_input_field.unselect()
         if element.name == "Main Block":
             self.last_clicked_element = None
             return False
@@ -295,3 +319,9 @@ class GUI:
             self.last_clicked_element.handle_right_release(mouse_pos)
         self.last_clicked_element = None
         return res
+
+    def handle_keyboard_press(self, keys, pressed_char):
+        if self.active_input_field:
+            self.active_input_field.handle_keyboard_press(keys, pressed_char)
+            return True
+        return False

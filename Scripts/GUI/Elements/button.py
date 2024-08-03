@@ -36,7 +36,8 @@ class Button(element_m.Element):
                                 centered_x=True,
                                 centered_y=True,
                                 font_size=self.text_size,
-                                space_between=0.1
+                                space_between=0.1,
+                                pivot=element_m.Pivot.Center
                                 )
         self.text.position.relative.center = glm.vec2(0.5, 0.5)
         self.text.position.evaluate_values_by_relative()
