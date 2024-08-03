@@ -1,5 +1,5 @@
 import copy
-
+import heapq
 import Scripts.GUI.Elements.element as element_m
 import Scripts.GUI.Elements.block as block_m
 import Scripts.GUI.Elements.text as text_m
@@ -7,6 +7,7 @@ import Scripts.Source.General.input_manager as input_manager_m
 import Scripts.GUI.Elements.button as button_m
 import Scripts.GUI.Elements.content as content_m
 import Scripts.GUI.Elements.input_field as input_field_m
+import Scripts.GUI.Elements.window as window_m
 import Scripts.Source.General.utils as utils_m
 import glm
 
@@ -48,7 +49,7 @@ HEADER_BOTTOM = 0.95
 LEFT_INSPECTOR_CORNER = 0.75
 DIVISION_BETWEEN_INSPECTOR_AND_HIERARCHY = 0.5
 
-DEV_MODE = False
+DEV_MODE = True
 
 Pivot = element_m.Pivot
 
@@ -83,6 +84,7 @@ class GUI:
         self.last_clicked_element = None
         self.active_sub_menu = None
         self.active_input_field = None
+        self.windows = []
 
     def _init_main_block(self):
         self.main_block = block_m.Block("Main Block", None, self.win_size)
@@ -90,19 +92,44 @@ class GUI:
         self.main_block.position.relative_window.right_top = glm.vec2(1)
         self.main_block.position.evaluate_values_by_relative_window()
 
-        input_field = input_field_m.InputField("Input Field", self.main_block, self.win_size, self)
+        self.count_windows = 0
 
-        input_field.position.relative.center = glm.vec2(0.5)
-        input_field.position.relative.size = glm.vec2(0.05, 0.05)
-        input_field.update_position()
-        input_field.text.position.relative.left_bottom = glm.vec2(0.05,
-                                                                  0.5 - input_field.text.position.relative.size.y / 2)
-        input_field.text.text = ""
 
-        if not DEV_MODE:
+
+        if DEV_MODE:
+            def create_window_action(button, gui):
+                test_window = window_m.Window(f"Test_window_{self.count_windows}", self.main_block, gui.win_size, gui)
+                test_window.position.relative_window.size = glm.vec2(0.3, 0.2)
+                test_window.position.relative_window.center = glm.vec2(0.5)
+                test_window.position.evaluate_values_by_relative_window()
+                test_window.update_position()
+                self.windows = self.windows + [test_window]
+                self.count_windows += 1
+                return test_window
+
+            create_window = button_m.Button("Create Window button", self.main_block, self.win_size, self,
+                                            text="Create Window",
+                                            text_size=1,
+                                            action=create_window_action
+                                            )
+            create_window.position.relative_window.size = glm.vec2(0.1, 0.1)
+            create_window.position.relative_window.center = glm.vec2(0.5, 0.2)
+            create_window.position.evaluate_values_by_relative_window()
+            create_window.update_position()
+
+        else:
             self._init_inspector()
             self._init_hierarchy()
             self._init_header()
+
+            # input_field = input_field_m.InputField("Input Field", self.main_block, self.win_size, self)
+            #
+            # input_field.position.relative.center = glm.vec2(0.5)
+            # input_field.position.relative.size = glm.vec2(0.05, 0.05)
+            # input_field.update_position()
+            # input_field.text.position.relative.left_bottom = glm.vec2(0.05,
+            #                                                           0.5 - input_field.text.position.relative.size.y / 2)
+            # input_field.text.text = ""
 
     def _init_inspector(self):
         inspector = block_m.Block("Inspector", self.main_block, self.win_size, (0.1, 0.3, 0.1, 0.5))
@@ -256,6 +283,8 @@ class GUI:
         if self.text_header:
             self.text_header.color = utils_m.rainbow_color(self.app.time)
         self.main_block.render()
+        for window in self.windows:
+            window.render()
 
     def find_clicked_element(self, mouse_pos: glm.vec2):
         if self.active_sub_menu and self.active_sub_menu.position.check_if_clicked(mouse_pos):
@@ -263,6 +292,14 @@ class GUI:
         return self.main_block.find_clicked_element(mouse_pos)
 
     def handle_left_click(self, mouse_pos: glm.vec2):
+        for window in self.windows[::-1]:
+            element = window.find_clicked_element(mouse_pos)
+            if element:
+                print(element.name)
+                self.last_clicked_element = element
+                element.handle_left_click(mouse_pos)
+                return
+
         element = self.find_clicked_element(mouse_pos)
         if self.active_sub_menu:
             self.active_sub_menu.active = False

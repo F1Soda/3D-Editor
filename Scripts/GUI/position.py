@@ -134,8 +134,9 @@ class Position:
         # Relative
         rely_pos = self.rely_element_position
         if rely_pos:
-            self.relative._left_bottom = (self.absolute.left_bottom - rely_pos.absolute.left_bottom) / rely_pos.size
-            self.relative.right_top = (rely_pos.absolute.right_top - self.absolute.right_top) / rely_pos.size
+            self.relative._left_bottom = (
+                                                     self.absolute.left_bottom - rely_pos.absolute.left_bottom) / rely_pos.absolute.size
+            self.relative.right_top = (self.absolute.right_top - rely_pos.absolute.left_bottom) / rely_pos.absolute.size
 
         self.m_gui = self.get_m_gui()
 

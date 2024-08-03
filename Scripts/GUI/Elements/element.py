@@ -57,6 +57,8 @@ class Element:
             element.render()
 
     def delete(self):
+        self.position.rely_element_position = None
+        self.position = None
         for element in self.elements:
             element.delete()
         self.rely_element = None
