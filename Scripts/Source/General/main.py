@@ -1,5 +1,10 @@
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+
 import glm
-import GUI.GUI as GUI_m
+import Scripts.GUI.GUI as GUI_m
 import scene as scene_m
 import pygame as pg
 import moderngl as mgl
@@ -9,6 +14,7 @@ import Scripts.Source.General.data_manager as data_manager_m
 import Scripts.Source.Render.gizmos as gizmos_m
 import Scripts.Source.General.input_manager as input_manager_m
 import Scripts.Source.General.object_picker as object_picker_m
+import Scripts.Source.General.object_creator as object_creator_m
 
 import sys
 
@@ -56,10 +62,19 @@ class GraphicsEngine:
         # GUI
         self.gui = GUI_m.GUI(self, WIN_SIZE)
 
-        self.scene = scene_m.Scene(self)
+        # Scene
+        self.scene = scene_m.Scene(self, self.gui)
+
+        # Object Creator
+        object_creator_m.ObjectCreator.init(self, self.scene)
+
+        # Load Scene
+        self.scene.load()
+
+        self.gui.update_data_in_hierarchy()
 
         # Gizmos
-        self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene.camera.get_component_by_name("Camera"))
+        self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene)
 
         # Input Manager
         input_manager_m.InputManager.init(self)
@@ -93,23 +108,32 @@ class GraphicsEngine:
 
     def render(self):
         self.ctx.clear(color=(0.08, 0.16, 0.18, 1))
+        self.ctx.disable(mgl.DEPTH_TEST)
+        self.ctx.enable(mgl.BLEND)
+        self.gizmos.draw_plane_grid()
+        self.gizmos.draw_center_coordinate()
+        self.ctx.disable(mgl.BLEND)
+        self.ctx.enable(mgl.DEPTH_TEST)
+        # self.gizmos.draw_fun_space()
+
         self.scene.apply_components()
-        self.render_gizmos()
 
         # GUI
-        self.ctx.enable(mgl.BLEND)
+
         self.ctx.disable(mgl.DEPTH_TEST)
+        self.ctx.enable(mgl.BLEND)
+        self.render_gizmos()
         self.gui.render()
         self.ctx.disable(mgl.BLEND)
         self.ctx.enable(mgl.DEPTH_TEST)
+
         pg.display.flip()
 
     def render_gizmos(self):
-        self.ctx.disable(mgl.DEPTH_TEST)
-        self.gizmos.draw_word_axis()
-        if object_picker_m.ObjectPicker.last_picked_obj_transformation:
+        self.gizmos.draw_word_axis_in_right_corner()
+        transform = object_picker_m.ObjectPicker.last_picked_obj_transformation
+        if transform and transform.moveable:
             self.scene.draw_gizmos_transformation_axis(object_picker_m.ObjectPicker.last_picked_obj_transformation)
-        self.ctx.enable(mgl.DEPTH_TEST)
 
     def exit(self):
         pg.quit()

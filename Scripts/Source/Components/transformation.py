@@ -15,6 +15,11 @@ class Transformation(component_m.Component):
         self.m_tr = None
         # self.m_s = None
         self.m_model = self.get_model_matrix()
+        self.moveable = True
+
+    @property
+    def m_scale(self):
+        return glm.scale(glm.mat4(), self._scale)
 
     @property
     def pos(self):

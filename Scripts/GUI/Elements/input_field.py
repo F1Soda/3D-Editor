@@ -40,6 +40,7 @@ class InputField(element_m.Element):
         self._timer_holding_backspace = 0
         self._backspace_was_released = True
         self.time_between_accelerating = 0.5
+        self.editable = True
 
     def find_clicked_element(self, mouse_pos: glm.vec2):
         return self
@@ -53,10 +54,12 @@ class InputField(element_m.Element):
         self.background.color = self.color
 
     def handle_left_click(self, pos: glm.vec2):
-        self.gui.active_input_field = self
-        self.color -= glm.vec4(0.1)
-        self.background.color = self.color
-        return True
+        if self.editable:
+            self.gui.active_input_field = self
+            self.color -= glm.vec4(0.1)
+            self.background.color = self.color
+            return True
+        return False
 
     def handle_keyboard_press(self, keys, pressed_char):
         if pressed_char:

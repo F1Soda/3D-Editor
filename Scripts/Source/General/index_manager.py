@@ -10,12 +10,14 @@ class IndexManager:
 
     @staticmethod
     def get_color_by_id(id: int):
-        if id > 256 * 256 * 256:
+        if id > 255 * 255 * 255:
             return 1, 1, 1
-        r = id % 256
-        g = (id // 256) % 256
-        b = ((id // 256) // 256) % 256
-        return r / 256.0, g / 256.0, b / 256.0
+        r = id % 255
+        g = (id // 255) % 255
+        b = ((id // 255) // 255) % 255
+        # print(r,g,b)
+        # print(hex(r),hex(g),hex(b))
+        return r / 255.0, g / 255.0, b / 255.0
 
         # OLD
         # t = id / 255
@@ -32,7 +34,11 @@ class IndexManager:
 
     @staticmethod
     def get_id_by_color(color: tuple):
-        return int(color[0] * 256) + int(color[1] * 256) * 256 + int(color[2] * 256) * 256 * 256
+        r = color[0]  # int(color[0], 16)
+        g = color[1]  # int(color[1], 16)
+        b = color[2]  # int(color[2], 16)
+        # print(r, g, b)
+        return r + g * 255 + b * 255 * 255
 
         # OLD
         # return color[0] * 255 + color[1] * 255 + color[2] * 255

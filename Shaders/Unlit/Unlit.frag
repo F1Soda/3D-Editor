@@ -1,10 +1,16 @@
 #version 330 core
 
-layout (location = 0) out vec4 fragColor;
+out vec4 fragColor;
 
-uniform vec3 color;
+uniform sampler2D texture1;
+uniform vec4 color;
+uniform vec2 tilling;
+uniform vec2 offset;
 
+in vec2 texCoord;
 
 void main() {
-    fragColor = vec4(color, 1.0);
+    vec2 texCoord = texCoord* tilling + offset;
+    vec4 textureColor = texture(texture1, texCoord);
+    fragColor = textureColor * color;
 }

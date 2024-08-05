@@ -4,8 +4,9 @@ import Scripts.Source.General.scene as scene_m
 import Scripts.Source.Components.light as light_m
 import Scripts.Source.Render.mesh as mesh_m
 import Scripts.Source.Render.material as material_m
+import Scripts.Source.Render.library as library_m
 import glm
-import moderngl
+import moderngl as mgl
 import enum
 
 NAME = 'Renderer'
@@ -18,7 +19,7 @@ class RenderMode(enum.Enum):
 
 
 class Renderer(component_m.Component):
-    def __init__(self, ctx: moderngl.Context, rely_object: object_m.Object, mesh: mesh_m.Mesh,
+    def __init__(self, ctx: mgl.Context, rely_object: object_m.Object, mesh: mesh_m.Mesh,
                  material: material_m.Material, camera_component, enable=True):
         super().__init__(NAME, DESCRIPTION, rely_object, enable)
 
@@ -41,8 +42,12 @@ class Renderer(component_m.Component):
         # Other
         self.mesh = mesh
         self._material = material
+        self.picking_material = library_m.materials['object_picking']
+        self.picking_material.camera_component = camera_component
+        self.picking_material.camera_transformation = camera_component.transformation
         self.transformation = self.rely_object.transformation
         self.vao = self.get_vao(material.shader_program, mesh)
+        self.vao_picking = self.get_vao(self.picking_material.shader_program, mesh)
         self.material.camera_component = camera_component
         self.material.camera_transformation = camera_component.transformation
         self.default_line_width = 3.0
@@ -50,6 +55,7 @@ class Renderer(component_m.Component):
         self.ctx.line_width = 3.0
         self.ctx.point_size = 4.0
         self.material.initialize()
+        self.picking_material.initialize()
 
     def change_render_mode(self):
         self.rendering_mode = RenderMode.Wireframe if self.rendering_mode == RenderMode.Solid else RenderMode.Solid
@@ -63,18 +69,27 @@ class Renderer(component_m.Component):
     def get_model_matrix(self) -> glm.mat4x4:
         return glm.mat4() if self.transformation is None else self.transformation.m_model
 
-    def get_vao(self, shader_program, mesh) -> moderngl.VertexArray:
+    def get_vao(self, shader_program, mesh) -> mgl.VertexArray:
         vao = self.ctx.vertex_array(shader_program.bin_program, [(mesh.vbo, mesh.data_format, *mesh.attributes)])
         return vao
 
     def apply(self):
         self.update()
         if self.rendering_mode == RenderMode.Solid:
-            self.vao.render()
+            if self.material.render_mode == material_m.RenderMode.Opaque:
+                self.vao.render()
+            elif self.material.render_mode == material_m.RenderMode.Transparency:
+                self.ctx.enable(mgl.BLEND)
+                self.vao.render()
+                self.ctx.disable(mgl.BLEND)
         else:
             self.ctx.line_width = self.default_line_width
             self.ctx.point_size = self.default_point_size
-            self.vao.render(moderngl.LINES)
+            self.vao.render(mgl.LINES)
+
+    def render_picking_material(self):
+        self.picking_material.update(self.transformation)
+        self.vao_picking.render()
 
     @property
     def material(self):

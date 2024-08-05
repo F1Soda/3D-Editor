@@ -16,7 +16,7 @@ class Button(element_m.Element):
 
         self.gui = gui
         self._button_text = text
-        self.color = color
+        self._color = color
         self.text_color = text_color
         self.text_size = text_size
         self.action = action
@@ -48,6 +48,16 @@ class Button(element_m.Element):
         self.text.render()
 
     @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        self._color = value
+        self.background.color = value
+
+
+    @property
     def button_text(self):
         return self._button_text
 
@@ -61,4 +71,4 @@ class Button(element_m.Element):
 
     def handle_left_click(self, pos: glm.vec2):
         if self.action:
-            self.action(self, self.gui)
+            self.action(self, self.gui, pos)

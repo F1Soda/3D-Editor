@@ -10,11 +10,12 @@ class Mesh:
         self.name = name
         self.data_format = data_format
         self.attributes = attributes
+
         self.vertices = None
-        self.indices = None
+        # self.indices = None
         self.normals = None
         self.tex_coord = None
-        self.tex_coord_indices = None
+        # self.tex_coord_indices = None
         self._vbo = None
 
     @property
@@ -28,16 +29,15 @@ class Mesh:
         return self._vbo
 
     def create_vertex_data(self) -> np.ndarray:
-        vertex_data = utils.get_data_elements_by_indices(self.vertices, self.indices)
-        # tex_coord_data = self.get_data(self.tex_coord, self.tex_coord_indices)
-        # normals = np.array(self.normals, dtype='f4')
-        # vertex_data = np.hstack([normals, vertex_data])
-        # vertex_data = np.hstack([tex_coord_data, vertex_data])
+        vertex_data = self.vertices
+        if self.tex_coord is not None:
+            vertex_data = np.hstack([vertex_data, self.tex_coord])
+        if self.normals is not None:
+            vertex_data = np.hstack([vertex_data, self.normals])
         return vertex_data
 
     def get_vbo(self):
-        vertex_data = self.create_vertex_data()
-        vbo = self.ctx.buffer(vertex_data)
+        vbo = self.ctx.buffer(self.create_vertex_data())
         return vbo
 
     def destroy(self):

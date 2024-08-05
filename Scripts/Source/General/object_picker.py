@@ -1,5 +1,6 @@
 import glm
 import moderngl as mgl
+import numpy as np
 import Scripts.Source.General.index_manager as index_manager_m
 import Scripts.Source.General.input_manager as input_manager_m
 import Scripts.Source.Render.library as library_m
@@ -21,7 +22,8 @@ class ObjectPicker:
     def init(app):
         ObjectPicker._app = app
         ObjectPicker._pick_fbo = app.ctx.framebuffer(
-            color_attachments=[app.ctx.renderbuffer((int(app.win_size.x), int(app.win_size.y)))]
+            color_attachments=[app.ctx.texture((int(app.win_size.x), int(app.win_size.y)), 4, dtype='f4')],
+            depth_attachment=app.ctx.depth_renderbuffer((int(app.win_size.x), int(app.win_size.y)))
         )
 
         input_manager_m.InputManager.handle_left_click_event += ObjectPicker.process_left_click
@@ -38,21 +40,23 @@ class ObjectPicker:
 
     @staticmethod
     def get_object_id_at_pos(pos: glm.vec2):
-        pixel = ObjectPicker._pick_fbo.read(attachment=0, viewport=(int(pos.x), int(pos.y), 1, 1), dtype='f1')
+        pixel = ObjectPicker._pick_fbo.read(attachment=0, viewport=(int(pos.x), int(pos.y), 1, 1))
 
-        return index_manager_m.IndexManager.get_id_by_color(utils.bytes_to_normalized_tuple(pixel))
+        return index_manager_m.IndexManager.get_id_by_color(pixel)
 
     @staticmethod
     def process_left_click(mouse_position):
         object_id = ObjectPicker.get_object_id_at_pos(mouse_position)
         if object_id != 0:
-            gizmos_axis = ObjectPicker._app.scene.gizmo_objects.get(object_id)
+            gizmos_axis = ObjectPicker._app.scene.transform_axis_gizmo.get(object_id)
             if gizmos_axis:
                 ObjectPicker.process_click_transformation_gizmos(gizmos_axis, mouse_position)
             else:
+                ObjectPicker._app.gui.select_element_in_hierarchy(object_id)
                 ObjectPicker.process_click_object(object_id)
             return True
         else:
+            ObjectPicker._app.gui.unselect_data_in_hierarchy()
             ObjectPicker.process_click_nowhere()
             return False
 
@@ -71,17 +75,25 @@ class ObjectPicker:
         if ObjectPicker.active_axis:
             ObjectPicker.active_axis.set_default_size()
             ObjectPicker.active_axis = None
+        ObjectPicker.select_object(object_id)
+
+    @staticmethod
+    def select_object(object_id):
         if object_id != ObjectPicker._last_picked_obj_id:
             if ObjectPicker._last_picked_obj_id != 0:
                 renderer = ObjectPicker._app.scene.objects[ObjectPicker._last_picked_obj_id].get_component_by_name(
                     'Renderer')
-                renderer.material = ObjectPicker._last_picked_obj_material
-                renderer.apply()
+                # renderer.material['color'].value += glm.vec4(0.2, 0.2, 0.2, 0)
+                if renderer is not None:
+                    renderer.apply()
             ObjectPicker._last_picked_obj_id = object_id
-            renderer = ObjectPicker._app.scene.objects[object_id].get_component_by_name('Renderer')
-            ObjectPicker._last_picked_obj_material = renderer.material
-            renderer.material = library_m.materials['gray']
-            ObjectPicker.last_picked_obj_transformation = renderer.transformation
+            ObjectPicker.last_picked_obj_transformation = ObjectPicker._app.scene.objects[object_id].transformation
+
+    @staticmethod
+    def unselect_object():
+        ObjectPicker._last_picked_obj_material = None
+        ObjectPicker.last_picked_obj_transformation = None
+        ObjectPicker._last_picked_obj_id = 0
 
     @staticmethod
     def process_click_nowhere():
@@ -89,12 +101,7 @@ class ObjectPicker:
             ObjectPicker.active_axis.set_default_size()
             ObjectPicker.active_axis = None
         if ObjectPicker._last_picked_obj_id != 0:
-            renderer = ObjectPicker._app.scene.objects[ObjectPicker._last_picked_obj_id].get_component_by_name(
-                'Renderer')
-            renderer.material = ObjectPicker._last_picked_obj_material
-            ObjectPicker._last_picked_obj_material = None
-            ObjectPicker.last_picked_obj_transformation = None
-            ObjectPicker._last_picked_obj_id = 0
+            ObjectPicker.unselect_object()
 
     @staticmethod
     def process_release_left_mouse_button(mouse_pos):
@@ -111,23 +118,32 @@ class ObjectPicker:
         ObjectPicker._app.ctx.clear(0.0, 0.0, 0.0)
         for obj in ObjectPicker._app.scene.objects.values():
             renderer = obj.get_component_by_name('Renderer')
-            if renderer is None:
+            if renderer:
+                pick_color = glm.vec4(index_manager_m.IndexManager.get_color_by_id(obj.id), 1)
+                renderer.picking_material['color'] = pick_color
+                renderer.render_picking_material()
                 continue
-            past_color = renderer._material['color'].value
-            pick_color = index_manager_m.IndexManager.get_color_by_id(obj.id)
-            renderer._material['color'].value = glm.vec3(pick_color)
-            renderer.apply()
-            renderer._material['color'].value = past_color
+            point_component = obj.get_component_by_name('Point')
+            if point_component:
+                last_color = point_component.gizmos_point.color
+                pick_color = glm.vec4(index_manager_m.IndexManager.get_color_by_id(obj.id), 1)
+                point_component.gizmos_point.color = pick_color
+                point_component.apply()
+                point_component.gizmos_point.color = last_color
+                continue
 
         if ObjectPicker._last_picked_obj_id != 0:
-            for gizmo_obj in ObjectPicker._app.scene.gizmo_objects.values():
-                past_color = gizmo_obj.color
-                past_size = gizmo_obj.size
-                gizmo_obj.size = 20
-                gizmo_obj.color = index_manager_m.IndexManager.get_color_by_id(gizmo_obj.id)
-                gizmo_obj.vao.render(mgl.LINES)
-                gizmo_obj.color = past_color
-                gizmo_obj.size = past_size
+            for axis in ObjectPicker._app.scene.transform_axis_gizmo.values():
+                # Возможно тут потом какие то преколюхи возникнут, хз зачем выключаю
+                ObjectPicker._app.ctx.disable(mgl.DEPTH_TEST)
+                past_color = axis.color
+                past_size = axis.size
+                axis.size = 20
+                axis.color = glm.vec3(index_manager_m.IndexManager.get_color_by_id(axis.id))
+                axis.vao.render(mgl.LINES)
+                axis.color = past_color
+                axis.size = past_size
+                ObjectPicker._app.ctx.enable(mgl.DEPTH_TEST)
 
         ObjectPicker._app.ctx.screen.use()
 

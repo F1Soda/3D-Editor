@@ -1,9 +1,12 @@
-import copy
-
 import moderngl
 import Scripts.Source.Render.shader_program as shader_program_m
 
 import enum
+
+
+class RenderMode(enum.Enum):
+    Opaque = 0
+    Transparency = 1
 
 
 class VisibleState(enum.Enum):
@@ -32,6 +35,7 @@ class Material:
         # Camera
         self.camera_component = None
         self.camera_transformation = None
+        self.render_mode = RenderMode.Opaque
 
     def __getitem__(self, item):
         return self.properties[item]
@@ -65,7 +69,16 @@ class Material:
 
     def _update_properties_uniforms(self):
         for key, value in self.properties.items():
-            self.shader_program[key].write(value.value)
+            if key.startswith('tex'):
+                p = self.shader_program.get(key)
+                if p:
+                    value.value.use()
+                    p = 0
+                    continue
+            p = self.shader_program.get(key)
+            if p:
+                p.write(value.value)
+            pass
 
     def update_projection_matrix(self, m_proj):
         if self.shader_program.get('m_proj'):
