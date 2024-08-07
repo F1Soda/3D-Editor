@@ -74,6 +74,23 @@ class Header(element_m.Element):
         render_mode_button.position.relative.right_top = copy.copy(rrt)
         render_mode_button.position.evaluate_values_by_relative()
 
+        def grid_off_on_action(button, gui, pos):
+            button.button_text = "Grid: ON" if button.button_text == "Grid: OFF" else "Grid: OFF"
+            gui.app.gizmos.draw_grid_and_center_system = not gui.app.gizmos.draw_grid_and_center_system
+            pass
+
+        grid_on_off_button = elements.Button("Grid off on button", background, self.win_size, self.gui,
+                                             "Grid: ON",
+                                             action=grid_off_on_action,
+                                             color=glm.vec4(0.0, 0.7, 0.7, 1),
+                                             text_color=glm.vec4(1, 1, 1, 1),
+                                             text_size=2
+                                             )
+
+        grid_on_off_button.position.relative.size = glm.vec2(0.15, 0.8)
+        grid_on_off_button.position.relative.center = glm.vec2(0.87, 0.5)
+        grid_on_off_button.position.evaluate_values_by_relative()
+
         self.update_position()
 
     def render(self):

@@ -41,24 +41,24 @@ class Scene:
         self.gui.update_data_in_hierarchy()
 
     def init_scene(self):
-        tetrahedron = object_creator_m.ObjectCreator.create_tetrahedron('blue')
+        tetrahedron = object_creator_m.ObjectCreator.create_tetrahedron('blue_lit')
         tetrahedron.transformation.pos = (5, 0, 5)
         self.objects[tetrahedron.id] = tetrahedron
 
-        octahedron = object_creator_m.ObjectCreator.create_octahedron('red')
+        octahedron = object_creator_m.ObjectCreator.create_octahedron('red_lit')
         octahedron.transformation.pos = (5, 0, 3)
         self.objects[octahedron.id] = octahedron
 
-        cube = object_creator_m.ObjectCreator.create_cube('green')
+        cube = object_creator_m.ObjectCreator.create_cube('green_lit')
         cube.transformation.pos = (5, 0, 1)
         self.objects[cube.id] = cube
 
         p1 = object_creator_m.ObjectCreator.create_point(glm.vec4(1, 0, 0, 1), size=200)
-        p1.transformation.pos = glm.vec3(3, 0, 0)
+        p1.transformation.pos = glm.vec3(4, 0, 4)
         self.objects[p1.id] = p1
 
         p2 = object_creator_m.ObjectCreator.create_point(glm.vec4(0, 1, 0, 1), size=200)
-        p2.transformation.pos = glm.vec3(0, 3, 0)
+        p2.transformation.pos = glm.vec3(0, 0, 4)
         self.objects[p2.id] = p2
 
         test_segment = object_creator_m.ObjectCreator.create_segment(glm.vec4(0.6, 0.1, 0.5, 1), p1, p2)
@@ -106,9 +106,13 @@ class Scene:
         for obj in self.objects.values():
             obj.apply_components()
         for renderer in self.opaque_renderer:
-            renderer.apply()
+            if renderer.rely_object.enable:
+                renderer.apply()
+
+    def render_transparent_objects(self):
         for renderer in self.transparency_renderer:
-            renderer.apply()
+            if renderer.rely_object.enable:
+                renderer.apply()
 
     def update(self):
         self.camera.update_components()

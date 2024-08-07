@@ -687,7 +687,7 @@ class Hierarchy(element_m.Element):
                                         0.2)
         self._create_button_in_sub_menu(self.sub_menu_plane, create_ask_window_element_3, "By point and plane", 3)
 
-    def _create_button_in_sub_menu(self, sub_menu, action, text, number, content_width=0.1):
+    def _create_button_in_sub_menu(self, sub_menu, action, text, number, content_width=0.13):
         content_element = elements.Block(f"Element_{number}", None, self.win_size, (1, 1, 1, 0.5))
         content_element.position.relative_window.size = glm.vec2(content_width, 0.05)
         content_element.position.evaluate_values_by_relative_window()

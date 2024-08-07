@@ -50,6 +50,7 @@ class Renderer(component_m.Component):
         self.vao_picking = self.get_vao(self.picking_material.shader_program, mesh)
         self.material.camera_component = camera_component
         self.material.camera_transformation = camera_component.transformation
+        self.material.light_component = self.light_component
         self.default_line_width = 3.0
         self.default_point_size = 4.0
         self.ctx.line_width = 3.0

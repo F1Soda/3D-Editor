@@ -108,32 +108,25 @@ class GraphicsEngine:
 
     def render(self):
         self.ctx.clear(color=(0.08, 0.16, 0.18, 1))
-        self.ctx.disable(mgl.DEPTH_TEST)
         self.ctx.enable(mgl.BLEND)
-        self.gizmos.draw_plane_grid()
-        self.gizmos.draw_center_coordinate()
-        self.ctx.disable(mgl.BLEND)
-        self.ctx.enable(mgl.DEPTH_TEST)
-        # self.gizmos.draw_fun_space()
-
         self.scene.apply_components()
 
-        # GUI
+        # Gizmos
+        self.gizmos.render()
+
+        self.scene.render_transparent_objects()
+
+        self.ctx.enable(mgl.BLEND)
+
+
 
         self.ctx.disable(mgl.DEPTH_TEST)
-        self.ctx.enable(mgl.BLEND)
-        self.render_gizmos()
+        # GUI
         self.gui.render()
         self.ctx.disable(mgl.BLEND)
         self.ctx.enable(mgl.DEPTH_TEST)
 
         pg.display.flip()
-
-    def render_gizmos(self):
-        self.gizmos.draw_word_axis_in_right_corner()
-        transform = object_picker_m.ObjectPicker.last_picked_obj_transformation
-        if transform and transform.moveable:
-            self.scene.draw_gizmos_transformation_axis(object_picker_m.ObjectPicker.last_picked_obj_transformation)
 
     def exit(self):
         pg.quit()

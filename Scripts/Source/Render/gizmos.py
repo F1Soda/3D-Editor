@@ -8,20 +8,11 @@ import Scripts.GUI.GUI as gui_m
 import Scripts.Source.General.object as object_m
 import Scripts.Source.Components.components as components
 import Scripts.Source.Render.library as library_m
+import Scripts.Source.General.object_picker as object_picker_m
+import Scripts.Source.General.object_creator as object_creator_m
 
 
 class Gizmos:
-    class Geometry:
-        def __init__(self, ctx, scene, camera_component, save_size=True):
-            self.id = index_manager_m.IndexManager.get_id()
-            self.ctx = ctx
-            self.scene = scene
-            self.camera_component = camera_component
-            self.save_size = True
-
-        def draw(self):
-            ...
-
     class SegmentByPoints:
         def __init__(self, ctx, p1, p2, color, camera_component, size=3.0, save_size=True):
             # self.id = index_manager_m.IndexManager.get_id()
@@ -223,12 +214,36 @@ class Gizmos:
         self.ctx = ctx
         self.camera = scene.camera_component
         self.scene = scene
-        self.x_axis = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (0.5, -0.5, -0.5), glm.vec3(1, 0, 0),
-                                           self.scene.camera_component)
-        self.y_axis = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (-0.5, 0.5, -0.5), glm.vec3(0, 1, 0),
-                                           self.scene.camera_component)
-        self.z_axis = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (-0.5, -0.5, 0.5), glm.vec3(0, 0, 1),
-                                           self.scene.camera_component)
+        self.x_axis_in_right_corner = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (0.5, -0.5, -0.5),
+                                                           glm.vec3(1, 0, 0),
+                                                           self.scene.camera_component)
+        self.y_axis_in_right_corner = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (-0.5, 0.5, -0.5),
+                                                           glm.vec3(0, 1, 0),
+                                                           self.scene.camera_component)
+        self.z_axis_in_right_corner = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (-0.5, -0.5, 0.5),
+                                                           glm.vec3(0, 0, 1),
+                                                           self.scene.camera_component)
+
+        self.x_axis_center = Gizmos.WordAxisGizmo(ctx, (-3, 0.1, 0), (3, 0.1, 0), glm.vec3(0.8, 0, 0),
+                                                  self.scene.camera_component)
+        self.y_axis_center = Gizmos.WordAxisGizmo(ctx, (0, -3, 0), (0, 3, 0), glm.vec3(0, 0.8, 0),
+                                                  self.scene.camera_component)
+        self.z_axis_center = Gizmos.WordAxisGizmo(ctx, (0, 0.1, -3), (0, 0.1, 3), glm.vec3(0, 0, 0.8),
+                                                  self.scene.camera_component)
+        self.arrow_x_axis = object_creator_m.ObjectCreator.create_tetrahedron("red_unlit")
+        self.arrow_x_axis.transformation.pos = glm.vec3(3, 0.1, 0)
+        self.arrow_x_axis.transformation.rot = glm.vec3(0, 0, -90)
+        self.arrow_x_axis.transformation.scale = glm.vec3(0.2)
+
+        self.arrow_y_axis = object_creator_m.ObjectCreator.create_tetrahedron("green_unlit")
+        self.arrow_y_axis.transformation.pos = glm.vec3(0, 3, 0)
+        self.arrow_y_axis.transformation.rot = glm.vec3(0, 0, 0)
+        self.arrow_y_axis.transformation.scale = glm.vec3(0.2)
+
+        self.arrow_z_axis = object_creator_m.ObjectCreator.create_tetrahedron("blue_unlit")
+        self.arrow_z_axis.transformation.pos = glm.vec3(0, 0.1, 3)
+        self.arrow_z_axis.transformation.rot = glm.vec3(90, 0, 0)
+        self.arrow_z_axis.transformation.scale = glm.vec3(0.2)
 
         plane = object_m.Object(scene, "Plane", [])
         renderer = components.Renderer(self.ctx, plane, library_m.meshes['plane'], library_m.materials['grid'],
@@ -240,6 +255,7 @@ class Gizmos:
 
         self.grid_plane_renderer = renderer
         self.shader = library.shader_programs['word_axis_gizmo']
+        self.draw_grid_and_center_system = True
 
         self.space = []
         length = 5
@@ -255,20 +271,36 @@ class Gizmos:
         for point in self.space:
             point.draw()
 
-    def draw_center_coordinate(self):
-        m_model = glm.mat4()
-        m_model[3][1] = 0.5
-        m_model[3][0] = 0.5
-        m_model[3][2] = 0.5
+    def render(self):
+        self.ctx.enable(mgl.BLEND)
+        self.draw_word_axis_in_right_corner()
+        transform = object_picker_m.ObjectPicker.last_picked_obj_transformation
+        if self.draw_grid_and_center_system:
+            self.arrow_x_axis.enable = True
+            self.arrow_y_axis.enable = True
+            self.arrow_z_axis.enable = True
+            self.draw_center_coordinate()
+            self.draw_plane_grid()
+        else:
+            self.arrow_x_axis.enable = False
+            self.arrow_y_axis.enable = False
+            self.arrow_z_axis.enable = False
+        if transform and transform.moveable:
+            self.ctx.disable(mgl.DEPTH_TEST)
+            self.scene.draw_gizmos_transformation_axis(object_picker_m.ObjectPicker.last_picked_obj_transformation)
+            self.ctx.enable(mgl.DEPTH_TEST)
+        self.ctx.disable(mgl.BLEND)
 
-        self.x_axis.draw(m_model=m_model)
-        self.y_axis.draw(m_model=m_model)
-        self.z_axis.draw(m_model=m_model)
+    def draw_center_coordinate(self):
+
+        self.x_axis_center.draw(glm.mat4())
+        self.y_axis_center.draw(glm.mat4())
+        self.z_axis_center.draw(glm.mat4())
 
     def draw_word_axis_in_right_corner(self):
-        self.x_axis.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
-        self.y_axis.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
-        self.z_axis.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
+        self.x_axis_in_right_corner.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
+        self.y_axis_in_right_corner.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
+        self.z_axis_in_right_corner.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
 
     def draw_plane_grid(self):
         self.grid_plane_renderer.apply()

@@ -35,6 +35,7 @@ class Material:
         # Camera
         self.camera_component = None
         self.camera_transformation = None
+        self.light_component = None
         self.render_mode = RenderMode.Opaque
 
     def __getitem__(self, item):
@@ -66,6 +67,24 @@ class Material:
         m_matrix = self.shader_program.get('m_model')
         if m_matrix:
             m_matrix.write(transform_object.m_model)
+        # Light
+        if self.light_component:
+            # light_position
+            light_position = self.shader_program.get("light.position")
+            if light_position:
+                light_position.write(self.light_component.transformation.pos)
+            # light_Ia
+            light_Ia = self.shader_program.get("light.Ia")
+            if light_Ia:
+                light_Ia.write(self.light_component.intensity_ambient)
+            # light_Id
+            light_Id = self.shader_program.get("light.Id")
+            if light_Id:
+                light_Id.write(self.light_component.intensity_diffuse)
+            # light_Is
+            light_Is = self.shader_program.get("light.Is")
+            if light_Is:
+                light_Is.write(self.light_component.intensity_specular)
 
     def _update_properties_uniforms(self):
         for key, value in self.properties.items():
