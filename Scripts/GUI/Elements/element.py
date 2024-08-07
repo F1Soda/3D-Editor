@@ -6,6 +6,13 @@ import Scripts.GUI.position as position_m
 class Pivot(enum.Enum):
     Center = 0,
     LeftBottom = 1
+    LeftTop = 2
+    RightTop = 3
+    RightBottom = 4
+    Left = 5
+    Top = 6
+    Right = 7
+    Bottom = 8
 
 
 class Element:
@@ -16,6 +23,8 @@ class Element:
         self.rely_element = rely_element
         self.elements = []
         self.recalculate_size_by = Pivot.LeftBottom
+
+        self.pivot = Pivot.Center
 
         self.position = position_m.Position(self.win_size)
         self.active = True
@@ -48,6 +57,8 @@ class Element:
             element.render()
 
     def delete(self):
+        self.position.rely_element_position = None
+        self.position = None
         for element in self.elements:
             element.delete()
         self.rely_element = None
@@ -75,6 +86,9 @@ class Element:
         ...
 
     def handle_right_release(self, pos: glm.vec2):
+        ...
+
+    def handle_keyboard_press(self, keys, pressed_char):
         ...
 
     def __str__(self):

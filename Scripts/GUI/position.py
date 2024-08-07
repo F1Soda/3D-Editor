@@ -1,13 +1,40 @@
 import glm
+import copy
 
 
 class Position:
     class PositionInSpace:
+
+        class Copy:
+            def __init__(self, pos_in_space):
+                self._pos_in_space = pos_in_space
+
+            @property
+            def left_bottom(self):
+                return copy.copy(self._pos_in_space.left_bottom)
+
+            @property
+            def right_top(self):
+                return copy.copy(self._pos_in_space.right_top)
+
+            @property
+            def size(self):
+                return copy.copy(self._pos_in_space.size)
+
+            @property
+            def center(self):
+                return copy.copy(self._pos_in_space.center)
+
         def __init__(self, left_bottom, right_top):
             self._left_bottom = left_bottom
             self._right_top = right_top
             self._size = self._right_top - self._left_bottom
             self._center = self._left_bottom + self.size / 2
+            self._copy = Position.PositionInSpace.Copy(self)
+
+        @property
+        def copy(self):
+            return self._copy
 
         @property
         def left_bottom(self):
@@ -107,8 +134,9 @@ class Position:
         # Relative
         rely_pos = self.rely_element_position
         if rely_pos:
-            self.relative._left_bottom = (self.absolute.left_bottom - rely_pos.absolute.left_bottom) / rely_pos.size
-            self.relative.right_top = (rely_pos.absolute.right_top - self.absolute.right_top) / rely_pos.size
+            self.relative._left_bottom = (
+                                                     self.absolute.left_bottom - rely_pos.absolute.left_bottom) / rely_pos.absolute.size
+            self.relative.right_top = (self.absolute.right_top - rely_pos.absolute.left_bottom) / rely_pos.absolute.size
 
         self.m_gui = self.get_m_gui()
 

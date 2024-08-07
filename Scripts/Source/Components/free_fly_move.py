@@ -27,10 +27,10 @@ class FreeFlyMove(component_m.Component):
         self.RIGHT_MOUSE_BUTTON_RELEASED = False
         input_manager_m.InputManager.handle_right_hold_event += self._handle_right_hold
         input_manager_m.InputManager.handle_right_release_event += self._handle_right_release
+        input_manager_m.InputManager.handle_keyboard_press += self._handle_keyboard_press
         self._rel_pos = (0, 0)
 
-    def _move(self):
-        keys = pg.key.get_pressed()
+    def _move(self, keys):
         velocity = (SHIFT_SPEED if keys[pg.K_LSHIFT] else SPEED) * self.app.delta_time
 
         if keys[pg.K_w]:
@@ -47,17 +47,6 @@ class FreeFlyMove(component_m.Component):
             self.transformation.pos -= self.camera_component.up * velocity
 
     def _rotate(self, mouse_pos):
-        # mouse_pos = input_manager_m.InputManager.mouse_position
-        # mouse_states = input_manager_m.InputManager.mouse_states
-        if not self.RIGHT_MOUSE_BUTTON_RELEASED:
-            self.RIGHT_MOUSE_BUTTON_RELEASED = True
-            rel_x, rel_y = pg.mouse.get_rel()
-        rel_x, rel_y = pg.mouse.get_rel()
-        self.transformation.rot.y += rel_x * SENSITIVITY
-        self.transformation.rot.x -= rel_y * SENSITIVITY
-        self.transformation.rot.x = max(-89, min(89, self.transformation.rot.x))
-
-    def _handle_right_hold(self, mouse_pos):
         if not self.RIGHT_MOUSE_BUTTON_RELEASED:
             self.RIGHT_MOUSE_BUTTON_RELEASED = True
             self._rel_pos = mouse_pos
@@ -67,6 +56,13 @@ class FreeFlyMove(component_m.Component):
         self.transformation.rot.x -= rel_y * SENSITIVITY
         self.transformation.rot.x = max(-89, min(89, self.transformation.rot.x))
         self._rel_pos = copy.copy(mouse_pos)
+
+    def _handle_right_hold(self, mouse_pos):
+        self._rotate(mouse_pos)
+        return True
+
+    def _handle_keyboard_press(self, keys, pressed_char):
+        self._move(keys)
         return True
 
     def _handle_right_release(self, mouse_pos):
@@ -85,8 +81,6 @@ class FreeFlyMove(component_m.Component):
         self.camera_component.up = glm.normalize(glm.cross(self.camera_component.right, self.camera_component.forward))
 
     def update(self):
-        self._move()
-        # self._rotate()
         self._update_camera_vectors()
 
     @property

@@ -18,6 +18,9 @@ class Block(element_m.Element):
         self.vao.render()
         super().render()
 
+    def handle_right_hold(self, pos: glm.vec2):
+        return True
+
     def delete(self):
         self.vao = None
         self.shader_program = None

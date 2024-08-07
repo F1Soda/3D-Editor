@@ -47,7 +47,7 @@ class Object:
 
     def apply_components(self):
         for component in self.components:
-            if component.enable:
+            if component.enable and component.name not in ["Renderer", "Plane"]:
                 component.apply()
 
     def update_components(self):

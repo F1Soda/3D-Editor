@@ -17,9 +17,10 @@ class Text(element_m.Element):
                  space_between=0.1,
                  centered_x=False,
                  centered_y=False,
+                 pivot=element_m.Pivot.LeftBottom,
                  ):
         super().__init__(name, rely_element, win_size)
-        self.text = text
+        self._text = text
         self.font_size = font_size
         self.color = color
         self.space_between = space_between
@@ -35,34 +36,74 @@ class Text(element_m.Element):
 
         self.abs_quad_size = FONT_SIZE_SCALE * glm.vec2(font_size,
                                                         font_size * self.win_aspect_ratio) * self.win_size
-        self.relative_quad_size = self.abs_quad_size / self.win_size
+        self.relative_win_quad_size = self.abs_quad_size / self.win_size
 
         # List with width for all letters
         self.letters_width = data_manager_m.DataManager.letters_width
-
+        self.render_letters_outside_boundaries = True
+        self.moving_words_to_new_line = False
+        self.pivot = pivot
+        self._text_to_print = self.text
+        self._count_red_lines = 0
         # Properties
         self._relative_size = None
 
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        self._text = value
+        self._text_to_print = value
+
     def process_window_resize(self, new_size: glm.vec2):
-        self.abs_quad_size = self.abs_quad_size * new_size/self.win_size
+        self.abs_quad_size = self.abs_quad_size * new_size / self.win_size
         super().process_window_resize(new_size)
         # self.size = self.win_size * (self.relative_right_top - self.relative_left_bottom)
 
     def evaluate_text_size(self):
         size = glm.vec2(0, self.abs_quad_size.y)
-        for char in self.text:
+        current_abs_right_pos = (self.rely_element.position.absolute.left_bottom.x +
+                                 self.position.relative.left_bottom.x * self.rely_element.position.absolute.size.x)
+        start_left_abs_pos = current_abs_right_pos
+        left_abs_offset = current_abs_right_pos - self.rely_element.position.absolute.left_bottom.x
+        max_right_abs_right_pos = 0
+        self._count_red_lines = 0
+        for i in range(len(self.text)):
+            char = self.text[i]
             index = ord(char)
             y = index // 16
             x = index % 16
             letter_width = self.letters_width[y * 16 + x]
-            size.x += self.abs_quad_size.x * (letter_width + self.space_between)
-        past_center = copy.copy(self.position.relative.center)
-        self.position.relative.size = size / self.rely_element.position.absolute.size
-        self.position.relative.center = past_center
+            current_abs_right_pos += self.abs_quad_size.x * (letter_width + self.space_between)
+            if not self.render_letters_outside_boundaries:
+                if current_abs_right_pos >= self.rely_element.position.absolute.right_top.x - left_abs_offset:
+                    max_right_abs_right_pos = max(max_right_abs_right_pos, current_abs_right_pos)
+                    current_abs_right_pos = start_left_abs_pos + self.abs_quad_size.x * (
+                                letter_width + self.space_between)
+                    if self.moving_words_to_new_line:
+                        size.y += self.abs_quad_size.y
+                        self._text_to_print = self._text_to_print[
+                                              :i + self._count_red_lines] + "\n" + self._text_to_print[
+                                                                                   i + self._count_red_lines:]
+                        self._count_red_lines += 1
+                    else:
+                        self._text_to_print = self._text_to_print[:i]
+        max_right_abs_right_pos = max(max_right_abs_right_pos, current_abs_right_pos)
+        size.x = max_right_abs_right_pos - start_left_abs_pos
+        if self.pivot == element_m.Pivot.LeftBottom:
+            self.position.relative.right_top = (self.position.relative.left_bottom +
+                                                size / self.rely_element.position.absolute.size)
+        elif self.pivot == element_m.Pivot.Center:
+            past_center = self.position.relative.copy.center
+            self.position.relative.size = size / self.rely_element.position.absolute.size
+            self.position.relative.center = past_center
 
     def update_position(self):
         self.evaluate_text_size()
         self.position.evaluate_values_by_relative()
+        pass
 
     def render(self):
         self.shader_program['color'] = self.color
@@ -70,9 +111,20 @@ class Text(element_m.Element):
         self.font_texture.use()
 
         m_gui = copy.deepcopy(self.position.m_gui)
-        m_gui[0][0] = self.relative_quad_size.x
+        m_gui[0][0] = self.relative_win_quad_size.x
+        m_gui[1][1] = self.relative_win_quad_size.y
+        m_gui[3][1] += self._count_red_lines * self.relative_win_quad_size.y
 
-        for char in self.text:
+        m_gui_c3_r0 = m_gui[3][0]
+        current_right_relative_corner = self.position.relative.left_bottom.x
+
+        for char in self._text_to_print:
+
+            if char == "\n":
+                m_gui[3][0] = m_gui_c3_r0
+                m_gui[3][1] -= self.relative_win_quad_size.y
+                continue
+
             index = ord(char)
             y = index // 16
             x = index % 16
@@ -88,7 +140,8 @@ class Text(element_m.Element):
 
             # Shift Quad
             letter_width = self.letters_width[y * 16 + x]
-            m_gui[3][0] += self.relative_quad_size.x * (letter_width + self.space_between)
+            m_gui[3][0] += self.relative_win_quad_size.x * (letter_width + self.space_between)
+            current_right_relative_corner += self.position.relative.size.x / len(self._text_to_print)
 
     @staticmethod
     def precalculate_block_height(text, text_size):

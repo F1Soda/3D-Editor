@@ -12,6 +12,7 @@ class Content(element_m.Element):
         self.background.position.relative.right_top = glm.vec2(1)
         self.background.position.evaluate_values_by_relative()
         self.elements_size = []
+        self.add_to_bottom = False
         self.active = False
 
     def add(self, element):
@@ -22,14 +23,20 @@ class Content(element_m.Element):
         self.position.absolute.size = glm.vec2(max(self.position.absolute.size.x, element.position.absolute.size.x),
                                                new_size_y)
         self.position.absolute.center = past_center
+        if self.pivot == element_m.Pivot.Top:
+            self.position.absolute.transform(glm.vec2(0, -element.position.absolute.size.y/2))
         self.position.evaluate_values_by_absolute()
         self.background.position.evaluate_values_by_relative()
+
+        current_left_bottom = 0
 
         for i in range(len(self.background.elements)):
             size_y = self.elements_size[i].y / new_size_y
 
+            self.background.elements[i].position.relative.left_bottom = glm.vec2(0, current_left_bottom)
             self.background.elements[i].position.relative.size = glm.vec2(
                 self.background.elements[i].position.relative.size.x, size_y)
+            current_left_bottom += size_y
             self.background.elements[i].position.evaluate_values_by_relative()
 
         # Element settings
@@ -53,6 +60,16 @@ class Content(element_m.Element):
     def render(self):
         if self.active:
             self.background.render()
+
+    def clear(self):
+        for element in self.background.elements:
+            element.delete()
+        self.background.elements.clear()
+        if self.pivot == element_m.Pivot.Top:
+            self.position.absolute.left_bottom = glm.vec2(self.position.absolute.left_bottom.x,
+                                                          self.position.absolute.right_top.y)
+        self.position.evaluate_values_by_absolute()
+        self.update_position()
 
     def contains(self, name):
         for element in self.background.elements:

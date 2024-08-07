@@ -138,6 +138,19 @@ def rainbow_color(t):
     return glm.vec4(r, g, b, 1)
 
 
+def get_non_parallel_vector(vec, delta=1e-7):
+    res = glm.vec3(-vec.y, vec.x, 0)
+    if glm.length(res) != 0 and abs(glm.dot(res, vec)) < delta:
+        return res
+    res = glm.vec3(-vec.z, 0, -vec.x)
+    if glm.length(res) != 0 and abs(glm.dot(res, vec)) < delta:
+        return res
+    res = glm.vec3(0, -vec.z, -vec.y)
+    if glm.length(res) != 0 and abs(glm.dot(res, vec)) < delta:
+        return res
+    return None
+
+
 class PriorityEventDelegate:
     def __init__(self):
         self.__event_followers = []
@@ -154,3 +167,45 @@ class PriorityEventDelegate:
         for follower in self.__event_followers:
             if follower(*args, **kwargs):
                 return
+
+
+class EventDelegate:
+    def __init__(self):
+        self.__event_followers = []
+
+    def __iadd__(self, ehandler):
+        self.__event_followers.append(ehandler)
+        return self
+
+    def __isub__(self, ehandler):
+        self.__event_followers.remove(ehandler)
+        return self
+
+    def __call__(self, *args, **kwargs):
+        for follower in self.__event_followers:
+            follower(*args, **kwargs)
+
+
+def rotation_matrix_to_euler_angles(R):
+    '''
+    Хз че та не очень работает, хотя вроде все правильно сделал
+    :param R:
+    :return:
+    '''
+    delta = 1e-9
+    if abs(R[0][2] - 1) > delta and abs(R[0][2] + 1) > delta:
+        q_1 = glm.asin(R[0][2])
+        q_2 = glm.pi() - q_1
+        p_1 = np.atan2(R[1][2] / glm.cos(q_1), R[2][2] / glm.cos(q_1))
+        p_2 = np.atan2(R[1][2] / glm.cos(q_2), R[2][2] / glm.cos(q_2))
+        r_1 = np.atan2(R[0][1] / glm.cos(q_1), R[0][0] / glm.cos(q_1))
+        r_2 = np.atan2(R[0][1] / glm.cos(q_2), R[0][0] / glm.cos(q_2))
+    else:
+        r_1 = r_2 = 0
+        if abs(R[0][2] + 1) < delta:
+            q_1 = q_2 = glm.pi() / 2
+            p_1 = p_2 = r_1 + np.atan2(R[1][0], R[2][0])
+        else:
+            q_1 = q_2 = -glm.pi() / 2
+            p_1 = p_2 = -r_1 + np.atan2(-R[1][0], -R[2][0])
+    return p_1, q_1, r_1
