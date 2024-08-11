@@ -83,7 +83,7 @@ def _init_tetrahedron(ctx):
         (-vertices[2].x, -vertices[2].y, -vertices[2].z) * 3,
         (-vertices[0].x, -vertices[0].y, -vertices[0].z) * 3
     ]
-    mesh = render.Mesh(ctx, "cube", '3f 2f 3f', ['in_position', 'in_texCoord', 'in_normal'])
+    mesh = render.Mesh(ctx, "tetrahedron", '3f 2f 3f', ['in_position', 'in_texCoord', 'in_normal'])
     mesh.vertices = utils_m.get_data_elements_by_indices(vertices, indices)
     mesh.tex_coord = utils_m.get_data_elements_by_indices(tex_coord, tex_coord_indices)
     mesh.normals = np.array(normals, dtype='f4').reshape(12, 3)
@@ -139,7 +139,7 @@ def _init_octahedron(ctx):
         (0, -temp_y, 1 / 3) * 3,  # Normal for Face 3
         (-1 / 3, -temp_y, 0) * 3  # Normal for Face 4
     ]
-    mesh = render.Mesh(ctx, "cube", '3f 2f 3f', ['in_position', 'in_texCoord', 'in_normal'])
+    mesh = render.Mesh(ctx, "octahedron", '3f 2f 3f', ['in_position', 'in_texCoord', 'in_normal'])
     mesh.vertices = utils_m.get_data_elements_by_indices(vertices, indices)
     mesh.tex_coord = utils_m.get_data_elements_by_indices(tex_coord, tex_coord_indices)
     mesh.normals = np.array(normals, dtype='f4').reshape(24, 3)
@@ -163,15 +163,15 @@ def _init_plane(ctx):
     return mesh
 
 
-def _init_unlit_material(ctx, color):
-    return render.Material(ctx, "Unlit", shader_programs['unlit'], [('color', glm.vec4(color)),
-                                                                    ('tilling', glm.vec2(1)),
-                                                                    ('offset', glm.vec2(0)),
-                                                                    ('texture1', textures['white'])])
+def _init_unlit_material(ctx, color, name, render_mode=render.RenderMode.Opaque):
+    return render.Material(ctx, name, shader_programs['unlit'], [('color', glm.vec4(color)),
+                                                                 ('tilling', glm.vec2(1)),
+                                                                 ('offset', glm.vec2(0)),
+                                                                 ('texture1', textures['white'])], render_mode)
 
 
-def _init_lit_material(ctx, tint):
-    return render.Material(ctx, "Lit", shader_programs['lit'], [
+def _init_lit_material(ctx, tint, name):
+    return render.Material(ctx, name, shader_programs['lit'], [
         ('tint', glm.vec4(tint)),
         ('tilling', glm.vec2(1)),
         ('offset', glm.vec2(0)),
@@ -180,12 +180,12 @@ def _init_lit_material(ctx, tint):
 
 
 def _init_shaders(ctx):
-    shader_programs['unlit'] = render.ShaderProgram(ctx, 'unlit')
-    shader_programs['lit'] = render.ShaderProgram(ctx, 'lit')
-    shader_programs['word_axis_gizmo'] = render.ShaderProgram(ctx, 'WordAxisGizmo')
-    shader_programs['point_gizmo'] = render.ShaderProgram(ctx, 'PointGizmo')
-    shader_programs['segment_gizmo'] = render.ShaderProgram(ctx, 'SegmentGizmo')
-    shader_programs['object_picking'] = render.ShaderProgram(ctx, 'ObjectPicking')
+    shader_programs['unlit'] = render.ShaderProgram(ctx, 'unlit', 'unlit')
+    shader_programs['lit'] = render.ShaderProgram(ctx, 'lit', 'unlit')
+    shader_programs['word_axis_gizmo'] = render.ShaderProgram(ctx, 'WordAxisGizmo', 'word_axis_gizmo')
+    shader_programs['point_gizmo'] = render.ShaderProgram(ctx, 'PointGizmo', 'point_gizmo')
+    shader_programs['segment_gizmo'] = render.ShaderProgram(ctx, 'SegmentGizmo', 'segment_gizmo')
+    shader_programs['object_picking'] = render.ShaderProgram(ctx, 'ObjectPicking', 'object_picking')
 
 
 def _init_textures(ctx):
@@ -238,30 +238,31 @@ def init(ctx):
 
     # Materials
     # Unlit
-    materials['red_unlit'] = _init_unlit_material(ctx, (1, 0, 0, 1))
-    materials['orange_unlit'] = _init_unlit_material(ctx, (1, 0.6, 0, 1))
-    materials['green_unlit'] = _init_unlit_material(ctx, (0, 1, 0, 1))
-    materials['blue_unlit'] = _init_unlit_material(ctx, (0, 0, 1, 1))
-    materials['magenta_unlit'] = _init_unlit_material(ctx, (1, 0, 1, 1))
-    materials['cyan_unlit'] = _init_unlit_material(ctx, (0, 1, 1, 1))
-    materials['gray_unlit'] = _init_unlit_material(ctx, (0.5, 0.5, 0.5, 1))
-    materials['black_unlit'] = _init_unlit_material(ctx, (0, 0, 0, 1))
-    materials['white_unlit'] = _init_unlit_material(ctx, (1, 1, 1, 1))
+    materials['red_unlit'] = _init_unlit_material(ctx, (1, 0, 0, 1), 'red_unlit')
+    materials['orange_unlit'] = _init_unlit_material(ctx, (1, 0.6, 0, 1), 'orange_unlit')
+    materials['green_unlit'] = _init_unlit_material(ctx, (0, 1, 0, 1), 'green_unlit')
+    materials['blue_unlit'] = _init_unlit_material(ctx, (0, 0, 1, 1), 'blue_unlit')
+    materials['magenta_unlit'] = _init_unlit_material(ctx, (1, 0, 1, 1), 'magenta_unlit')
+    materials['cyan_unlit'] = _init_unlit_material(ctx, (0, 1, 1, 1), 'cyan_unlit')
+    materials['gray_unlit'] = _init_unlit_material(ctx, (0.5, 0.5, 0.5, 1), 'gray_unlit')
+    materials['black_unlit'] = _init_unlit_material(ctx, (0, 0, 0, 1), 'black_unlit')
+    materials['white_unlit'] = _init_unlit_material(ctx, (1, 1, 1, 1), 'white_unlit')
 
-    materials['transparency_white_unlit'] = _init_unlit_material(ctx, (1, 1, 1, 0.5))
-    materials['transparency_white_unlit'].render_mode = render.RenderMode.Transparency
+    materials['transparency_white_unlit'] = _init_unlit_material(ctx, (1, 1, 1, 0.5), 'transparency_white_unlit',
+                                                                 render.RenderMode.Transparency)
 
-    materials['transparency_gray_unlit'] = _init_unlit_material(ctx, (0.5, 0.5, 0.5, 0.5))
-    materials['transparency_gray_unlit'].render_mode = render.RenderMode.Transparency
+    materials['transparency_gray_unlit'] = _init_unlit_material(ctx, (0.5, 0.5, 0.5, 0.5), 'transparency_gray_unlit',
+                                                                render.RenderMode.Transparency)
 
     # Lit
-    materials['red_lit'] = _init_lit_material(ctx, (1, 0, 0, 1))
-    materials['orange_lit'] = _init_lit_material(ctx, (1, 0.6, 0, 1))
-    materials['green_lit'] = _init_lit_material(ctx, (0, 1, 0, 1))
-    materials['blue_lit'] = _init_lit_material(ctx, (0, 0, 1, 1))
+    materials['red_lit'] = _init_lit_material(ctx, (1, 0, 0, 1), 'red_lit')
+    materials['orange_lit'] = _init_lit_material(ctx, (1, 0.6, 0, 1), 'orange_lit')
+    materials['green_lit'] = _init_lit_material(ctx, (0, 1, 0, 1), 'green_lit')
+    materials['blue_lit'] = _init_lit_material(ctx, (0, 0, 1, 1), 'blue_lit')
+    materials['gray_lit'] = _init_lit_material(ctx, (0.5, 0.5, 0.5, 1), 'gray_lit')
 
-    materials['transparency_gray_lit'] = _init_lit_material(ctx, (0.5, 0.5, 0.5, 0.5))
-    materials['transparency_gray_lit'].render_mode = render.RenderMode.Transparency
+    # materials['transparency_gray_lit'] = _init_lit_material(ctx, (0.5, 0.5, 0.5, 0.5), 'transparency_gray_lit')
+    # materials['transparency_gray_lit'].render_mode = render.RenderMode.Transparency
 
     # Special
     materials['grid'] = render.Material(ctx, "Grid", shader_programs['unlit'], [
@@ -269,6 +270,6 @@ def init(ctx):
         ('tilling', glm.vec2(1)),
         ('offset', glm.vec2(0)),
         ('texture1', textures['grid'])
-    ])
+    ], render.RenderMode.Transparency)
     materials['object_picking'] = render.Material(ctx, "Object Picking", shader_programs['object_picking'],
                                                   [('color', glm.vec4(0))])

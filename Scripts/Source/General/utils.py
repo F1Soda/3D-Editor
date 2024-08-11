@@ -168,6 +168,15 @@ class PriorityEventDelegate:
             if follower(*args, **kwargs):
                 return
 
+    def __del__(self):
+        self.__event_followers.clear()
+
+    def __str__(self):
+        return f"Event Delegate. {len(self.__event_followers)} followers"
+
+    def __repr__(self):
+        return str(self)
+
 
 class EventDelegate:
     def __init__(self):
@@ -184,6 +193,15 @@ class EventDelegate:
     def __call__(self, *args, **kwargs):
         for follower in self.__event_followers:
             follower(*args, **kwargs)
+
+    def __del__(self):
+        self.__event_followers.clear()
+
+    def __str__(self):
+        return f"Event Delegate. {len(self.__event_followers)} followers"
+
+    def __repr__(self):
+        return str(self)
 
 
 def rotation_matrix_to_euler_angles(R):

@@ -7,11 +7,12 @@ if typing.TYPE_CHECKING:
 
 
 class Component:
-    def __init__(self, name: str, description: str, rely_object: Object, enable=True):
+    def __init__(self, name: str, description: str, enable=True):
         self.name = name
         self.description = description
-        self.rely_object = rely_object
+        self.rely_object = None  # type: Object | None
         self.enable = enable
+        self.app = None
 
     def set_active(self, enable: bool):
         self.enable = enable
@@ -23,4 +24,15 @@ class Component:
 
     def on_change(self): ...
 
-    def update(self): ...
+    def init(self, app, rely_object):
+        self.app = app
+        self.rely_object = rely_object
+
+    def serialize(self) -> {}:
+        ...
+
+    def __str__(self):
+        return f"Component '{self.name}', rely object: {self.rely_object}"
+
+    def __repr__(self):
+        return str(self)

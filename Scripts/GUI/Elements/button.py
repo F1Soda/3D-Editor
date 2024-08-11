@@ -56,7 +56,6 @@ class Button(element_m.Element):
         self._color = value
         self.background.color = value
 
-
     @property
     def button_text(self):
         return self._button_text
@@ -72,3 +71,10 @@ class Button(element_m.Element):
     def handle_left_click(self, pos: glm.vec2):
         if self.action:
             self.action(self, self.gui, pos)
+
+    def delete(self):
+        self.gui = None
+        self.action = None
+        self.text = None
+        self.background = None
+        super().delete()

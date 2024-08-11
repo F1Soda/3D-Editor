@@ -8,24 +8,30 @@ GLOBAL_INDEX = 0
 
 
 class Object:
-    def __init__(self, scene, name: str, components: typing.List[component_m.Component], parent_object=None):
+    def __init__(self, scene, name: str, parent_object=None,
+                 obj_id=None):
         self.scene = scene
         self.name = name
-        self.components: typing.List[component_m.Component] = components
+        self.components: typing.List[component_m.Component] = []
         self.parent_object = parent_object
         self.child_objects = []
-        self.id = index_manager_m.IndexManager.get_id()
+        if obj_id:
+            self.id = obj_id
+        else:
+            self.id = scene.index_manager.get_id()
 
         # Transformation
-        self.transformation = transformation_m.Transformation(self)
-        components.append(self.transformation)
+        self.transformation = transformation_m.Transformation()
+
+        self.add_component(self.transformation)
 
         self._renderer: renderer_m.Renderer = None
         self.enable = True
 
     def add_component(self, component) -> component_m.Component:
-        self.components.append(component)
         component.rely_object = self
+        component.init(self.scene.app, self)
+        self.components.append(component)
         component.apply()
         return component
 
@@ -50,7 +56,16 @@ class Object:
             if component.enable and component.name not in ["Renderer", "Plane"]:
                 component.apply()
 
-    def update_components(self):
-        for component in self.components:
-            if component.enable:
-                component.update()
+    def serialize(self):
+        return {
+            'name': self.name,
+            'components': {
+                component.name: component.serialize() for component in self.components
+            }
+        }
+
+    def __str__(self):
+        return f"Object '{self.name}', id: {self.id}, pos: {self.transformation.pos.to_tuple()}"
+
+    def __repr__(self):
+        return str(self)

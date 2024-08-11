@@ -24,7 +24,7 @@ class Content(element_m.Element):
                                                new_size_y)
         self.position.absolute.center = past_center
         if self.pivot == element_m.Pivot.Top:
-            self.position.absolute.transform(glm.vec2(0, -element.position.absolute.size.y/2))
+            self.position.absolute.transform(glm.vec2(0, -element.position.absolute.size.y / 2))
         self.position.evaluate_values_by_absolute()
         self.background.position.evaluate_values_by_relative()
 
@@ -76,3 +76,8 @@ class Content(element_m.Element):
             if element.name == name:
                 return True
         return False
+
+    def delete(self):
+        self.background = None
+        self.elements_size.clear()
+        super().delete()

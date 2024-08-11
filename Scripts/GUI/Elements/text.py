@@ -81,7 +81,7 @@ class Text(element_m.Element):
                 if current_abs_right_pos >= self.rely_element.position.absolute.right_top.x - left_abs_offset:
                     max_right_abs_right_pos = max(max_right_abs_right_pos, current_abs_right_pos)
                     current_abs_right_pos = start_left_abs_pos + self.abs_quad_size.x * (
-                                letter_width + self.space_between)
+                            letter_width + self.space_between)
                     if self.moving_words_to_new_line:
                         size.y += self.abs_quad_size.y
                         self._text_to_print = self._text_to_print[
@@ -150,4 +150,5 @@ class Text(element_m.Element):
     def delete(self):
         self.vao = None
         self.shader_program = None
+        self.font_texture = None
         super().delete()

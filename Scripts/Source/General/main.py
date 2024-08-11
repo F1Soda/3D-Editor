@@ -1,5 +1,8 @@
+import cProfile
 import os
+import pstats
 import sys
+import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 
@@ -15,8 +18,8 @@ import Scripts.Source.Render.gizmos as gizmos_m
 import Scripts.Source.General.input_manager as input_manager_m
 import Scripts.Source.General.object_picker as object_picker_m
 import Scripts.Source.General.object_creator as object_creator_m
-
 import sys
+import Scripts.Experemental.profiler as profiler
 
 WIN_SIZE = (1600, 900)
 
@@ -25,6 +28,7 @@ class GraphicsEngine:
     win_size = glm.vec2()
 
     def __init__(self, width=1600, height=900):
+
         pg.init()
 
         # Window size
@@ -62,33 +66,38 @@ class GraphicsEngine:
         # GUI
         self.gui = GUI_m.GUI(self, WIN_SIZE)
 
-        # Scene
-        self.scene = scene_m.Scene(self, self.gui)
-
-        # Object Creator
-        object_creator_m.ObjectCreator.init(self, self.scene)
-
-        # Load Scene
-        self.scene.load()
-
-        self.gui.update_data_in_hierarchy()
-
-        # Gizmos
-        self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene)
-
         # Input Manager
         input_manager_m.InputManager.init(self)
 
-        # ObjectPicker
+        # Initialization in load_scene
+        self.scene = None
+        self.gizmos = None
+
+        # Load Scene
+        self.load_scene('C:/Users/golik/PycharmProjects/3dEditor/Scenes/scene2.json')
+
+        pg.display.set_caption("3D Editor")
+
+    def load_scene(self, file_path=None):
+        if self.scene:
+            self.scene.delete()
+        if self.gizmos:
+            self.gizmos.delete()
+        self.scene = scene_m.Scene(self, self.gui)
+        object_creator_m.ObjectCreator.rely_scene = self.scene
+        self.scene.load(file_path)
+        self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene)
         object_picker_m.ObjectPicker.init(self)
+        self.gui.update_data_in_hierarchy()
 
     def process_window_resize(self, event):
-        GraphicsEngine.win_size = glm.vec2(event.size)
+        self.win_size = glm.vec2(event.size)
 
         pg.display.set_mode((self.win_size.x, self.win_size.y), flags=pg.OPENGL | pg.DOUBLEBUF | pg.RESIZABLE)
 
         self.gui.process_window_resize(self.win_size)
         self.scene.process_window_resize(self.win_size)
+        self.gizmos.process_window_resize(self.win_size)
         object_picker_m.ObjectPicker.process_window_resize(self.win_size)
 
         self.ctx.viewport = (0, 0, self.win_size.x, self.win_size.y)
@@ -109,7 +118,7 @@ class GraphicsEngine:
     def render(self):
         self.ctx.clear(color=(0.08, 0.16, 0.18, 1))
         self.ctx.enable(mgl.BLEND)
-        self.scene.apply_components()
+        self.scene.render_opaque_objects()
 
         # Gizmos
         self.gizmos.render()
@@ -117,8 +126,6 @@ class GraphicsEngine:
         self.scene.render_transparent_objects()
 
         self.ctx.enable(mgl.BLEND)
-
-
 
         self.ctx.disable(mgl.DEPTH_TEST)
         # GUI
@@ -131,14 +138,20 @@ class GraphicsEngine:
     def exit(self):
         pg.quit()
         self.scene.delete()
+        self.gizmos.delete()
+        self.gui.delete()
+        object_picker_m.ObjectPicker.release()
+        input_manager_m.InputManager.release()
+        object_creator_m.ObjectCreator.release()
+        profiler.close_streams()
         sys.exit()
 
     def run(self):
+
         while True:
             self.delta_time = self.clock.tick(120)
-            self.update_title()
             self.update_time()
-            self.scene.update()
+            self.scene.apply_components()
             self.render()
             object_picker_m.ObjectPicker.picking_pass()
             input_manager_m.InputManager.process()

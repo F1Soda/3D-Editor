@@ -2,7 +2,6 @@ import copy
 
 import Scripts.Source.Components.component as component_m
 import Scripts.Source.General.main as main_m
-import Scripts.Source.General.object as object_m
 import Scripts.Source.Components.camera as camera_m
 import Scripts.Source.Components.transformation as transformation_m
 import Scripts.Source.General.input_manager as input_manager_m
@@ -18,17 +17,21 @@ SENSITIVITY = 0.2
 
 
 class FreeFlyMove(component_m.Component):
-    def __init__(self, rely_object: object_m.Object, app: main_m.GraphicsEngine, enable=True):
-        super().__init__(NAME, DESCRIPTION, rely_object, enable)
-        self.app = app
-        self._transformation = rely_object.transformation
-        self.camera_component = rely_object.get_component_by_name('Camera')  # type: camera_m.Camera
-
+    def __init__(self, enable=True):
+        super().__init__(NAME, DESCRIPTION, enable)
         self.RIGHT_MOUSE_BUTTON_RELEASED = False
         input_manager_m.InputManager.handle_right_hold_event += self._handle_right_hold
         input_manager_m.InputManager.handle_right_release_event += self._handle_right_release
         input_manager_m.InputManager.handle_keyboard_press += self._handle_keyboard_press
         self._rel_pos = (0, 0)
+
+        self.camera_component = None
+        self._transformation = None
+
+    def init(self, app, rely_object):
+        super().init(app, rely_object)
+        self._transformation = self.rely_object.transformation
+        self.camera_component = self.rely_object.get_component_by_name('Camera')  # type: camera_m.Camera
 
     def _move(self, keys):
         velocity = (SHIFT_SPEED if keys[pg.K_LSHIFT] else SPEED) * self.app.delta_time
@@ -57,6 +60,9 @@ class FreeFlyMove(component_m.Component):
         self.transformation.rot.x = max(-89, min(89, self.transformation.rot.x))
         self._rel_pos = copy.copy(mouse_pos)
 
+    def apply(self):
+        self._update_camera_vectors()
+
     def _handle_right_hold(self, mouse_pos):
         self._rotate(mouse_pos)
         return True
@@ -80,9 +86,6 @@ class FreeFlyMove(component_m.Component):
         self.camera_component.right = glm.normalize(glm.cross(self.camera_component.forward, glm.vec3(0, 1, 0)))
         self.camera_component.up = glm.normalize(glm.cross(self.camera_component.right, self.camera_component.forward))
 
-    def update(self):
-        self._update_camera_vectors()
-
     @property
     def transformation(self):
         if self._transformation is None:
@@ -93,7 +96,16 @@ class FreeFlyMove(component_m.Component):
     def transformation(self, value):
         self._transformation = value
 
+    def serialize(self) -> {}:
+        return {
+            'enable': self.enable
+        }
+
     def delete(self):
+        input_manager_m.InputManager.handle_right_hold_event -= self._handle_right_hold
+        input_manager_m.InputManager.handle_right_release_event -= self._handle_right_release
+        input_manager_m.InputManager.handle_keyboard_press -= self._handle_keyboard_press
+
         self.app = None
         self.camera_component = None
         self.transformation = None

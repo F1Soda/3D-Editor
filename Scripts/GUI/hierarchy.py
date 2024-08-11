@@ -22,8 +22,6 @@ class Hierarchy(element_m.Element):
         self.select_element = utils_m.EventDelegate()
         self.unselect_element = utils_m.EventDelegate()
 
-        self.main_block.elements.append(self)
-
         self.position.relative.left_bottom = glm.vec2(gui.LEFT_INSPECTOR_CORNER, 0)
         self.position.relative.right_top = glm.vec2(1, gui.DIVISION_BETWEEN_INSPECTOR_AND_HIERARCHY)
 
@@ -69,11 +67,15 @@ class Hierarchy(element_m.Element):
         self.content.position.relative.center = glm.vec2(0.5, 0.9)
         self.content.position.evaluate_values_by_relative()
 
-        self._init_sub_menu_plane()
+        self.sub_menu = None
+        self.sub_menu_plane = None
+        self.sub_menu_other = None
+
         self._init_sub_menu()
 
     def _create_element_in_content(self, content, action, text, number):
-        content_element = elements.Block(f"Element_{number}", None, self.win_size, (1, 1, 1, 0.5))
+        content_element = elements.Block(f"Element_{number}_in_content_{content.name}", None, self.win_size,
+                                         (1, 1, 1, 0.5))
         content_element.position.relative_window.size = glm.vec2(0.25, 0.03)
         content_element.position.evaluate_values_by_relative_window()
 
@@ -93,14 +95,26 @@ class Hierarchy(element_m.Element):
         content.update_position()
 
     def _init_sub_menu(self):
+        self._init_sub_menu_plane()
+        self._init_sub_menu_polyhedrons()
+        self._init_sub_menu_other()
+
         self.sub_menu = elements.Content("Sub Menu", self, self.win_size, (1, 1, 1, 0.5))
         self.sub_menu.position.relative.center = glm.vec2(0.5)
         self.sub_menu.position.evaluate_values_by_relative()
 
-        def create_cube_button_action(button, gui, pos):
-            self.gui.app.scene.add_object(object_creator_m.ObjectCreator.create_cube("gray"))
+        def create_polyhedrons_button_action(button, gui, pos):
+            self.sub_menu_polyhedrons.active = True
+            self.sub_menu_polyhedrons.position.absolute.center = glm.vec2(
+                pos.x - self.sub_menu_polyhedrons.position.absolute.size.x / 2,
+                pos.y + self.sub_menu_polyhedrons.position.absolute.size.y / 2
+            )
+            self.sub_menu_polyhedrons.position.evaluate_values_by_absolute()
+            self.sub_menu_polyhedrons.update_position()
+            self.gui.active_sub_menu = self.sub_menu_polyhedrons
+            self.gui.last_clicked_element = self.sub_menu_polyhedrons
 
-        self._create_button_in_sub_menu(self.sub_menu, create_cube_button_action, "Create Cube", 1)
+        self._create_button_in_sub_menu(self.sub_menu, create_polyhedrons_button_action, "Create Polyhedrons", 1)
 
         def create_plane_button_action(button, gui, pos):
             self.sub_menu_plane.active = True
@@ -128,6 +142,15 @@ class Hierarchy(element_m.Element):
             window.position.relative_window.center = glm.vec2(0.5)
             window.position.evaluate_values_by_relative_window()
             window.update_position()
+
+            temp = window.close
+
+            def _extension_close():
+                self.select_element -= handle_select_element
+                self.unselect_element -= handle_unselect_element
+                temp()
+
+            window.close = _extension_close
 
             hint_text = elements.Text(f"Select points", window.inner_data_block, self.win_size,
                                       f"Select points",
@@ -185,10 +208,8 @@ class Hierarchy(element_m.Element):
                     return
                 p1 = point_component_1.rely_object
                 p2 = point_component_2.rely_object
-                segment = object_creator_m.ObjectCreator.create_segment(glm.vec4(0.7, 0.5, 0.7, 1), p1, p2)
-                self.gui.app.scene.objects[segment.id] = segment
-                self.gui.app.scene.opaque_renderer.append(segment.get_component_by_name("Segment"))
-                self.update_content()
+                self.gui.app.scene.add_object(
+                    object_creator_m.ObjectCreator.create_segment(glm.vec4(0.7, 0.5, 0.7, 1), p1, p2))
                 window.close()
 
             button_apply = elements.Button("Apply", window.inner_data_block, self.win_size, self.gui, 'Create', 1.5,
@@ -249,6 +270,19 @@ class Hierarchy(element_m.Element):
 
         self._create_button_in_sub_menu(self.sub_menu, create_segment_button, "Create Segment", 3)
 
+        def create_other_button(button, gui, pos):
+            self.sub_menu_other.active = True
+            self.sub_menu_other.position.absolute.center = glm.vec2(
+                pos.x - self.sub_menu_other.position.absolute.size.x / 2,
+                pos.y + self.sub_menu_other.position.absolute.size.y / 2
+            )
+            self.sub_menu_other.position.evaluate_values_by_absolute()
+            self.sub_menu_other.update_position()
+            self.gui.active_sub_menu = self.sub_menu_other
+            self.gui.last_clicked_element = self.sub_menu_other
+
+        self._create_button_in_sub_menu(self.sub_menu, create_other_button, "Other", 3)
+
     def _init_sub_menu_plane(self):
         self.sub_menu_plane = elements.Content("Sub Menu Plane", self, self.win_size,
                                                (1, 1, 1, 0.5))
@@ -263,7 +297,16 @@ class Hierarchy(element_m.Element):
             window.position.relative_window.size = glm.vec2(0.3, 0.3) / 1.25
             window.position.relative_window.center = glm.vec2(0.5)
             window.position.evaluate_values_by_relative_window()
-            window.update_position()
+            window.init()
+
+            temp = window.close
+
+            def _extension_close():
+                self.select_element -= handle_select_element
+                self.unselect_element -= handle_unselect_element
+                temp()
+
+            window.close = _extension_close
 
             hint_text = elements.Text(f"Select points", window.inner_data_block, self.win_size,
                                       f"Select points",
@@ -343,9 +386,7 @@ class Hierarchy(element_m.Element):
                 nonlocal p3
                 if p1 is None or p2 is None or p3 is None:
                     return
-                plane = object_creator_m.ObjectCreator.create_plane_by_3_points(p1, p2, p3)
-                self.gui.app.scene.objects[plane.id] = plane
-                self.update_content()
+                self.gui.app.scene.add_object(object_creator_m.ObjectCreator.create_plane_by_3_points(p1, p2, p3))
                 window.close()
 
             button_apply = elements.Button("Apply", window.inner_data_block, self.win_size, self.gui, 'Create', 1.5,
@@ -420,7 +461,16 @@ class Hierarchy(element_m.Element):
             window.position.relative_window.size = glm.vec2(0.3, 0.3) / 1.25
             window.position.relative_window.center = glm.vec2(0.5)
             window.position.evaluate_values_by_relative_window()
-            window.update_position()
+            window.init()
+
+            temp = window.close
+
+            def _extension_close():
+                self.select_element -= handle_select_element
+                self.unselect_element -= handle_unselect_element
+                temp()
+
+            window.close = _extension_close
 
             hint_text = elements.Text(f"Select point and segment", window.inner_data_block, self.win_size,
                                       f"Select point and segment",
@@ -545,7 +595,16 @@ class Hierarchy(element_m.Element):
             window.position.relative_window.size = glm.vec2(0.3, 0.3) / 1.25
             window.position.relative_window.center = glm.vec2(0.5)
             window.position.evaluate_values_by_relative_window()
-            window.update_position()
+            window.init()
+
+            temp = window.close
+
+            def _extension_close():
+                self.select_element -= handle_select_element
+                self.unselect_element -= handle_unselect_element
+                temp()
+
+            window.close = _extension_close
 
             hint_text = elements.Text(f"Select point and plane", window.inner_data_block, self.win_size,
                                       f"Select point and plane",
@@ -605,8 +664,8 @@ class Hierarchy(element_m.Element):
                 if point_component is None or plane_component is None:
                     return
                 p1 = point_component.rely_object.transformation.pos
-                p2 = plane_component.p1
-                p3 = plane_component.p2
+                p2 = plane_component.p1.transformation.pos
+                p3 = plane_component.p2.transformation.pos
 
                 len_n = glm.dot(p1 - p2, plane_component.n)
                 p2 = p2 + plane_component.n * len_n
@@ -687,8 +746,43 @@ class Hierarchy(element_m.Element):
                                         0.2)
         self._create_button_in_sub_menu(self.sub_menu_plane, create_ask_window_element_3, "By point and plane", 3)
 
+    def _init_sub_menu_polyhedrons(self):
+        self.sub_menu_polyhedrons = elements.Content("Sub Menu polyhedrons", self, self.win_size,
+                                                     (1, 1, 1, 0.5))
+        self.sub_menu_polyhedrons.position.relative.center = glm.vec2(0.5)
+        self.sub_menu_polyhedrons.position.evaluate_values_by_relative()
+        self.sub_menu_polyhedrons.active = False
+
+        def create_tetrahedron(button, gui, pos):
+            self.gui.app.scene.add_object(object_creator_m.ObjectCreator.create_tetrahedron('gray_lit'))
+
+        def create_octahedron(button, gui, pos):
+            self.gui.app.scene.add_object(object_creator_m.ObjectCreator.create_octahedron('gray_lit'))
+
+        def create_cube(button, gui, pos):
+            self.gui.app.scene.add_object(object_creator_m.ObjectCreator.create_cube('gray_lit'))
+
+        self._create_button_in_sub_menu(self.sub_menu_polyhedrons, create_tetrahedron, "Tetrahedron", 1, 0.2)
+        self._create_button_in_sub_menu(self.sub_menu_polyhedrons, create_octahedron, "Octahedron", 2,
+                                        0.2)
+        self._create_button_in_sub_menu(self.sub_menu_polyhedrons, create_cube, "Cube", 3)
+
+    def _init_sub_menu_other(self):
+        self.sub_menu_other = elements.Content("Sub Menu other", self, self.win_size,
+                                               (1, 1, 1, 0.5))
+        self.sub_menu_other.position.relative.center = glm.vec2(0.5)
+        self.sub_menu_other.position.evaluate_values_by_relative()
+        self.sub_menu_other.active = False
+
+        def create_light(button, gui, pos):
+            self.gui.app.scene.light = self.gui.app.scene.add_object(
+                object_creator_m.ObjectCreator.create_light()).get_component_by_name("Light")
+
+        self._create_button_in_sub_menu(self.sub_menu_other, create_light, "Create Light", 1, 0.2)
+
     def _create_button_in_sub_menu(self, sub_menu, action, text, number, content_width=0.13):
-        content_element = elements.Block(f"Element_{number}", None, self.win_size, (1, 1, 1, 0.5))
+        content_element = elements.Block(f"Element_{number}_in_sub_menu_{sub_menu.name}", None, self.win_size,
+                                         (1, 1, 1, 0.5))
         content_element.position.relative_window.size = glm.vec2(content_width, 0.05)
         content_element.position.evaluate_values_by_relative_window()
 
@@ -699,8 +793,8 @@ class Hierarchy(element_m.Element):
                                  text_size=1
                                  )
 
-        button.position.relative.left_bottom = glm.vec2(0.1)
-        button.position.relative.right_top = glm.vec2(0.9)
+        button.position.relative.size = glm.vec2(0.9, 0.8)
+        button.position.relative.center = glm.vec2(0.5)
         button.position.evaluate_values_by_relative()
         button.update_position()
 
@@ -708,6 +802,7 @@ class Hierarchy(element_m.Element):
 
     def update_content(self):
         self.content.clear()
+        self.selected_elements.clear()
 
         def click_button_action(button, gui, pos):
             name = button.rely_element.name
@@ -719,13 +814,6 @@ class Hierarchy(element_m.Element):
                     if element[1] == obj_id:
                         self.selected_elements.remove((button, obj_id))
                         return
-                        # found = None
-                # for i in range(len(self.selected_elements)):
-                #     if self.selected_elements[i][1] == obj_id:
-                #         found = i
-                #         break
-                # if found is not None:
-                #     del self.selected_elements[found]
                 return
 
             if not input_manager_m.InputManager.keys[pg.K_LSHIFT]:
@@ -753,104 +841,14 @@ class Hierarchy(element_m.Element):
             selected_elements[0].color = glm.vec4(0.7, 0.7, 0.7, 1)
         self.selected_elements.clear()
 
-# Some deprecated stuff, but I dont want to delete it. Too much time spend on it =/
-
-# def create_ask_window_element_1(button, gui, pos):
-#     window = elements.Window(f"Ask_plane_data_window_{len(self.gui.windows)}", self.main_block,
-#                              gui.win_size,
-#                              gui, "Enter data")
-#     window.position.relative_window.size = glm.vec2(0.3, 0.5) / 1.25
-#     window.position.relative_window.center = glm.vec2(0.5)
-#     window.position.evaluate_values_by_relative_window()
-#     window.update_position()
-#
-#     input_fields = {}
-#
-#     for i in range(3):
-#         text = elements.Text(f"point {3 - i}", window.inner_data_block, self.win_size, f"point {3 - i}",
-#                              font_size=1.5)
-#         text.color = glm.vec4(0.1, 0.1, 0.1, 1)
-#         text.position.relative.center = glm.vec2(0.1, 0.2 * (i + 1) + 0.3)
-#         text.update_position()
-#         input_fields[2 - i] = []
-#         for j in range(3):
-#             input_field = elements.InputField(f"input_field_{i * 3 + j}", window.inner_data_block,
-#                                               self.win_size,
-#                                               self.gui,
-#                                               text_size=1)
-#             input_field.position.relative.size = glm.vec2(0.2, 0.1)
-#             input_field.position.relative.center = glm.vec2(0.25 * (j + 1), 0.2 * (i + 1) + 0.25)
-#             input_field.update_position()
-#             input_field.text.position.relative.left_bottom = glm.vec2(0.05,
-#                                                                       0.5 - input_field.text.position.relative.size.y / 2)
-#             input_field.text.text = "0.0"
-#             input_fields[2 - i].append(input_field)
-#
-#     text = elements.Text(f"Or You can select", window.inner_data_block, self.win_size,
-#                          f"Or select point",
-#                          font_size=1.5)
-#     text.color = glm.vec4(0.1, 0.1, 0.1, 1)
-#     text.pivot = Pivot.Center
-#     text.position.relative.center = glm.vec2(0.5, 0.3)
-#     text.update_position()
-#
-#     def read_pos_from_input_fields():
-#         res = []
-#         for fields in input_fields.values():
-#             vec = glm.vec3()
-#             res.append(vec)
-#             vec.x = float(fields[0].text.text)
-#             vec.y = float(fields[1].text.text)
-#             vec.z = float(fields[2].text.text)
-#         return res
-#
-#     def apply(button, gui, pos):
-#         plane = object_creator_m.ObjectCreator.create_plane_by_3_point_pos(*read_pos_from_input_fields())
-#         self.gui.app.scene.objects[plane.id] = plane
-#         self.update_content()
-#         window.close()
-#
-#     button_apply = elements.Button("Apply", window.inner_data_block, self.win_size, self.gui, 'Create', 1.5,
-#                                    apply,
-#                                    color=glm.vec4(0, 0.8, 0, 1), text_color=glm.vec4(1))
-#     button_apply.position.relative.center = glm.vec2(0.65, 0.05)
-#     button_apply.position.relative.size = glm.vec2(0.3, 0.15)
-#     button_apply.update_position()
-#
-#     def clear_fields(button, gui, pos):
-#         for fields in input_fields.values():
-#             for f in fields:
-#                 f.text.text = "0.0"
-#
-#     button_clear = elements.Button("Clear", window.inner_data_block, self.win_size, self.gui, 'Clear', 1.5,
-#                                    clear_fields,
-#                                    color=glm.vec4(0.8, 0.8, 0, 1), text_color=glm.vec4(1))
-#     button_clear.position.relative.center = glm.vec2(0.05, 0.05)
-#     button_clear.position.relative.size = glm.vec2(0.3, 0.15)
-#     button_clear.update_position()
-#
-#     window.update_position()
-#
-#     def fill_input_fields_by_position(fields, pos):
-#         fields[0].text.text = str(pos.x)
-#         fields[1].text.text = str(pos.y)
-#         fields[2].text.text = str(pos.z)
-#
-#     def handle_select_element(obj_id):
-#         input_field_index = len(self.selected_elements)
-#         if input_field_index > 2:
-#             return
-#         obj = self.gui.app.scene.objects[obj_id]
-#         fill_input_fields_by_position(input_fields[input_field_index], obj.transformation.pos)
-#
-#     def handle_unselect_element(obj_id):
-#         input_field_index = len(self.selected_elements) - 1
-#         if input_field_index > 2:
-#             return
-#         for field in input_fields[input_field_index]:
-#             field.text.text = "0.0"
-#
-#     self.select_element += handle_select_element
-#     self.unselect_element += handle_unselect_element
-#
-#     self.gui.windows.append(window)
+    def delete(self):
+        self.gui = None
+        self.main_block = None
+        self.selected_elements.clear()
+        del self.select_element
+        del self.unselect_element
+        self.sub_menu = None
+        self.sub_menu_plane = None
+        self.sub_menu_other = None
+        self.content = None
+        super().delete()

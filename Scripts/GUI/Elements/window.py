@@ -19,6 +19,8 @@ import glm
 #        #                               #
 #        #################################
 
+WIDTH_HEADER = 0.04
+
 HEADER_BOTTOM = 0.8
 BUTTON_LEFT_CORNER = 0.95
 
@@ -72,6 +74,17 @@ class Window(element_m.Element):
                                        )
         close_button.position.relative.size = glm.vec2(0.1, 1)
         close_button.position.relative.center = glm.vec2(0.95, 0.5)
+
+    def init(self):
+        self.background.position.evaluate_values_by_relative()
+        self.header.position.evaluate_values_by_relative()
+        vec_offset = glm.vec2(0, self.header.position.relative_window.size.y - WIDTH_HEADER)
+        self.header.position.relative_window.size = glm.vec2(self.header.position.relative_window.size.x, WIDTH_HEADER)
+        self.header.position.relative_window.transform(vec_offset)
+        self.header.position.evaluate_values_by_relative_window()
+        self.header.update_position()
+        self.inner_data_block.position.relative.right_top = (1, self.header.position.relative.left_bottom.y)
+        self.inner_data_block.update_position()
 
     def find_clicked_element(self, mouse_pos: glm.vec2):
         if self.position.check_if_clicked(mouse_pos):

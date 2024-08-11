@@ -1,7 +1,8 @@
 class ShaderProgram:
-    def __init__(self, ctx, name='test'):
+    def __init__(self, ctx, folder_name, name):
         self.ctx = ctx
-        self.bin_program = self.get_bin_program(name)
+        self.name = name
+        self.bin_program = self.get_bin_program(folder_name)
 
     def __getitem__(self, item):
         return self.bin_program[item]
