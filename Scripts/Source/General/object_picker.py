@@ -1,14 +1,11 @@
 import glm
 import moderngl as mgl
-import numpy as np
 import Scripts.Source.General.index_manager as index_manager_m
 import Scripts.Source.General.input_manager as input_manager_m
-import Scripts.Source.Render.library as library_m
-import utils
 
 
 class ObjectPicker:
-    _pick_fbo = None
+    _pick_fbo = None  # type: mgl.Framebuffer
     _app = None
 
     active_axis = None
@@ -33,9 +30,12 @@ class ObjectPicker:
     @staticmethod
     def process_window_resize(new_size):
         if ObjectPicker._pick_fbo:
+            ObjectPicker._pick_fbo.depth_attachment.release()
+            ObjectPicker._pick_fbo.color_attachments[0].release()
             ObjectPicker._pick_fbo.release()
         ObjectPicker._pick_fbo = ObjectPicker._app.ctx.framebuffer(
-            color_attachments=[ObjectPicker._app.ctx.renderbuffer((int(new_size.x), int(new_size.y)))]
+            color_attachments=[ObjectPicker._app.ctx.renderbuffer((int(new_size.x), int(new_size.y)))],
+            depth_attachment=ObjectPicker._app.ctx.depth_renderbuffer((int(new_size.x), int(new_size.y)))
         )
 
     @staticmethod
@@ -182,3 +182,9 @@ class ObjectPicker:
         ObjectPicker._last_mouse_dot = dot
         ObjectPicker.last_picked_obj_transformation.pos += (axis.end - axis.start) * difference / 100
         return True
+
+    @staticmethod
+    def release():
+        ObjectPicker._pick_fbo.release()
+        ObjectPicker._pick_fbo = None
+        ObjectPicker._app = None

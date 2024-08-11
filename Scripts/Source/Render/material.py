@@ -1,6 +1,6 @@
 import moderngl
 import Scripts.Source.Render.shader_program as shader_program_m
-
+import glm
 import enum
 
 
@@ -24,7 +24,7 @@ class MaterialProperty:
 
 class Material:
     def __init__(self, ctx: moderngl.Context, material_name: str, shader_program: shader_program_m.ShaderProgram,
-                 properties):
+                 properties, render_mode=RenderMode.Opaque):
         self.ctx = ctx
         self.name = material_name
         self.shader_program = shader_program
@@ -35,7 +35,7 @@ class Material:
         # Camera
         self.camera_component = None
         self.camera_transformation = None
-        self.render_mode = RenderMode.Opaque
+        self.render_mode = render_mode
 
     def __getitem__(self, item):
         return self.properties[item]
@@ -53,7 +53,7 @@ class Material:
         if m_proj:
             m_proj.write(self.camera_component.m_proj)
 
-    def _update_base_uniforms(self, transform_object):
+    def _update_base_uniforms(self, transform_object, light_component):
         # Camera Position
         cam_pos = self.shader_program.get('camPos')
         if cam_pos and self.camera_transformation is not None:
@@ -66,6 +66,36 @@ class Material:
         m_matrix = self.shader_program.get('m_model')
         if m_matrix:
             m_matrix.write(transform_object.m_model)
+        # Light
+        light_position = self.shader_program.get("light.position")
+        light_Ia = self.shader_program.get("light.Ia")
+        light_Id = self.shader_program.get("light.Id")
+        light_Is = self.shader_program.get("light.Is")
+        if light_component:
+            # light_position
+            if light_position:
+                light_position.write(light_component.transformation.pos)
+            # light_Ia
+            if light_Ia:
+                light_Ia.write(light_component.intensity_ambient)
+            # light_Id
+            if light_Id:
+                light_Id.write(light_component.intensity_diffuse)
+            # light_Is
+            if light_Is:
+                light_Is.write(light_component.intensity_specular)
+        else:
+            if light_position:
+                light_position.write(glm.vec3())
+            # light_Ia
+            if light_Ia:
+                light_Ia.write(glm.vec3())
+            # light_Id
+            if light_Id:
+                light_Id.write(glm.vec3())
+            # light_Is
+            if light_Is:
+                light_Is.write(glm.vec3())
 
     def _update_properties_uniforms(self):
         for key, value in self.properties.items():
@@ -84,8 +114,8 @@ class Material:
         if self.shader_program.get('m_proj'):
             self.shader_program.get('m_proj').write(m_proj)
 
-    def update(self, transform_object):
-        self._update_base_uniforms(transform_object)
+    def update(self, transform_object, light_component):
+        self._update_base_uniforms(transform_object, light_component)
         self._update_properties_uniforms()
 
     def destroy(self):

@@ -1,11 +1,16 @@
-class IndexManager:
-    global_index = 1
-    unused_indices = []
+# Reserved id:
+# 1 — camera
+# 2-4 — transformation axis
+# 5-... — scene objects
 
-    @staticmethod
-    def get_id():
-        id = IndexManager.global_index
-        IndexManager.global_index += 1
+class IndexManager:
+    def __init__(self):
+        self.global_index = 1
+        self.unused_indices = []
+
+    def get_id(self):
+        id = self.global_index
+        self.global_index += 1
         return id
 
     @staticmethod
@@ -42,3 +47,9 @@ class IndexManager:
 
         # OLD
         # return color[0] * 255 + color[1] * 255 + color[2] * 255
+
+    def serialize(self):
+        return {
+            'global_index': self.global_index,
+            'unused_indices': self.unused_indices
+        }

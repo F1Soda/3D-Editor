@@ -85,3 +85,9 @@ class InputField(element_m.Element):
             self._backspace_was_released = True
 
         return True
+
+    def delete(self):
+        self.gui = None
+        self.background = None
+        self.text = None
+        super().delete()

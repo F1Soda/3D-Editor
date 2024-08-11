@@ -9,8 +9,6 @@ class Inspector(element_m.Element):
         self.gui = gui
         self.main_block = main_block
 
-        self.main_block.elements.append(self)
-
         self.position.relative.left_bottom = glm.vec2(gui.LEFT_INSPECTOR_CORNER,
                                                       gui.DIVISION_BETWEEN_INSPECTOR_AND_HIERARCHY)
         self.position.relative.right_top = glm.vec2(1)
@@ -29,3 +27,8 @@ class Inspector(element_m.Element):
                                     )
         text_header.position.relative.center = glm.vec2(0.5, 0.95)
         self.update_position()
+
+    def delete(self):
+        self.gui = None
+        self.main_block = None
+        super().delete()

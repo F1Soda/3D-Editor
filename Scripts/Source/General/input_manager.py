@@ -1,6 +1,6 @@
-import copy
-
 import pygame as pg
+from pympler import tracker
+
 import Scripts.Source.General.utils as utils_m
 import enum
 import glm
@@ -11,6 +11,10 @@ class MouseButtonState(enum.Enum):
     Pressed = 1
     Hold = 2
     Released = 3
+
+
+tr = tracker.SummaryTracker()
+tr.diff()
 
 
 class InputManager:
@@ -68,9 +72,17 @@ class InputManager:
 
         for event in pg.event.get():
             if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
-                InputManager._app.exit()
+                InputManager._app.gui.ask_save_file_before_exit()
+
             elif event.type == pg.VIDEORESIZE:
+                #tr.diff()
                 InputManager._app.process_window_resize(event)
+                data = ""
+                #for data in tr.format_diff():
+                #    print(f"{data}", file=resize_log_stream)
+                #print("\n", file=resize_log_stream)
+
+
             elif event.type == pg.KEYDOWN:
                 if event.unicode.isalnum() and event.unicode.isascii():
                     InputManager.pressed_keyboard_char = event.unicode
@@ -105,3 +117,13 @@ class InputManager:
 
         if mouse_states[2] == MouseButtonState.Released:
             InputManager.handle_right_release_event(mouse_pos)
+
+    @staticmethod
+    def release():
+        del InputManager.handle_keyboard_press
+        del InputManager.handle_left_click_event
+        del InputManager.handle_left_hold_event
+        del InputManager.handle_left_release_event
+        del InputManager.handle_right_click_event
+        del InputManager.handle_right_hold_event
+        del InputManager.handle_right_release_event

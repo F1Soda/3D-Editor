@@ -2,6 +2,8 @@ import glm
 
 import Scripts.Source.General.object_creator as object_creator_m
 import Scripts.Source.Render.gizmos as gizmos_m
+import Scripts.Source.General.data_manager as data_manager_m
+import Scripts.Source.General.index_manager as index_manager_m
 
 
 class Scene:
@@ -10,7 +12,8 @@ class Scene:
         self.ctx = self.app.ctx
         self.objects = {}
         self.transform_axis_gizmo = {}
-        self.gizmo_objects = {}
+
+        self.index_manager = index_manager_m.IndexManager()
 
         self.light = None
         self.camera = None
@@ -18,6 +21,7 @@ class Scene:
 
         self.opaque_renderer = []
         self.transparency_renderer = []
+        self.test_saving_object = None
 
         self.gui = gui
 
@@ -27,38 +31,25 @@ class Scene:
             if renderer:
                 renderer.change_render_mode()
 
-    def load(self):
-        self.light = object_creator_m.ObjectCreator.create_light()
-        self.objects[self.light.id] = self.light
-        self.camera = object_creator_m.ObjectCreator.create_camera()
-        self.camera_component = self.camera.get_component_by_name("Camera")
-
-        self.init_gizmo()
-        self.init_scene()
-
-    def add_object(self, obj):
-        self.objects[obj.id] = obj
-        self.gui.update_data_in_hierarchy()
-
-    def init_scene(self):
-        tetrahedron = object_creator_m.ObjectCreator.create_tetrahedron('blue')
+    def _default_load(self):
+        tetrahedron = object_creator_m.ObjectCreator.create_tetrahedron('blue_lit')
         tetrahedron.transformation.pos = (5, 0, 5)
         self.objects[tetrahedron.id] = tetrahedron
 
-        octahedron = object_creator_m.ObjectCreator.create_octahedron('red')
+        octahedron = object_creator_m.ObjectCreator.create_octahedron('red_lit')
         octahedron.transformation.pos = (5, 0, 3)
         self.objects[octahedron.id] = octahedron
 
-        cube = object_creator_m.ObjectCreator.create_cube('green')
+        cube = object_creator_m.ObjectCreator.create_cube('green_lit')
         cube.transformation.pos = (5, 0, 1)
         self.objects[cube.id] = cube
 
         p1 = object_creator_m.ObjectCreator.create_point(glm.vec4(1, 0, 0, 1), size=200)
-        p1.transformation.pos = glm.vec3(3, 0, 0)
+        p1.transformation.pos = glm.vec3(4, 0, 4)
         self.objects[p1.id] = p1
 
         p2 = object_creator_m.ObjectCreator.create_point(glm.vec4(0, 1, 0, 1), size=200)
-        p2.transformation.pos = glm.vec3(0, 3, 0)
+        p2.transformation.pos = glm.vec3(0, 0, 4)
         self.objects[p2.id] = p2
 
         test_segment = object_creator_m.ObjectCreator.create_segment(glm.vec4(0.6, 0.1, 0.5, 1), p1, p2)
@@ -78,6 +69,27 @@ class Scene:
 
         plane_by_3_points = object_creator_m.ObjectCreator.create_plane_by_3_points(p3, p4, p5)
         self.objects[plane_by_3_points.id] = plane_by_3_points
+
+    def load(self, file_path=None):
+        self.camera = object_creator_m.ObjectCreator.create_camera()
+        self.camera_component = self.camera.get_component_by_name("Camera")
+
+        self.init_gizmo()
+
+        if file_path:
+            data_manager_m.DataManager.load_scene(self, file_path)
+        else:
+
+            self._default_load()
+        for obj in self.objects.values():
+            light = obj.get_component_by_name("Light")
+            if light:
+                self.light = light
+
+    def add_object(self, obj):
+        self.objects[obj.id] = obj
+        self.gui.update_data_in_hierarchy()
+        return obj
 
     def init_gizmo(self):
         axis = gizmos_m.Gizmos.WordAxisGizmo(self.ctx, (0, 0, 0), (1, 0, 0), (1, 0, 0), self.camera_component, size=3)
@@ -105,16 +117,18 @@ class Scene:
         self.camera.apply_components()
         for obj in self.objects.values():
             obj.apply_components()
+
+    def render_opaque_objects(self):
         for renderer in self.opaque_renderer:
-            renderer.apply()
+            if renderer.rely_object.enable:
+                renderer.apply()
+
+    def render_transparent_objects(self):
         for renderer in self.transparency_renderer:
-            renderer.apply()
+            if renderer.rely_object.enable:
+                renderer.apply()
 
-    def update(self):
-        self.camera.update_components()
-        for obj in self.objects.values():
-            obj.update_components()
-
+    #@profiler_m.profile
     def delete(self):
         for obj_id, obj in self.objects.items():
             obj.delete()
@@ -122,4 +136,7 @@ class Scene:
 
         for obj in self.transform_axis_gizmo.values():
             obj.delete()
-        self.gizmo_objects.clear()
+        self.transform_axis_gizmo.clear()
+
+        self.camera.delete()
+        self.camera_component = None

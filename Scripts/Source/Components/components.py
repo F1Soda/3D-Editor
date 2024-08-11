@@ -15,3 +15,14 @@ FreeFlyMove = free_fly_move_m.FreeFlyMove
 Point = point_m.Point
 Segment = segment_m.Segment
 Plane = plane_m.Plane
+
+components = {
+    "Transformation": Transformation,
+    "Renderer": Renderer,
+    "Camera": Camera,
+    "Light": Light,
+    "FreeFlyMove": FreeFlyMove,
+    "Point": Point,
+    "Segment": Segment,
+    "Plane": Plane,
+}

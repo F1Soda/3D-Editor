@@ -39,7 +39,6 @@ class Element:
 
     def process_window_resize(self, new_size: glm.vec2):
         self.win_size = new_size
-
         self.position.recalculate(self.win_size)
         for element in self.elements:
             element.process_window_resize(new_size)

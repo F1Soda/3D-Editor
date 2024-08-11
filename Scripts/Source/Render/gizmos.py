@@ -8,32 +8,31 @@ import Scripts.GUI.GUI as gui_m
 import Scripts.Source.General.object as object_m
 import Scripts.Source.Components.components as components
 import Scripts.Source.Render.library as library_m
+import Scripts.Source.General.object_picker as object_picker_m
+import Scripts.Source.General.object_creator as object_creator_m
+import Scripts.Source.Components.light as light_m
 
 
 class Gizmos:
-    class Geometry:
-        def __init__(self, ctx, scene, camera_component, save_size=True):
-            self.id = index_manager_m.IndexManager.get_id()
-            self.ctx = ctx
-            self.scene = scene
-            self.camera_component = camera_component
-            self.save_size = True
-
-        def draw(self):
-            ...
-
     class SegmentByPoints:
-        def __init__(self, ctx, p1, p2, color, camera_component, size=3.0, save_size=True):
+        def __init__(self, ctx, p1: object_m.Object, p2: object_m.Object, color: glm.vec4, camera_component, size=3.0,
+                     save_size=True):
             # self.id = index_manager_m.IndexManager.get_id()
             self.ctx = ctx
             self.p1 = p1
             self.p2 = p2
-            self._color = glm.vec4(color)
+            self._color = color
             self._size = self.default_size = size
             self.camera_component = camera_component
             self.save_size = save_size
-            self.vbo = self.ctx.buffer(self.get_vertices())
             self.shader_program = library_m.shader_programs['segment_gizmo']
+
+            self.vbo = None
+            self.vao = None
+
+        def init(self, ctx):
+            self.ctx = ctx
+            self.vbo = self.ctx.buffer(self.get_vertices())
             self.vao = self.ctx.vertex_array(self.shader_program.bin_program, self.vbo, 'in_position')
 
         def get_vertices(self):
@@ -94,8 +93,11 @@ class Gizmos:
             self.shader_program = None
 
     class WordAxisGizmo:
-        def __init__(self, ctx, start, end, color, camera, size=3.0, save_size=False):
-            self.id = index_manager_m.IndexManager.get_id()
+        def __init__(self, ctx, start, end, color, camera, size=3.0, save_size=False, axis_id=None):
+            if axis_id:
+                self.id = axis_id
+            else:
+                self.id = camera.app.scene.index_manager.get_id()
             self.ctx = ctx
             self.save_size = save_size
             self.start = glm.vec3(*start)
@@ -149,7 +151,7 @@ class Gizmos:
             self.shader = None
 
     class Point:
-        def __init__(self, ctx, pos: glm.vec3, color, camera, size=10.0, save_size=True):
+        def __init__(self, ctx, pos: glm.vec3, color, camera_component, size=10.0, save_size=True):
             # self.id = index_manager_m.IndexManager.get_id()
             self.ctx = ctx
             self._pos = pos
@@ -159,7 +161,7 @@ class Gizmos:
             self.shader = library.shader_programs['point_gizmo']
             self.shader['color'].write(self._color)
             self.vao = library.vaos['point']
-            self.camera = camera
+            self.camera = camera_component
 
         @property
         def pos(self):
@@ -223,16 +225,60 @@ class Gizmos:
         self.ctx = ctx
         self.camera = scene.camera_component
         self.scene = scene
-        self.x_axis = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (0.5, -0.5, -0.5), glm.vec3(1, 0, 0),
-                                           self.scene.camera_component)
-        self.y_axis = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (-0.5, 0.5, -0.5), glm.vec3(0, 1, 0),
-                                           self.scene.camera_component)
-        self.z_axis = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (-0.5, -0.5, 0.5), glm.vec3(0, 0, 1),
-                                           self.scene.camera_component)
+        self.x_axis_in_right_corner = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (0.5, -0.5, -0.5),
+                                                           glm.vec3(1, 0, 0),
+                                                           self.scene.camera_component, axis_id=-1)
+        self.y_axis_in_right_corner = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (-0.5, 0.5, -0.5),
+                                                           glm.vec3(0, 1, 0),
+                                                           self.scene.camera_component, axis_id=-1)
+        self.z_axis_in_right_corner = Gizmos.WordAxisGizmo(ctx, (-0.5, -0.5, -0.5), (-0.5, -0.5, 0.5),
+                                                           glm.vec3(0, 0, 1),
+                                                           self.scene.camera_component, axis_id=-1)
 
-        plane = object_m.Object(scene, "Plane", [])
-        renderer = components.Renderer(self.ctx, plane, library_m.meshes['plane'], library_m.materials['grid'],
-                                       scene.camera_component)
+        self.x_axis_center = Gizmos.WordAxisGizmo(ctx, (-3, 0.1, 0), (3, 0.1, 0), glm.vec3(0.8, 0, 0),
+                                                  self.scene.camera_component, axis_id=-1)
+        self.y_axis_center = Gizmos.WordAxisGizmo(ctx, (0, -3, 0), (0, 3, 0), glm.vec3(0, 0.8, 0),
+                                                  self.scene.camera_component, axis_id=-1)
+        self.z_axis_center = Gizmos.WordAxisGizmo(ctx, (0, 0.1, -3), (0, 0.1, 3), glm.vec3(0, 0, 0.8),
+                                                  self.scene.camera_component, axis_id=-1)
+
+        # Gizmos Light
+        gizmos_light = object_m.Object(scene, 'gizmos_light', obj_id=-1)
+        gizmos_light.transformation.pos = glm.vec3(3, 6, 3)
+        self.gizmos_light_component = gizmos_light.add_component(light_m.Light())
+
+        # Arrows for center coordinate axis
+        current_index = scene.index_manager.global_index
+
+        self.arrow_axis_renderers = []
+        arrow_x_axis = object_creator_m.ObjectCreator.create_tetrahedron("red_lit", add_to_sequence_render=False)
+        arrow_x_axis.transformation.pos = glm.vec3(3, 0.1, 0)
+        arrow_x_axis.transformation.rot = glm.vec3(0, 0, -90)
+        arrow_x_axis.transformation.scale = glm.vec3(0.2)
+        arrow_x_axis.id = -1
+        self.arrow_axis_renderers.append(arrow_x_axis.get_component_by_name("Renderer"))
+        self.arrow_axis_renderers[0].material.light_component = self.gizmos_light_component
+
+        arrow_y_axis = object_creator_m.ObjectCreator.create_tetrahedron("green_lit", add_to_sequence_render=False)
+        arrow_y_axis.transformation.pos = glm.vec3(0, 3, 0)
+        arrow_y_axis.transformation.rot = glm.vec3(0, 0, 0)
+        arrow_y_axis.transformation.scale = glm.vec3(0.2)
+        arrow_y_axis.id = -1
+        self.arrow_axis_renderers.append(arrow_y_axis.get_component_by_name("Renderer"))
+        self.arrow_axis_renderers[1].material.light_component = self.gizmos_light_component
+
+        arrow_z_axis = object_creator_m.ObjectCreator.create_tetrahedron("blue_lit", add_to_sequence_render=False)
+        arrow_z_axis.transformation.pos = glm.vec3(0, 0.1, 3)
+        arrow_z_axis.transformation.rot = glm.vec3(90, 0, 0)
+        arrow_z_axis.transformation.scale = glm.vec3(0.2)
+        arrow_z_axis.id = -1
+        self.arrow_axis_renderers.append(arrow_z_axis.get_component_by_name("Renderer"))
+        self.arrow_axis_renderers[2].material.light_component = self.gizmos_light_component
+
+        scene.index_manager.global_index = current_index
+
+        plane = object_m.Object(scene, "Plane", [], obj_id=-1)
+        renderer = components.Renderer(library_m.meshes['plane'], library_m.materials['grid'])
         plane.add_component(renderer)
         plane.transformation.scale = glm.vec3(1000, 1, 1000)
         renderer.material['tilling'] = glm.vec2(1000)
@@ -240,35 +286,41 @@ class Gizmos:
 
         self.grid_plane_renderer = renderer
         self.shader = library.shader_programs['word_axis_gizmo']
+        self.draw_grid_and_center_system = True
 
-        self.space = []
-        length = 5
-        for z in range(length):
-            for y in range(length):
-                for x in range(length):
-                    point = Gizmos.Point(ctx, glm.vec3(x, y, z), glm.vec4(x / 10, y / 10, z / 10, 1), self.camera,
-                                         size=100,
-                                         save_size=False)
-                    self.space.append(point)
+    def process_window_resize(self, new_win_size):
+        self.grid_plane_renderer.update_projection_matrix(self.camera.m_proj)
+        for arrow_axis_renderer in self.arrow_axis_renderers:
+            arrow_axis_renderer.update_projection_matrix(self.camera.m_proj)
 
-    def draw_fun_space(self):
-        for point in self.space:
-            point.draw()
+    def draw_center_axis_arrows(self):
+        for renderer in self.arrow_axis_renderers:
+            renderer.material.update(renderer.rely_object.transformation, self.gizmos_light_component)
+            renderer.vao.render()
+
+    def render(self):
+        self.ctx.enable(mgl.BLEND)
+        self.draw_word_axis_in_right_corner()
+        transform = object_picker_m.ObjectPicker.last_picked_obj_transformation
+        if self.draw_grid_and_center_system:
+            self.draw_center_coordinate()
+            self.draw_center_axis_arrows()
+            self.draw_plane_grid()
+        if transform and transform.moveable:
+            self.ctx.disable(mgl.DEPTH_TEST)
+            self.scene.draw_gizmos_transformation_axis(object_picker_m.ObjectPicker.last_picked_obj_transformation)
+            self.ctx.enable(mgl.DEPTH_TEST)
+        self.ctx.disable(mgl.BLEND)
 
     def draw_center_coordinate(self):
-        m_model = glm.mat4()
-        m_model[3][1] = 0.5
-        m_model[3][0] = 0.5
-        m_model[3][2] = 0.5
-
-        self.x_axis.draw(m_model=m_model)
-        self.y_axis.draw(m_model=m_model)
-        self.z_axis.draw(m_model=m_model)
+        self.x_axis_center.draw(glm.mat4())
+        self.y_axis_center.draw(glm.mat4())
+        self.z_axis_center.draw(glm.mat4())
 
     def draw_word_axis_in_right_corner(self):
-        self.x_axis.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
-        self.y_axis.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
-        self.z_axis.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
+        self.x_axis_in_right_corner.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
+        self.y_axis_in_right_corner.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
+        self.z_axis_in_right_corner.draw(m_proj=self.camera.m_ortho, m_model=self.get_model_matrix_for_world_axis())
 
     def draw_plane_grid(self):
         self.grid_plane_renderer.apply()
@@ -291,3 +343,31 @@ class Gizmos:
 
         m_model = glm.scale(m_model, (size, size, size))
         return m_model
+
+    def delete(self):
+        self.ctx = None
+        self.camera = None
+        self.scene = None
+        self.x_axis_in_right_corner.delete()
+        self.x_axis_in_right_corner = None
+        self.y_axis_in_right_corner.delete()
+        self.y_axis_in_right_corner = None
+        self.z_axis_in_right_corner.delete()
+        self.z_axis_in_right_corner = None
+
+        self.x_axis_center.delete()
+        self.x_axis_center = None
+        self.y_axis_center.delete()
+        self.y_axis_center = None
+        self.z_axis_center.delete()
+        self.z_axis_center = None
+
+        self.gizmos_light_component.rely_object.delete()
+        self.gizmos_light_component = None
+        for arrow_axis_renderer in self.arrow_axis_renderers:
+            arrow_axis_renderer.rely_object.delete()
+        self.arrow_axis_renderers.clear()
+
+        self.grid_plane_renderer.rely_object.delete()
+        self.grid_plane_renderer = None
+        self.shader = None

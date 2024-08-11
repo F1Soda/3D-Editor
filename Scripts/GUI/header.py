@@ -1,8 +1,10 @@
 import Scripts.GUI.Elements.element as element_m
 import Scripts.GUI.Elements.elements as elements
 import Scripts.Source.General.utils as utils_m
+import Scripts.Source.General.data_manager as data_manager_m
 import copy
 import glm
+import easygui
 
 
 class Header(element_m.Element):
@@ -10,8 +12,6 @@ class Header(element_m.Element):
         super().__init__('Header', main_block, gui.win_size)
         self.gui = gui
         self.main_block = main_block
-
-        self.main_block.elements.append(self)
 
         self.position.relative.left_bottom = glm.vec2(0, gui.HEADER_BOTTOM)
         self.position.relative.right_top = glm.vec2(gui.LEFT_INSPECTOR_CORNER, 1)
@@ -31,9 +31,34 @@ class Header(element_m.Element):
         rlb = glm.vec2(0.005, 0.1)
         rrt = glm.vec2(0.05, 1 - 0.1)
 
+        def save_action(button, gui, pos):
+            file_path = easygui.fileopenbox(title='Save', filetypes='\\*.json')
+            if file_path:
+                if file_path.endswith(".json"):
+                    data_manager_m.DataManager.save_scene(gui.app.scene, file_path)
+                else:
+                    window = elements.Window(f"Error_saving_file_window{len(self.gui.windows)}", self.main_block,
+                                             gui.win_size,
+                                             gui, "Error")
+                    window.position.relative_window.size = glm.vec2(0.2, 0.1)
+                    window.position.relative_window.center = glm.vec2(0.5)
+                    window.position.evaluate_values_by_relative_window()
+                    window.init()
+
+                    hint_text = elements.Text(f"Incorrect format selected", window.inner_data_block, self.win_size,
+                                              f"Incorrect format selected",
+                                              font_size=1)
+                    hint_text.color = glm.vec4(0.1, 0.1, 0.1, 1)
+                    hint_text.pivot = element_m.Pivot.Center
+                    hint_text.position.relative.center = glm.vec2(0.5)
+                    hint_text.update_position()
+
+                    window.update_position()
+                    self.gui.windows.append(window)
+
         save_button = elements.Button("Save Button", background, self.win_size, self.gui,
                                       "Save",
-                                      action=None,
+                                      action=save_action,
                                       color=glm.vec4(0, 0.7, 0, 1),
                                       text_color=glm.vec4(1, 1, 1, 1),
                                       text_size=1
@@ -44,9 +69,70 @@ class Header(element_m.Element):
         rlb = rlb + glm.vec2(rrt.x + rlb.x, 0)
         rrt = rrt + glm.vec2(rrt.x, 0)
 
+        self.ask_save_file_before_load_window = None
+
+        def load_button(button, gui, pos):
+            if self.ask_save_file_before_load_window:
+                self.ask_save_file_before_load_window.position.relative.center = glm.vec2(0.15, 0.85)
+                self.ask_save_file_before_load_window.update_position()
+                return
+
+            window = elements.Window(f"Ask_save_or_not_window_{len(self.gui.windows)}", self.main_block,
+                                     self.win_size,
+                                     self.gui, "Warning")
+            self.ask_save_file_before_load_window = window
+            window.position.relative_window.size = glm.vec2(0.2, 0.15)
+            window.position.relative_window.center = glm.vec2(0.15, 0.85)
+            window.position.evaluate_values_by_relative_window()
+            window.init()
+
+            hint_text = elements.Text(f"Save scene before load?", window.inner_data_block, self.win_size,
+                                      f"Save scene before load?",
+                                      font_size=1)
+            hint_text.color = glm.vec4(0.1, 0.1, 0.1, 1)
+            hint_text.pivot = element_m.Pivot.Center
+            hint_text.position.relative.center = glm.vec2(0.5, 0.8)
+            hint_text.update_position()
+
+            def load(button, gui, pos):
+                file_path = easygui.fileopenbox(title='Load', filetypes='\\*.json')
+                if file_path:
+                    self.gui.app.load_scene(file_path)
+                    self.ask_save_file_before_load_window.close()
+
+            def save(button, gui, pos):
+                save_action(button, gui, pos)
+                load(button, gui, pos)
+
+            button_apply = elements.Button("Save", window.inner_data_block, self.win_size, self.gui, 'Save', 1.5,
+                                           save,
+                                           color=glm.vec4(0, 0.8, 0.1, 1), text_color=glm.vec4(1))
+            button_apply.position.relative.center = glm.vec2(0.65, 0.15)
+            button_apply.position.relative.size = glm.vec2(0.3)
+            button_apply.update_position()
+
+            button_clear = elements.Button("Skip", window.inner_data_block, self.win_size, self.gui, 'Skip', 1.5,
+                                           load,
+                                           color=glm.vec4(0.8, 0.1, 0.1, 1), text_color=glm.vec4(1))
+            button_clear.position.relative.center = glm.vec2(0.05, 0.15)
+            button_clear.position.relative.size = glm.vec2(0.3)
+            button_clear.update_position()
+
+            temp = window.close
+
+            def _extension_to_close():
+                self.ask_save_file_before_load_window = None
+                temp()
+
+            window.close = _extension_to_close
+
+            window.update_position()
+
+            self.gui.windows.append(window)
+
         load_button = elements.Button("Load Button", background, self.win_size, self.gui,
                                       "Load",
-                                      action=None,
+                                      action=load_button,
                                       color=glm.vec4(0.7, 0.7, 0, 1),
                                       text_color=glm.vec4(1, 1, 1, 1),
                                       text_size=1
@@ -74,9 +160,33 @@ class Header(element_m.Element):
         render_mode_button.position.relative.right_top = copy.copy(rrt)
         render_mode_button.position.evaluate_values_by_relative()
 
+        def grid_off_on_action(button, gui, pos):
+            button.button_text = "Grid: ON" if button.button_text == "Grid: OFF" else "Grid: OFF"
+            gui.app.gizmos.draw_grid_and_center_system = not gui.app.gizmos.draw_grid_and_center_system
+            pass
+
+        grid_on_off_button = elements.Button("Grid off on button", background, self.win_size, self.gui,
+                                             "Grid: ON",
+                                             action=grid_off_on_action,
+                                             color=glm.vec4(0.0, 0.7, 0.7, 1),
+                                             text_color=glm.vec4(1, 1, 1, 1),
+                                             text_size=2
+                                             )
+
+        grid_on_off_button.position.relative.size = glm.vec2(0.15, 0.8)
+        grid_on_off_button.position.relative.center = glm.vec2(0.87, 0.5)
+        grid_on_off_button.position.evaluate_values_by_relative()
+
         self.update_position()
 
     def render(self):
         if self.text_header:
             self.text_header.color = utils_m.rainbow_color(self.gui.app.time)
         super().render()
+
+    def delete(self):
+        self.gui = None
+        self.main_block = None
+        self.text_header = None
+        self.ask_save_file_before_load_window = None
+        super().delete()
