@@ -75,15 +75,14 @@ class InputManager:
                 InputManager._app.gui.ask_save_file_before_exit()
 
             elif event.type == pg.VIDEORESIZE:
-                #tr.diff()
+                # tr.diff()
                 InputManager._app.process_window_resize(event)
-                data = ""
-                #for data in tr.format_diff():
-                #    print(f"{data}", file=resize_log_stream)
-                #print("\n", file=resize_log_stream)
+
 
 
             elif event.type == pg.KEYDOWN:
+                if event.unicode == "G":
+                    InputManager._app.draw_gui = not InputManager._app.draw_gui
                 if event.unicode.isalnum() and event.unicode.isascii():
                     InputManager.pressed_keyboard_char = event.unicode
                 elif event.unicode == " ":
@@ -120,10 +119,10 @@ class InputManager:
 
     @staticmethod
     def release():
-        del InputManager.handle_keyboard_press
-        del InputManager.handle_left_click_event
-        del InputManager.handle_left_hold_event
-        del InputManager.handle_left_release_event
-        del InputManager.handle_right_click_event
-        del InputManager.handle_right_hold_event
-        del InputManager.handle_right_release_event
+        InputManager.handle_keyboard_press.delete()
+        InputManager.handle_left_click_event.delete()
+        InputManager.handle_left_hold_event.delete()
+        InputManager.handle_left_release_event.delete()
+        InputManager.handle_right_click_event.delete()
+        InputManager.handle_right_hold_event.delete()
+        InputManager.handle_right_release_event.delete()

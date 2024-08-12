@@ -22,7 +22,7 @@ class Camera(component_m.Component):
         # Matrix
         self.m_ortho = None
         self.m_proj = None
-        self.m_view = None
+        self.m_view = glm.mat4()
 
         self._transformation = None
         self.aspect_ratio = None
@@ -44,15 +44,28 @@ class Camera(component_m.Component):
         self.top_bound = self.near * glm.tan(glm.radians(self.fov / 2))
         self.right_bound = self.aspect_ratio * self.top_bound
 
-        self.m_view = self.get_view_matrix()
+        self.get_view_matrix(self.m_view)
         self.m_proj = self.get_projection_matrix()
         self.m_ortho = self.get_orthographic_matrix()
 
     def apply(self):
-        self.m_view = self.get_view_matrix()
+        self.get_view_matrix(self.m_view)
 
-    def get_view_matrix(self) -> glm.mat4x4:
-        return glm.lookAt(self.transformation.pos, self.transformation.pos + self.forward, self.up)
+    def get_view_matrix(self, out_mat):
+        out_mat[0][0] = self.right.x
+        out_mat[1][0] = self.right.y
+        out_mat[2][0] = self.right.z
+        out_mat[3][0] = -glm.dot(self.transformation.pos, self.right)
+
+        out_mat[0][1] = self.up.x
+        out_mat[1][1] = self.up.y
+        out_mat[2][1] = self.up.z
+        out_mat[3][1] = -glm.dot(self.transformation.pos, self.up)
+
+        out_mat[0][2] = self.forward.x
+        out_mat[1][2] = self.forward.y
+        out_mat[2][2] = self.forward.z
+        out_mat[3][2] = -glm.dot(self.transformation.pos, self.forward)
 
     def get_projection_matrix(self) -> glm.mat4x4:
         return glm.perspective(glm.radians(self.fov), self.aspect_ratio, self.near, self.far)

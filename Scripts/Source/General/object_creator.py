@@ -20,6 +20,9 @@ class ObjectCreator:
         ObjectCreator.camera_component = components.Camera()
         cam.add_component(ObjectCreator.camera_component)
         cam.add_component(components.FreeFlyMove())
+        temp = cam.components[1]
+        cam.components[1] = cam.components[2]
+        cam.components[2] = temp
         cam.transformation.pos = (-2, 3, 0)
         cam.transformation.rot = (-30, 45, 0)
 

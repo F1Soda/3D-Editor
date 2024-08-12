@@ -15,6 +15,8 @@ SPEED = 0.005
 SHIFT_SPEED = 0.03
 SENSITIVITY = 0.2
 
+VEC_UP = glm.vec3(0, 1, 0)
+
 
 class FreeFlyMove(component_m.Component):
     def __init__(self, enable=True):
@@ -37,9 +39,9 @@ class FreeFlyMove(component_m.Component):
         velocity = (SHIFT_SPEED if keys[pg.K_LSHIFT] else SPEED) * self.app.delta_time
 
         if keys[pg.K_w]:
-            self.transformation.pos += self.camera_component.forward * velocity
-        if keys[pg.K_s]:
             self.transformation.pos -= self.camera_component.forward * velocity
+        if keys[pg.K_s]:
+            self.transformation.pos += self.camera_component.forward * velocity
         if keys[pg.K_a]:
             self.transformation.pos -= self.camera_component.right * velocity
         if keys[pg.K_d]:
@@ -82,9 +84,9 @@ class FreeFlyMove(component_m.Component):
         self.camera_component.forward.y = glm.sin(y)
         self.camera_component.forward.z = glm.sin(x) * glm.cos(y)
 
-        self.camera_component.forward = glm.normalize(self.camera_component.forward)
-        self.camera_component.right = glm.normalize(glm.cross(self.camera_component.forward, glm.vec3(0, 1, 0)))
-        self.camera_component.up = glm.normalize(glm.cross(self.camera_component.right, self.camera_component.forward))
+        self.camera_component.forward = glm.normalize(-self.camera_component.forward)
+        self.camera_component.right = glm.normalize(glm.cross(VEC_UP, self.camera_component.forward))
+        self.camera_component.up = glm.cross(self.camera_component.forward, self.camera_component.right)
 
     @property
     def transformation(self):

@@ -1,3 +1,5 @@
+import pympler.tracker
+
 import Scripts.GUI.Elements.element as element_m
 import Scripts.GUI.Elements.block as block_m
 import Scripts.Source.General.input_manager as input_manager_m
@@ -7,6 +9,7 @@ import Scripts.Source.General.data_manager as data_manager_m
 import Scripts.GUI.header as header_m
 import Scripts.GUI.inspector as inspector_m
 import Scripts.GUI.hierarchy as hierarchy_m
+import Scripts.Experemental.profiler as profiler_m
 import glm
 import easygui
 

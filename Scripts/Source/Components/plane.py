@@ -34,6 +34,11 @@ class Plane(component_m.Component):
         self._white_texture = library_m.textures['white']
         self.vao = None
 
+        # Optimization
+        self._t_m = glm.mat4()
+        self._r_m = glm.mat4()
+        self._s_m = glm.mat4()
+
     def init(self, app, rely_object):
         super().init(app, rely_object)
         self.camera_component = self.rely_object.scene.camera_component
@@ -52,17 +57,19 @@ class Plane(component_m.Component):
             u = utils_m.get_non_parallel_vector(self._n)
             v = glm.cross(self._n, u)
             center = (p1 + p2 + p3) / 3
-            T = glm.mat4(glm.vec4(1, 0, 0, 0), glm.vec4(0, 1, 0, 0), glm.vec4(0, 0, 1, 0),
-                         glm.vec4(center.x, center.y, center.z, 1))
-            R = glm.mat4x4(glm.vec4(u, 0), glm.vec4(self._n, 0), glm.vec4(v, 0), glm.vec4(0, 0, 0, 1))
-            S = self.rely_object.transformation.m_scale
-            res = self.rely_object.transformation.m_model = T * R * S
-            self.rely_object.transformation.m_model = res
-            return res
+            self._t_m[3] = (center.x, center.y, center.z, 1)
+
+            self._r_m[0] = glm.vec4(u, 0)
+            self._r_m[1] = glm.vec4(self._n, 0)
+            self._r_m[2] = glm.vec4(v, 0)
+            self._r_m[3] = (0, 0, 0, 1)
+
+            self.rely_object.transformation.m_model = glm.scale(self._t_m * self._r_m,
+                                                                self.rely_object.transformation.scale)
 
         self.rely_object.transformation.moveable = False
 
-        self.rely_object.transformation.get_model_matrix = custom_update_model_matrix
+        self.rely_object.transformation.update_model_matrix = custom_update_model_matrix
 
     @property
     def n(self):
@@ -97,7 +104,7 @@ class Plane(component_m.Component):
             self._last_p1_pos = copy.copy(self.p1)
             self._last_p2_pos = copy.copy(self.p2)
             self._last_p3_pos = copy.copy(self.p3)
-            self.rely_object.transformation.get_model_matrix()
+            self.rely_object.transformation.update_model_matrix()
 
         self.shader_program['color'].write(self.color)
         self.shader_program['m_proj'].write(self.camera_component.m_proj)

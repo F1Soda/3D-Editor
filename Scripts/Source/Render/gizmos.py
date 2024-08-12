@@ -72,7 +72,7 @@ class Gizmos:
 
             self.shader_program['color'] = self.color
             self.shader_program['m_proj'].write(m_proj if m_proj is not None else self.camera_component.m_proj)
-            self.shader_program['m_view'].write(self.camera_component.get_view_matrix())
+            self.shader_program['m_view'].write(self.camera_component.m_view)
             self.shader_program['m_model'].write(m_model if m_model is not None else glm.mat4())
 
             if not self.save_size:
@@ -135,7 +135,7 @@ class Gizmos:
 
         def draw(self, m_model=None, m_proj=None, m_view=None):
             if self.shader.get('m_view'):
-                self.shader.get('m_view').write(self.camera.get_view_matrix() if m_view is None else m_view)
+                self.shader.get('m_view').write(self.camera.m_view if m_view is None else m_view)
             if self.shader.get('m_model'):
                 self.shader.get('m_model').write(m_model)
             if self.shader.get('m_proj'):
@@ -202,7 +202,7 @@ class Gizmos:
         def draw(self, m_proj=None, m_view=None):
 
             if self.shader.get('m_view'):
-                self.shader.get('m_view').write(self.camera.get_view_matrix() if m_view is None else m_view)
+                self.shader.get('m_view').write(self.camera.m_view if m_view is None else m_view)
             if self.shader.get('m_proj'):
                 self.shader.get('m_proj').write(self.camera.m_proj if m_proj is None else m_proj)
             if self.save_size:

@@ -5,6 +5,7 @@ import glm
 import Scripts.GUI.Elements.element as element_m
 import Scripts.GUI.library as library_m
 import Scripts.Source.General.data_manager as data_manager_m
+import Scripts.Source.General.utils as utils_m
 
 FONT_SIZE_SCALE = 0.01
 
@@ -22,7 +23,7 @@ class Text(element_m.Element):
         super().__init__(name, rely_element, win_size)
         self._text = text
         self.font_size = font_size
-        self.color = color
+        self.color = glm.vec4(color)
         self.space_between = space_between
         self.centered_x = centered_x
         self.centered_y = centered_y
@@ -32,7 +33,7 @@ class Text(element_m.Element):
         self.font_texture = library_m.textures['font']  # ['font_boundaries']
         self.shader_program = library_m.shader_programs['TextGUI']
         self.shader_program['letter_size'] = 16.0
-        self.shader_program['color'].write(glm.vec4(1))
+        self.shader_program['color'].write(self.color)
 
         self.abs_quad_size = FONT_SIZE_SCALE * glm.vec2(font_size,
                                                         font_size * self.win_aspect_ratio) * self.win_size
@@ -47,6 +48,9 @@ class Text(element_m.Element):
         self._count_red_lines = 0
         # Properties
         self._relative_size = None
+
+        # Custom m_gui for rendering quad by quad
+        self.custom_m_gui = glm.mat4()
 
     @property
     def text(self):
@@ -103,26 +107,28 @@ class Text(element_m.Element):
     def update_position(self):
         self.evaluate_text_size()
         self.position.evaluate_values_by_relative()
-        pass
+
+        utils_m.copy_mat(self.position.m_gui, self.custom_m_gui)
+
+        self.custom_m_gui[0][0] = self.relative_win_quad_size.x
+        self.custom_m_gui[1][1] = self.relative_win_quad_size.y
+        self.custom_m_gui[3][1] += self._count_red_lines * self.relative_win_quad_size.y
 
     def render(self):
         self.shader_program['color'] = self.color
         self.shader_program['texture_0'] = 0
         self.font_texture.use()
 
-        m_gui = copy.deepcopy(self.position.m_gui)
-        m_gui[0][0] = self.relative_win_quad_size.x
-        m_gui[1][1] = self.relative_win_quad_size.y
-        m_gui[3][1] += self._count_red_lines * self.relative_win_quad_size.y
+        m_gui_c3_r0 = self.custom_m_gui[3][0]
+        m_gui_c3_r1 = self.custom_m_gui[3][1]
 
-        m_gui_c3_r0 = m_gui[3][0]
         current_right_relative_corner = self.position.relative.left_bottom.x
 
         for char in self._text_to_print:
 
             if char == "\n":
-                m_gui[3][0] = m_gui_c3_r0
-                m_gui[3][1] -= self.relative_win_quad_size.y
+                self.custom_m_gui[3][0] = m_gui_c3_r0
+                self.custom_m_gui[3][1] -= self.relative_win_quad_size.y
                 continue
 
             index = ord(char)
@@ -134,14 +140,17 @@ class Text(element_m.Element):
             self.shader_program['offset'].write(offset)
 
             # M_GUI
-            self.shader_program['m_gui'].write(m_gui)
+            self.shader_program['m_gui'].write(self.custom_m_gui)
 
             self.vao.render()
 
             # Shift Quad
             letter_width = self.letters_width[y * 16 + x]
-            m_gui[3][0] += self.relative_win_quad_size.x * (letter_width + self.space_between)
+            self.custom_m_gui[3][0] += self.relative_win_quad_size.x * (letter_width + self.space_between)
             current_right_relative_corner += self.position.relative.size.x / len(self._text_to_print)
+
+        self.custom_m_gui[3][0] = m_gui_c3_r0
+        self.custom_m_gui[3][1] = m_gui_c3_r1
 
     @staticmethod
     def precalculate_block_height(text, text_size):

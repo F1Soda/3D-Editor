@@ -181,7 +181,7 @@ class Header(element_m.Element):
 
     def render(self):
         if self.text_header:
-            self.text_header.color = utils_m.rainbow_color(self.gui.app.time)
+            utils_m.rainbow_color(self.gui.app.time, self.text_header.color)
         super().render()
 
     def delete(self):

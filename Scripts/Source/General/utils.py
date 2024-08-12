@@ -117,7 +117,7 @@ def calculate_width_letters(path):
     return letter_widths
 
 
-def rainbow_color(t):
+def rainbow_color(t, out_color):
     """
     Returns an RGB color representing a rainbow shimmering effect based on the time in seconds.
 
@@ -131,11 +131,9 @@ def rainbow_color(t):
     hue = (t % 6) / 6
 
     # Convert hue to RGB
-    r = max(0, min(1, abs(hue * 6 - 3) - 1))
-    g = max(0, min(1, 2 - abs(hue * 6 - 2)))
-    b = max(0, min(1, 2 - abs(hue * 6 - 4)))
-
-    return glm.vec4(r, g, b, 1)
+    out_color.r = max(0, min(1, abs(hue * 6 - 3) - 1))
+    out_color.g = max(0, min(1, 2 - abs(hue * 6 - 2)))
+    out_color.b = max(0, min(1, 2 - abs(hue * 6 - 4)))
 
 
 def get_non_parallel_vector(vec, delta=1e-7):
@@ -168,7 +166,7 @@ class PriorityEventDelegate:
             if follower(*args, **kwargs):
                 return
 
-    def __del__(self):
+    def delete(self):
         self.__event_followers.clear()
 
     def __str__(self):
@@ -194,7 +192,7 @@ class EventDelegate:
         for follower in self.__event_followers:
             follower(*args, **kwargs)
 
-    def __del__(self):
+    def delete(self):
         self.__event_followers.clear()
 
     def __str__(self):
@@ -227,3 +225,23 @@ def rotation_matrix_to_euler_angles(R):
             q_1 = q_2 = -glm.pi() / 2
             p_1 = p_2 = -r_1 + np.atan2(-R[1][0], -R[2][0])
     return p_1, q_1, r_1
+
+
+def copy_vec(from_vec, to_vec):
+    for i in range(len(from_vec)):
+        to_vec[i] = from_vec[i]
+
+
+def copy_mat(from_mat, to_mat):
+    for i in range(len(from_mat)):
+        for j in range(len(from_mat[i])):
+            to_mat[i][j] = from_mat[i][j]
+
+
+def reset_mat(mat):
+    for i in range(len(mat)):
+        for j in range(len(mat[i])):
+            if i == j:
+                mat[i][j] = 1
+            else:
+                mat[i][j] = 0

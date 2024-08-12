@@ -76,18 +76,24 @@ class GraphicsEngine:
         # Load Scene
         self.load_scene('C:/Users/golik/PycharmProjects/3dEditor/Scenes/scene2.json')
 
+        self.draw_gui = True
+
         pg.display.set_caption("3D Editor")
 
     def load_scene(self, file_path=None):
         if self.scene:
             self.scene.delete()
+            object_picker_m.ObjectPicker.release()
+            object_creator_m.ObjectCreator.release()
         if self.gizmos:
             self.gizmos.delete()
         self.scene = scene_m.Scene(self, self.gui)
+        input_manager_m.InputManager.init(self)
         object_creator_m.ObjectCreator.rely_scene = self.scene
+        object_picker_m.ObjectPicker.init(self)
         self.scene.load(file_path)
         self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene)
-        object_picker_m.ObjectPicker.init(self)
+
         self.gui.update_data_in_hierarchy()
 
     def process_window_resize(self, event):
@@ -126,10 +132,10 @@ class GraphicsEngine:
         self.scene.render_transparent_objects()
 
         self.ctx.enable(mgl.BLEND)
-
         self.ctx.disable(mgl.DEPTH_TEST)
         # GUI
-        self.gui.render()
+        if self.draw_gui:
+            self.gui.render()
         self.ctx.disable(mgl.BLEND)
         self.ctx.enable(mgl.DEPTH_TEST)
 
@@ -153,6 +159,7 @@ class GraphicsEngine:
             self.update_time()
             self.scene.apply_components()
             self.render()
+
             object_picker_m.ObjectPicker.picking_pass()
             input_manager_m.InputManager.process()
 
