@@ -81,6 +81,9 @@ class Renderer(component_m.Component):
         vao = self.ctx.vertex_array(shader_program.bin_program, [(mesh.vbo, mesh.data_format, *mesh.attributes)])
         return vao
 
+    def process_window_resize(self, new_size):
+        self.update_projection_matrix(self.camera_component.m_proj)
+
     def apply(self):
         self.material.update(self.transformation, self.light_component)
         if self.rendering_mode == RenderMode.Solid:

@@ -4,7 +4,7 @@ import Scripts.Source.General.object_creator as object_creator_m
 import Scripts.Source.Render.gizmos as gizmos_m
 import Scripts.Source.General.data_manager as data_manager_m
 import Scripts.Source.General.index_manager as index_manager_m
-import Scripts.Source.Components.components as components_m
+import Scripts.Source.Components.components as components
 
 
 class Scene:
@@ -38,11 +38,11 @@ class Scene:
 
         cube = object_creator_m.ObjectCreator.create_cube('transparency_white_unlit')
         cube_renderer = cube.get_component_by_name('Renderer')
-        # self.opaque_renderer.remove(cube_renderer)
-        # self.transparency_renderer.append(cube_renderer)
+        self.opaque_renderer.remove(cube_renderer)
+        self.transparency_renderer.append(cube_renderer)
         cube.transformation.pos = (3, 0, 3)
         cube.transformation.scale = glm.vec3(2)
-        secateur = cube.add_component(components_m.Secateur())
+        cube.add_component(components.Secateur())
         self.objects[cube.id] = cube
 
         p1 = object_creator_m.ObjectCreator.create_point(glm.vec4(1, 0, 0, 1), size=200)
@@ -58,7 +58,7 @@ class Scene:
         self.objects[p3.id] = p3
 
         plane = object_creator_m.ObjectCreator.create_plane_by_3_points(p1, p2, p3)
-        plane.add_component(components_m.Section(secateur))
+        plane.add_component(components.Section())
         self.objects[plane.id] = plane
 
     def load(self, file_path=None):
@@ -100,13 +100,7 @@ class Scene:
     def process_window_resize(self, new_size):
         self.camera_component.process_window_resize(new_size)
         for obj in self.objects.values():
-            renderer = obj.get_component_by_name("Renderer")
-            if renderer:
-                renderer.update_projection_matrix(self.camera_component.m_proj)
-            section = obj.get_component_by_name("Section")
-            if section:
-                section.process_resize_window(new_size)
-                continue
+            obj.process_window_resize(new_size)
 
     def apply_components(self):
         self.camera.apply_components()

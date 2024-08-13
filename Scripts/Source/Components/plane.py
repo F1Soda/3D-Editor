@@ -115,10 +115,9 @@ class Plane(component_m.Component):
         self.shader_program['color'].write(self.color)
         self.shader_program['m_proj'].write(self.camera_component.m_proj)
         self.shader_program['m_view'].write(self.camera_component.m_view)
-
         self.shader_program['m_model'].write(self.rely_object.transformation.m_model)
         self._white_texture.use()
-        self.shader_program['texture1'] = 0
+
         self.app.ctx.enable(mgl.BLEND)
         self.vao.render()
         self.app.ctx.disable(mgl.BLEND)

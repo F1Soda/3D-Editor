@@ -48,7 +48,7 @@ class GraphicsEngine:
 
         # Context
         self.ctx = mgl.create_context()
-        self.ctx.enable(flags=mgl.DEPTH_TEST | mgl.CULL_FACE)
+        self.ctx.enable(mgl.DEPTH_TEST | mgl.CULL_FACE)
 
         # Transparency
         self.ctx.blend_func = mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA
@@ -73,7 +73,7 @@ class GraphicsEngine:
         # Input Manager
         input_manager_m.InputManager.init(self)
 
-        secateur_m.Secateur.init_texture(self)
+        secateur_m.Secateur.init_buffers(self)
 
         # Initialization in load_scene
         self.scene = None
@@ -97,7 +97,7 @@ class GraphicsEngine:
         input_manager_m.InputManager.init(self)
         object_creator_m.ObjectCreator.rely_scene = self.scene
         object_picker_m.ObjectPicker.init(self)
-        self.scene.load(None)
+        self.scene.load(file_path)
         self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene)
 
         self.gui.update_data_in_hierarchy()
@@ -107,11 +107,8 @@ class GraphicsEngine:
 
         pg.display.set_mode((self.win_size.x, self.win_size.y), flags=pg.OPENGL | pg.DOUBLEBUF | pg.RESIZABLE)
 
-        secateur_m.Secateur.background_stencil_texture.release()
-        secateur_m.Secateur.background_stencil_fbo.color_attachments[0].release()
-        secateur_m.Secateur.background_stencil_fbo.release()
-
-        secateur_m.Secateur.init_texture(self)
+        secateur_m.Secateur.delete_buffers()
+        secateur_m.Secateur.init_buffers(self)
 
         self.gui.process_window_resize(self.win_size)
         self.scene.process_window_resize(self.win_size)
@@ -159,9 +156,7 @@ class GraphicsEngine:
         self.gizmos.delete()
         self.gui.delete()
 
-        secateur_m.Secateur.background_stencil_texture.release()
-        secateur_m.Secateur.background_stencil_fbo.color_attachments[0].release()
-        secateur_m.Secateur.background_stencil_fbo.release()
+        secateur_m.Secateur.delete_buffers()
 
         object_picker_m.ObjectPicker.release()
         input_manager_m.InputManager.release()

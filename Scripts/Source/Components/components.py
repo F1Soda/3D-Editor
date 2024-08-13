@@ -29,4 +29,6 @@ components = {
     "Point": Point,
     "Segment": Segment,
     "Plane": Plane,
+    "Secateur": Secateur,
+    "Section": Section
 }

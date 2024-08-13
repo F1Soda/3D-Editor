@@ -14,7 +14,7 @@ struct Light {
 };
 
 uniform Light light;
-uniform sampler2D texture1;
+uniform sampler2D texture_0;
 uniform vec3 camPos;
 uniform vec4 tint;
 uniform vec2 tilling;
@@ -39,7 +39,7 @@ vec3 getLight(vec3 color)
 
 void main() {
     float gamma = 2.2;
-    vec3 color = texture(texture1, uv_0).rgb * tint.rgb;
+    vec3 color = texture(texture_0, uv_0).rgb * tint.rgb;
     color = pow(color, vec3(gamma));
 
     color = getLight(color);

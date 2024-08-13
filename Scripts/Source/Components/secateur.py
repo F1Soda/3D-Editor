@@ -1,7 +1,7 @@
 import Scripts.Source.Components.component as component_m
 import Scripts.Source.Render.library as library_m
-import Scripts.Experemental.frame_debugger as frame_debugger_m
 import moderngl as mgl
+import Scripts.Experemental.frame_debugger as frame_debugger_m
 import glm
 
 NAME = "Secateur"
@@ -15,8 +15,10 @@ class Secateur(component_m.Component):
     background_stencil_fbo = None
     front_stencil_fbo = None
 
+    GO_CRAZY = 0
+
     @staticmethod
-    def init_texture(app):
+    def init_buffers(app):
         size = (int(app.win_size.x), int(app.win_size.y))
         Secateur.background_stencil_texture = app.ctx.texture(size, 1, dtype='f1')
         Secateur.background_stencil_texture.repeat_x = False
@@ -39,44 +41,61 @@ class Secateur(component_m.Component):
             color_attachments=[Secateur.front_stencil_texture],
             depth_attachment=app.ctx.depth_texture(size)
         )
+        # if Secateur.GO_CRAZY == 1:
+        #    frame_debugger_m.FrameDebugger.draw_texture(Secateur.background_stencil_texture, glm.vec2(0.85))
+        #    frame_debugger_m.FrameDebugger.draw_texture(Secateur.front_stencil_texture, glm.vec2(0.85, 0.55))
+        # Secateur.GO_CRAZY += 1
+
+    @staticmethod
+    def delete_buffers():
+        # Background Stencil
+        Secateur.background_stencil_texture.release()
+        Secateur.background_stencil_fbo.color_attachments[0].release()
+        Secateur.background_stencil_fbo.depth_attachment.release()
+        Secateur.background_stencil_fbo.release()
+
+        # Front Stencil
+        Secateur.front_stencil_texture.release()
+        Secateur.front_stencil_fbo.color_attachments[0].release()
+        Secateur.front_stencil_fbo.depth_attachment.release()
+        Secateur.front_stencil_fbo.release()
 
     def __init__(self, enable=True):
         super().__init__(NAME, DESCRIPTION, enable)
+        self.shader = library_m.shader_programs['silhouette']
 
         self.renderer = None
-        self.vao = None
-        self.shader = library_m.shader_programs['silhouette']
+        self._vao = None
 
     def init(self, app, rely_object):
         super().init(app, rely_object)
 
         self.renderer = self.rely_object.get_component_by_name("Renderer")
         if self.renderer:
-            self.vao = self.renderer.get_vao(self.shader, self.renderer.mesh)
-        frame_debugger_m.FrameDebugger.draw_texture(self.background_stencil_texture, glm.vec2(0.85))
-        frame_debugger_m.FrameDebugger.draw_texture(self.front_stencil_texture, glm.vec2(0.85, 0.55))
-        # frame_debugger_m.FrameDebugger.draw_texture(Secateur.depth_texture0, glm.vec2(0.85, 0.25), True)
-        # frame_debugger_m.FrameDebugger.draw_texture(Secateur.depth_texture1, glm.vec2(0.85, 0), True)
+            self._vao = self.renderer.get_vao(self.shader, self.renderer.mesh)
         self.shader['m_proj'].write(self.app.scene.camera_component.m_proj)
-        self.renderer.enable = False
+
+    def process_window_resize(self, new_size):
+        self.shader['m_proj'].write(self.app.scene.camera_component.m_proj)
 
     def apply(self):
-        if self.background_stencil_fbo is None or self.background_stencil_texture is None or self.renderer is None or self.vao is None:
+        if self._vao is None:
             return
         self.shader['m_view'].write(self.app.scene.camera_component.m_view)
         self.shader['m_model'].write(self.rely_object.transformation.m_model)
-        # There don't update projection matrix!!!
         self.shader['subtract'] = False
 
+        # Background Stencil
         self.background_stencil_fbo.use()
         self.app.ctx.clear()
         self.app.ctx.cull_face = 'front'
-        self.vao.render()
+        self._vao.render()
 
+        # Front Stencil
         self.front_stencil_fbo.use()
         self.app.ctx.clear()
         self.app.ctx.cull_face = 'back'
-        self.vao.render()
+        self._vao.render()
 
         self.app.ctx.screen.use()
 
@@ -87,6 +106,6 @@ class Secateur(component_m.Component):
 
     def delete(self):
         self.renderer = None
-        self.vao.release()
-        self.vao = None
+        self._vao.release()
+        self._vao = None
         super().delete()

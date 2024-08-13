@@ -36,6 +36,7 @@ class Header(element_m.Element):
             if file_path:
                 if file_path.endswith(".json"):
                     data_manager_m.DataManager.save_scene(gui.app.scene, file_path)
+                    return True
                 else:
                     window = elements.Window(f"Error_saving_file_window{len(self.gui.windows)}", self.main_block,
                                              gui.win_size,
@@ -55,6 +56,8 @@ class Header(element_m.Element):
 
                     window.update_position()
                     self.gui.windows.append(window)
+
+            return False
 
         save_button = elements.Button("Save Button", background, self.win_size, self.gui,
                                       "Save",
@@ -101,8 +104,8 @@ class Header(element_m.Element):
                     self.ask_save_file_before_load_window.close()
 
             def save(button, gui, pos):
-                save_action(button, gui, pos)
-                load(button, gui, pos)
+                if save_action(button, gui, pos):
+                    load(button, gui, pos)
 
             button_apply = elements.Button("Save", window.inner_data_block, self.win_size, self.gui, 'Save', 1.5,
                                            save,

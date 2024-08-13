@@ -2,6 +2,7 @@ import moderngl
 import Scripts.Source.Render.shader_program as shader_program_m
 import glm
 import enum
+import re
 
 
 class RenderMode(enum.Enum):
@@ -108,8 +109,9 @@ class Material:
             if key.startswith('tex'):
                 p = self.shader_program.get(key)
                 if p:
-                    value.value.use()
-                    p = 0
+                    location = int(re.search(r'(?<=_)\d+', key).group())
+                    value.value.use(location=location)
+                    self.shader_program[key] = location
                     continue
             p = self.shader_program.get(key)
             if p:

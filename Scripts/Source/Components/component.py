@@ -34,6 +34,9 @@ class Component:
     def serialize(self) -> {}:
         ...
 
+    def process_window_resize(self, new_size):
+        ...
+
     def __str__(self):
         return f"Component '{self.name}', rely object: {self.rely_object}"
 

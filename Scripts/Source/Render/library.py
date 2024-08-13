@@ -168,7 +168,7 @@ def _init_unlit_material(ctx, color, name, render_mode=render.RenderMode.Opaque)
     return render.Material(ctx, name, shader_programs['unlit'], [('color', glm.vec4(color)),
                                                                  ('tilling', glm.vec2(1)),
                                                                  ('offset', glm.vec2(0)),
-                                                                 ('texture1', textures['white'])], render_mode)
+                                                                 ('texture_0', textures['white'])], render_mode)
 
 
 def _init_lit_material(ctx, tint, name):
@@ -176,7 +176,7 @@ def _init_lit_material(ctx, tint, name):
         ('tint', glm.vec4(tint)),
         ('tilling', glm.vec2(1)),
         ('offset', glm.vec2(0)),
-        ('texture1', textures['white'])
+        ('texture_0', textures['white'])
     ])
 
 
@@ -269,8 +269,8 @@ def init(ctx):
         ('tint', glm.vec4(1)),
         ('tilling', glm.vec2(1)),
         ('offset', glm.vec2(0)),
-        ('texture0', textures['white']),
-        ('texture1', textures['white']),
+        ('texture_0', textures['white']),
+        ('texture_1', textures['white']),
         ('winSize', glm.vec2(main_m.WIN_SIZE[0], main_m.WIN_SIZE[1]))
     ])
 
@@ -279,7 +279,7 @@ def init(ctx):
         ('color', glm.vec4(1)),
         ('tilling', glm.vec2(1)),
         ('offset', glm.vec2(0)),
-        ('texture1', textures['grid'])
+        ('texture_0', textures['grid'])
     ], render.RenderMode.Transparency)
     materials['object_picking'] = render.Material(ctx, "Object Picking", shader_programs['object_picking'],
                                                   [('color', glm.vec4(0))])
