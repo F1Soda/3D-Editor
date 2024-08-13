@@ -11,6 +11,7 @@ textures = dict()
 def _inti_shader_programs(ctx):
     shader_programs['BlockGUI'] = shader_program_m.ShaderProgram(ctx, 'BlockGUI', 'BlockGUI')
     shader_programs['TextGUI'] = shader_program_m.ShaderProgram(ctx, 'TextGUI', 'TextGUI')
+    shader_programs['TextureGUI'] = shader_program_m.ShaderProgram(ctx, 'TextureGUI', 'TextureGUI')
 
 
 def _inti_primitives(ctx):
@@ -27,6 +28,12 @@ def _inti_primitives(ctx):
     buffer_format = '2f'
     vbo = ctx.buffer(data)
     vao = ctx.vertex_array(shader_programs['TextGUI'].bin_program, [(vbo, buffer_format, 'inPosition')])
+    primitives_vao['text_quad'] = vao
+
+    # Quad for Texture
+    buffer_format = '2f'
+    vbo = ctx.buffer(data)
+    vao = ctx.vertex_array(shader_programs['TextureGUI'].bin_program, [(vbo, buffer_format, 'inPosition')])
     primitives_vao['textured_quad'] = vao
 
 

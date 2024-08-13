@@ -1,6 +1,7 @@
 import numpy as np
 import Scripts.Source.General.utils as utils_m
 import Scripts.Source.Render.render as render
+import Scripts.Source.General.main as main_m
 import glm
 import pygame as pg
 import moderngl as mgl
@@ -180,12 +181,14 @@ def _init_lit_material(ctx, tint, name):
 
 
 def _init_shaders(ctx):
-    shader_programs['unlit'] = render.ShaderProgram(ctx, 'unlit', 'unlit')
+    shader_programs['unlit'] = render.ShaderProgram(ctx, 'Unlit', 'unlit')
     shader_programs['lit'] = render.ShaderProgram(ctx, 'lit', 'unlit')
     shader_programs['word_axis_gizmo'] = render.ShaderProgram(ctx, 'WordAxisGizmo', 'word_axis_gizmo')
     shader_programs['point_gizmo'] = render.ShaderProgram(ctx, 'PointGizmo', 'point_gizmo')
     shader_programs['segment_gizmo'] = render.ShaderProgram(ctx, 'SegmentGizmo', 'segment_gizmo')
     shader_programs['object_picking'] = render.ShaderProgram(ctx, 'ObjectPicking', 'object_picking')
+    shader_programs['silhouette'] = render.ShaderProgram(ctx, 'Silhouette', 'silhouette')
+    shader_programs['section'] = render.ShaderProgram(ctx, 'Section', 'section')
 
 
 def _init_textures(ctx):
@@ -261,8 +264,15 @@ def init(ctx):
     materials['blue_lit'] = _init_lit_material(ctx, (0, 0, 1, 1), 'blue_lit')
     materials['gray_lit'] = _init_lit_material(ctx, (0.5, 0.5, 0.5, 1), 'gray_lit')
 
-    # materials['transparency_gray_lit'] = _init_lit_material(ctx, (0.5, 0.5, 0.5, 0.5), 'transparency_gray_lit')
-    # materials['transparency_gray_lit'].render_mode = render.RenderMode.Transparency
+    # Section (lit but for Section component)
+    materials['section'] = render.Material(ctx, 'section', shader_programs['section'], [
+        ('tint', glm.vec4(1)),
+        ('tilling', glm.vec2(1)),
+        ('offset', glm.vec2(0)),
+        ('texture0', textures['white']),
+        ('texture1', textures['white']),
+        ('winSize', glm.vec2(main_m.WIN_SIZE[0], main_m.WIN_SIZE[1]))
+    ])
 
     # Special
     materials['grid'] = render.Material(ctx, "Grid", shader_programs['unlit'], [

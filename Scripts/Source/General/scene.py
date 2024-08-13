@@ -4,6 +4,7 @@ import Scripts.Source.General.object_creator as object_creator_m
 import Scripts.Source.Render.gizmos as gizmos_m
 import Scripts.Source.General.data_manager as data_manager_m
 import Scripts.Source.General.index_manager as index_manager_m
+import Scripts.Source.Components.components as components_m
 
 
 class Scene:
@@ -32,43 +33,33 @@ class Scene:
                 renderer.change_render_mode()
 
     def _default_load(self):
-        tetrahedron = object_creator_m.ObjectCreator.create_tetrahedron('blue_lit')
-        tetrahedron.transformation.pos = (5, 0, 5)
-        self.objects[tetrahedron.id] = tetrahedron
+        light = object_creator_m.ObjectCreator.create_light()
+        self.objects[light.id] = light
 
-        octahedron = object_creator_m.ObjectCreator.create_octahedron('red_lit')
-        octahedron.transformation.pos = (5, 0, 3)
-        self.objects[octahedron.id] = octahedron
-
-        cube = object_creator_m.ObjectCreator.create_cube('green_lit')
-        cube.transformation.pos = (5, 0, 1)
+        cube = object_creator_m.ObjectCreator.create_cube('transparency_white_unlit')
+        cube_renderer = cube.get_component_by_name('Renderer')
+        # self.opaque_renderer.remove(cube_renderer)
+        # self.transparency_renderer.append(cube_renderer)
+        cube.transformation.pos = (3, 0, 3)
+        cube.transformation.scale = glm.vec3(2)
+        secateur = cube.add_component(components_m.Secateur())
         self.objects[cube.id] = cube
 
         p1 = object_creator_m.ObjectCreator.create_point(glm.vec4(1, 0, 0, 1), size=200)
-        p1.transformation.pos = glm.vec3(4, 0, 4)
+        p1.transformation.pos = glm.vec3(4, 0.5, 4)
         self.objects[p1.id] = p1
 
         p2 = object_creator_m.ObjectCreator.create_point(glm.vec4(0, 1, 0, 1), size=200)
-        p2.transformation.pos = glm.vec3(0, 0, 4)
+        p2.transformation.pos = glm.vec3(0, 0.5, 4)
         self.objects[p2.id] = p2
 
-        test_segment = object_creator_m.ObjectCreator.create_segment(glm.vec4(0.6, 0.1, 0.5, 1), p1, p2)
-        self.objects[test_segment.id] = test_segment
-
         p3 = object_creator_m.ObjectCreator.create_point(glm.vec4(0, 0, 1, 1), size=200)
-        p3.transformation.pos = glm.vec3(0, 0, 8)
+        p3.transformation.pos = glm.vec3(0, 0.5, 8)
         self.objects[p3.id] = p3
 
-        p4 = object_creator_m.ObjectCreator.create_point(glm.vec4(1, 0, 1, 1), size=200)
-        p4.transformation.pos = glm.vec3(0, 2, 10)
-        self.objects[p4.id] = p4
-
-        p5 = object_creator_m.ObjectCreator.create_point(glm.vec4(0, 1, 1, 1), size=200)
-        p5.transformation.pos = glm.vec3(3, -2, 8)
-        self.objects[p5.id] = p5
-
-        plane_by_3_points = object_creator_m.ObjectCreator.create_plane_by_3_points(p3, p4, p5)
-        self.objects[plane_by_3_points.id] = plane_by_3_points
+        plane = object_creator_m.ObjectCreator.create_plane_by_3_points(p1, p2, p3)
+        plane.add_component(components_m.Section(secateur))
+        self.objects[plane.id] = plane
 
     def load(self, file_path=None):
         self.camera = object_creator_m.ObjectCreator.create_camera()
@@ -112,6 +103,10 @@ class Scene:
             renderer = obj.get_component_by_name("Renderer")
             if renderer:
                 renderer.update_projection_matrix(self.camera_component.m_proj)
+            section = obj.get_component_by_name("Section")
+            if section:
+                section.process_resize_window(new_size)
+                continue
 
     def apply_components(self):
         self.camera.apply_components()
@@ -120,15 +115,15 @@ class Scene:
 
     def render_opaque_objects(self):
         for renderer in self.opaque_renderer:
-            if renderer.rely_object.enable:
+            if renderer.rely_object.enable and renderer.enable:
                 renderer.apply()
 
     def render_transparent_objects(self):
         for renderer in self.transparency_renderer:
-            if renderer.rely_object.enable:
+            if renderer.rely_object.enable and renderer.enable:
                 renderer.apply()
 
-    #@profiler_m.profile
+    # @profiler_m.profile
     def delete(self):
         for obj_id, obj in self.objects.items():
             obj.delete()

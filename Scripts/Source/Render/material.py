@@ -21,6 +21,12 @@ class MaterialProperty:
         self.material = material
         self.value = value
 
+    def __str__(self):
+        return f'{self.name}: {self.value}'
+
+    def __repr__(self):
+        return str(self)
+
 
 class Material:
     def __init__(self, ctx: moderngl.Context, material_name: str, shader_program: shader_program_m.ShaderProgram,
@@ -125,3 +131,9 @@ class Material:
         for shader_property in self.properties:
             shader_property._material = None
             shader_property.value = None
+
+    def __str__(self):
+        return f"Material {self.name}. Props: {self.properties}"
+
+    def __repr__(self):
+        return str(self)

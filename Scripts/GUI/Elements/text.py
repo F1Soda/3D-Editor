@@ -29,7 +29,7 @@ class Text(element_m.Element):
         self.centered_y = centered_y
 
         # Rendering
-        self.vao = library_m.primitives_vao['textured_quad']
+        self.vao = library_m.primitives_vao['text_quad']
         self.font_texture = library_m.textures['font']  # ['font_boundaries']
         self.shader_program = library_m.shader_programs['TextGUI']
         self.shader_program['letter_size'] = 16.0

@@ -78,8 +78,6 @@ class InputManager:
                 # tr.diff()
                 InputManager._app.process_window_resize(event)
 
-
-
             elif event.type == pg.KEYDOWN:
                 if event.unicode == "G":
                     InputManager._app.draw_gui = not InputManager._app.draw_gui

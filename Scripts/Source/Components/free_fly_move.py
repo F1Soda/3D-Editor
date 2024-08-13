@@ -17,7 +17,6 @@ SENSITIVITY = 0.2
 
 VEC_UP = glm.vec3(0, 1, 0)
 
-
 class FreeFlyMove(component_m.Component):
     def __init__(self, enable=True):
         super().__init__(NAME, DESCRIPTION, enable)

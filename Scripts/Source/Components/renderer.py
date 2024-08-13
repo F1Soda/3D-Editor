@@ -1,6 +1,5 @@
 import Scripts.Source.Components.component as component_m
 import Scripts.Source.General.scene as scene_m
-import Scripts.Source.Components.light as light_m
 import Scripts.Source.Render.mesh as mesh_m
 import Scripts.Source.Render.material as material_m
 import Scripts.Source.Render.library as library_m

@@ -39,11 +39,14 @@ class Plane(component_m.Component):
         self._r_m = glm.mat4()
         self._s_m = glm.mat4()
 
+    def get_vao(self, shader_program):
+        return self.app.ctx.vertex_array(shader_program.bin_program,
+                                         [(self.mesh.vbo, self.mesh.data_format, *self.mesh.attributes)])
+
     def init(self, app, rely_object):
         super().init(app, rely_object)
         self.camera_component = self.rely_object.scene.camera_component
-        self.vao = app.ctx.vertex_array(self.shader_program.bin_program,
-                                        [(self.mesh.vbo, self.mesh.data_format, *self.mesh.attributes)])
+        self.vao = self.get_vao(self.shader_program)
 
         def custom_update_model_matrix():
             p1 = self.p1.transformation.pos
@@ -99,12 +102,15 @@ class Plane(component_m.Component):
     def p3_pos(self, value):
         self.point3.transformation.pos = value
 
-    def apply(self):
+    def update_m_model(self):
         if self._last_p1_pos != self.p1 or self._last_p2_pos != self.p2 or self._last_p3_pos != self.p3:
             self._last_p1_pos = copy.copy(self.p1)
             self._last_p2_pos = copy.copy(self.p2)
             self._last_p3_pos = copy.copy(self.p3)
             self.rely_object.transformation.update_model_matrix()
+
+    def apply(self):
+        self.update_m_model()
 
         self.shader_program['color'].write(self.color)
         self.shader_program['m_proj'].write(self.camera_component.m_proj)

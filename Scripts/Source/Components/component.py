@@ -20,7 +20,10 @@ class Component:
     def apply(self): ...
 
     def delete(self):
-        rely_object = None
+        self.rely_object = None
+        self.app = None
+        self.name = None
+        self.description = None
 
     def on_change(self): ...
 

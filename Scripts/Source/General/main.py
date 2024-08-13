@@ -20,6 +20,8 @@ import Scripts.Source.General.object_picker as object_picker_m
 import Scripts.Source.General.object_creator as object_creator_m
 import sys
 import Scripts.Experemental.profiler as profiler
+import Scripts.Source.Components.secateur as secateur_m
+import Scripts.Experemental.frame_debugger as frame_debugger_m
 
 WIN_SIZE = (1600, 900)
 
@@ -27,7 +29,7 @@ WIN_SIZE = (1600, 900)
 class GraphicsEngine:
     win_size = glm.vec2()
 
-    def __init__(self, width=1600, height=900):
+    def __init__(self, width=WIN_SIZE[0], height=WIN_SIZE[1]):
 
         pg.init()
 
@@ -66,8 +68,12 @@ class GraphicsEngine:
         # GUI
         self.gui = GUI_m.GUI(self, WIN_SIZE)
 
+        frame_debugger_m.FrameDebugger.init(self.gui)
+
         # Input Manager
         input_manager_m.InputManager.init(self)
+
+        secateur_m.Secateur.init_texture(self)
 
         # Initialization in load_scene
         self.scene = None
@@ -91,7 +97,7 @@ class GraphicsEngine:
         input_manager_m.InputManager.init(self)
         object_creator_m.ObjectCreator.rely_scene = self.scene
         object_picker_m.ObjectPicker.init(self)
-        self.scene.load(file_path)
+        self.scene.load(None)
         self.gizmos = gizmos_m.Gizmos(self.ctx, self.scene)
 
         self.gui.update_data_in_hierarchy()
@@ -100,6 +106,12 @@ class GraphicsEngine:
         self.win_size = glm.vec2(event.size)
 
         pg.display.set_mode((self.win_size.x, self.win_size.y), flags=pg.OPENGL | pg.DOUBLEBUF | pg.RESIZABLE)
+
+        secateur_m.Secateur.background_stencil_texture.release()
+        secateur_m.Secateur.background_stencil_fbo.color_attachments[0].release()
+        secateur_m.Secateur.background_stencil_fbo.release()
+
+        secateur_m.Secateur.init_texture(self)
 
         self.gui.process_window_resize(self.win_size)
         self.scene.process_window_resize(self.win_size)
@@ -122,6 +134,7 @@ class GraphicsEngine:
             f'z: {round(self.scene.camera.transformation.rot.z, 1)})')
 
     def render(self):
+        self.ctx.screen.use()
         self.ctx.clear(color=(0.08, 0.16, 0.18, 1))
         self.ctx.enable(mgl.BLEND)
         self.scene.render_opaque_objects()
@@ -130,7 +143,6 @@ class GraphicsEngine:
         self.gizmos.render()
 
         self.scene.render_transparent_objects()
-
         self.ctx.enable(mgl.BLEND)
         self.ctx.disable(mgl.DEPTH_TEST)
         # GUI
@@ -146,6 +158,11 @@ class GraphicsEngine:
         self.scene.delete()
         self.gizmos.delete()
         self.gui.delete()
+
+        secateur_m.Secateur.background_stencil_texture.release()
+        secateur_m.Secateur.background_stencil_fbo.color_attachments[0].release()
+        secateur_m.Secateur.background_stencil_fbo.release()
+
         object_picker_m.ObjectPicker.release()
         input_manager_m.InputManager.release()
         object_creator_m.ObjectCreator.release()
