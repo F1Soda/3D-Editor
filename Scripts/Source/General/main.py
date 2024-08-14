@@ -80,7 +80,7 @@ class GraphicsEngine:
         self.gizmos = None
 
         # Load Scene
-        self.load_scene('./Scenes/scene0.json')
+        self.load_scene('./Scenes/Scene0.json')
 
         self.draw_gui = True
 

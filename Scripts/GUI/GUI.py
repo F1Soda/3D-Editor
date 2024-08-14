@@ -100,6 +100,7 @@ class GUI:
     def process_window_resize(self, new_size: glm.vec2):
         self.win_size = new_size
         self.main_block.process_window_resize(new_size)
+        self.update_data_in_hierarchy()
 
     def render(self):
         self.main_block.render()
