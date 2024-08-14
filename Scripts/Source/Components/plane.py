@@ -2,6 +2,7 @@ import Scripts.Source.Components.component as component_m
 import Scripts.Source.General.utils as utils_m
 import Scripts.Source.General.object as object_m
 import Scripts.Source.Render.library as library_m
+import Scripts.Source.Render.material as material_m
 import moderngl as mgl
 import glm
 import copy
@@ -11,7 +12,8 @@ DESCRIPTION = "Responsible for rendering plane"
 
 
 class Plane(component_m.Component):
-    def __init__(self, color: glm.vec4, p1: object_m.Object, p2: object_m.Object, p3: object_m.Object, save_size=False,
+    def __init__(self, color: glm.vec4, p1: object_m.Object, p2: object_m.Object, p3: object_m.Object,
+                 render_mode=material_m.RenderMode.Transparency, save_size=False,
                  enable=True):
         super().__init__(NAME, DESCRIPTION, enable)
 
@@ -20,6 +22,7 @@ class Plane(component_m.Component):
         self.save_size = save_size
         self.mesh = library_m.meshes['plane']
         self.shader_program = library_m.shader_programs['unlit']
+        self.render_mode = render_mode
 
         self.p1 = p1
         self.p2 = p2
@@ -42,6 +45,18 @@ class Plane(component_m.Component):
     def get_vao(self, shader_program):
         return self.app.ctx.vertex_array(shader_program.bin_program,
                                          [(self.mesh.vbo, self.mesh.data_format, *self.mesh.attributes)])
+
+    def update_render_mode(self):
+        if self.render_mode == material_m.RenderMode.Opaque:
+            if self in self.app.scene.transparency_renderer:
+                self.app.scene.transparency_renderer.remove(self)
+            if self not in self.app.scene.opaque_renderer:
+                self.app.scene.opaque_renderer.append(self)
+        else:
+            if self in self.app.scene.opaque_renderer:
+                self.app.scene.opaque_renderer.remove(self)
+            if self not in self.app.scene.transparency_renderer:
+                self.app.scene.transparency_renderer.append(self)
 
     def init(self, app, rely_object):
         super().init(app, rely_object)
@@ -128,6 +143,7 @@ class Plane(component_m.Component):
             "p1": ('id', self.p1.id),
             "p2": ('id', self.p2.id),
             "p3": ('id', self.p3.id),
+            "render_mode": self.render_mode.name,
             "save_size": self.save_size,
             'enable': self.enable
         }

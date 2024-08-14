@@ -115,6 +115,9 @@ class Material:
                     continue
             p = self.shader_program.get(key)
             if p:
+                if isinstance(value.value, bool):
+                    self.shader_program[key] = value.value
+                    continue
                 p.write(value.value)
             pass
 

@@ -15,7 +15,12 @@ class Secateur(component_m.Component):
     background_stencil_fbo = None
     front_stencil_fbo = None
 
-    GO_CRAZY = 0
+    @staticmethod
+    def clear_context(ctx):
+        Secateur.background_stencil_fbo.use()
+        ctx.clear()
+        Secateur.front_stencil_fbo.use()
+        ctx.clear()
 
     @staticmethod
     def init_buffers(app):
@@ -41,10 +46,6 @@ class Secateur(component_m.Component):
             color_attachments=[Secateur.front_stencil_texture],
             depth_attachment=app.ctx.depth_texture(size)
         )
-        # if Secateur.GO_CRAZY == 1:
-        #    frame_debugger_m.FrameDebugger.draw_texture(Secateur.background_stencil_texture, glm.vec2(0.85))
-        #    frame_debugger_m.FrameDebugger.draw_texture(Secateur.front_stencil_texture, glm.vec2(0.85, 0.55))
-        # Secateur.GO_CRAZY += 1
 
     @staticmethod
     def delete_buffers():
@@ -74,6 +75,8 @@ class Secateur(component_m.Component):
         if self.renderer:
             self._vao = self.renderer.get_vao(self.shader, self.renderer.mesh)
         self.shader['m_proj'].write(self.app.scene.camera_component.m_proj)
+        # frame_debugger_m.FrameDebugger.draw_texture(self.background_stencil_texture, glm.vec2(0.85))
+        # frame_debugger_m.FrameDebugger.draw_texture(self.front_stencil_texture, glm.vec2(0.85, 0.55))
 
     def process_window_resize(self, new_size):
         self.shader['m_proj'].write(self.app.scene.camera_component.m_proj)
@@ -87,13 +90,13 @@ class Secateur(component_m.Component):
 
         # Background Stencil
         self.background_stencil_fbo.use()
-        self.app.ctx.clear()
+        # self.app.ctx.clear()
         self.app.ctx.cull_face = 'front'
         self._vao.render()
 
         # Front Stencil
         self.front_stencil_fbo.use()
-        self.app.ctx.clear()
+        # self.app.ctx.clear()
         self.app.ctx.cull_face = 'back'
         self._vao.render()
 

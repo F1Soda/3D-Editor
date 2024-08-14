@@ -121,6 +121,9 @@ class DataManager:
                 obj.transformation.scale = component_data['scale']
                 obj.transformation.moveable = component_data['moveable']
                 should_create_component = False
+            elif component_name == "Plane":
+                component_data['render_mode'] = render.RenderMode[component_data['render_mode']]
+
             if should_create_component:
                 a = components_m.components[component_name](**component_data)
                 component = obj.add_component(a)
@@ -128,20 +131,23 @@ class DataManager:
                         isinstance(component, components_m.Segment) or
                         isinstance(component, components_m.Plane) or
                         isinstance(component, components_m.Renderer)):
-                    rendering_component = component
+                    component.update_render_mode()
 
-        if rendering_component:
-            if isinstance(rendering_component, components_m.Renderer):
-                if rendering_component.material.render_mode == render.RenderMode.Opaque:
-                    scene.opaque_renderer.append(rendering_component)
-                else:
-                    scene.transparency_renderer.append(rendering_component)
-            if isinstance(rendering_component, components_m.Point):
-                scene.opaque_renderer.append(rendering_component)
-            elif isinstance(rendering_component, components_m.Segment):
-                scene.opaque_renderer.append(rendering_component)
-            elif isinstance(rendering_component, components_m.Plane):
-                scene.transparency_renderer.append(rendering_component)
+        # if rendering_component:
+        #     if isinstance(rendering_component, components_m.Renderer):
+        #         if rendering_component.material.render_mode == render.RenderMode.Opaque:
+        #             scene.opaque_renderer.append(rendering_component)
+        #         else:
+        #             scene.transparency_renderer.append(rendering_component)
+        #     if isinstance(rendering_component, components_m.Point):
+        #         scene.opaque_renderer.append(rendering_component)
+        #     elif isinstance(rendering_component, components_m.Segment):
+        #         scene.opaque_renderer.append(rendering_component)
+        #     elif isinstance(rendering_component, components_m.Plane):
+        #         if rendering_component.render_mode == render.RenderMode.Opaque:
+        #             scene.opaque_renderer.append(rendering_component)
+        #         else:
+        #             scene.transparency_renderer.append(rendering_component)
 
         if later_initialization_dict.get(obj.id):
             DataManager.later_initialization(obj, later_initialization_dict, scene)

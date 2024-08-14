@@ -8,6 +8,8 @@ import Scripts.Source.Components.segment as segment_m
 import Scripts.Source.Components.plane as plane_m
 import Scripts.Source.Components.secateur as secateur_m
 import Scripts.Source.Components.section as section_m
+import Scripts.Source.Components.translator as translator_m
+import Scripts.Source.Components.rotator as rotator_m
 
 Transformation = transformation_m.Transformation
 Renderer = renderer_m.Renderer
@@ -19,6 +21,8 @@ Segment = segment_m.Segment
 Plane = plane_m.Plane
 Secateur = secateur_m.Secateur
 Section = section_m.Section
+Translator = translator_m.Translator
+Rotator = rotator_m.Rotator
 
 components = {
     "Transformation": Transformation,
@@ -30,5 +34,7 @@ components = {
     "Segment": Segment,
     "Plane": Plane,
     "Secateur": Secateur,
-    "Section": Section
+    "Section": Section,
+    "Translator": Translator,
+    "Rotator": Rotator
 }

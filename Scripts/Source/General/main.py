@@ -80,7 +80,7 @@ class GraphicsEngine:
         self.gizmos = None
 
         # Load Scene
-        self.load_scene('C:/Users/golik/PycharmProjects/3dEditor/Scenes/scene2.json')
+        self.load_scene('./Scenes/scene0.json')
 
         self.draw_gui = True
 
@@ -169,6 +169,8 @@ class GraphicsEngine:
         while True:
             self.delta_time = self.clock.tick(120)
             self.update_time()
+            secateur_m.Secateur.clear_context(self.ctx)
+            self.ctx.screen.use()
             self.scene.apply_components()
             self.render()
 

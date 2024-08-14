@@ -63,6 +63,18 @@ class Renderer(component_m.Component):
         self.vao = self.get_vao(self._material.shader_program, self.mesh)
         self.vao_picking = self.get_vao(self.picking_material.shader_program, self.mesh)
 
+    def update_render_mode(self):
+        if self.material.render_mode == material_m.RenderMode.Opaque:
+            if self in self.scene.transparency_renderer:
+                self.scene.transparency_renderer.remove(self)
+            if self not in self.scene.opaque_renderer:
+                self.scene.opaque_renderer.append(self)
+        else:
+            if self in self.scene.opaque_renderer:
+                self.scene.opaque_renderer.remove(self)
+            if self not in self.scene.transparency_renderer:
+                self.scene.transparency_renderer.append(self)
+
     @property
     def light_component(self):
         return self.scene.light

@@ -266,12 +266,13 @@ def init(ctx):
 
     # Section (lit but for Section component)
     materials['section'] = render.Material(ctx, 'section', shader_programs['section'], [
-        ('tint', glm.vec4(1)),
+        ('tint', glm.vec4(0.1, 1, 0.5, 1)),
         ('tilling', glm.vec2(1)),
         ('offset', glm.vec2(0)),
         ('texture_0', textures['white']),
         ('texture_1', textures['white']),
-        ('winSize', glm.vec2(main_m.WIN_SIZE[0], main_m.WIN_SIZE[1]))
+        ('winSize', glm.vec2(main_m.WIN_SIZE[0], main_m.WIN_SIZE[1])),
+        ('inverse', False)
     ])
 
     # Special

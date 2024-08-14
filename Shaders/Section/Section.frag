@@ -15,6 +15,7 @@ struct Light {
 uniform Light light;
 uniform sampler2D texture_0;
 uniform sampler2D texture_1;
+uniform bool inverse;
 uniform vec3 camPos;
 uniform vec4 tint;
 uniform vec2 tilling;
@@ -41,10 +42,16 @@ vec3 getLight(vec3 color)
 void main() {
     float silhouette_value0 = texture(texture_0, gl_FragCoord.xy / winSize).r;
     float silhouette_value1 = texture(texture_1, gl_FragCoord.xy / winSize).r;
-    if (silhouette_value0 == silhouette_value1) {
-        discard;
+    if (inverse) {
+        if (silhouette_value0 != silhouette_value1) {
+            discard;
+        }
     }
-
+    else {
+        if (silhouette_value0 == silhouette_value1) {
+            discard;
+        }
+    }
     float gamma = 2.2;
     vec3 color = tint.rgb;
     color = pow(color, vec3(gamma));
@@ -52,5 +59,5 @@ void main() {
     color = getLight(color);
 
     color = pow(color, 1 / vec3(gamma));
-    fragColor = vec4(color, tint.a);
+    fragColor = vec4(color, 1);
 }

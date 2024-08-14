@@ -12,6 +12,10 @@ class Segment(component_m.Component):
         super().__init__(NAME, DESCRIPTION, enable)
         self.gizmos_segment = gizmos_m.Gizmos.SegmentByPoints(None, p1, p2, color, None, size, save_size)
 
+    def update_render_mode(self):
+        if self not in self.app.scene.opaque_renderer:
+            self.app.scene.opaque_renderer.append(self)
+
     @property
     def p1(self):
         return self.gizmos_segment.p1

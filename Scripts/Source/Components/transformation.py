@@ -63,7 +63,6 @@ class Transformation(component_m.Component):
     def update_model_matrix(self):
         rot = glm.vec3([glm.radians(x) for x in self.rot])
 
-
         # position
         self.m_model = self.m_t = glm.translate(glm.mat4(), self.pos)
 

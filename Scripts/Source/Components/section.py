@@ -9,12 +9,14 @@ DESCRIPTION = "Add this component to make section with objects with Secateur com
 
 
 class Section(component_m.Component):
-    def __init__(self, enable=True):
+    def __init__(self, inverse=False, enable=True):
         super().__init__(NAME, DESCRIPTION, enable)
 
         self.plane = None
         self._vao = None
         self._subtract_vao = None
+
+        self.inverse = inverse
 
         self._material = library_m.materials['section']
         self._section_shader = library_m.shader_programs['section']
@@ -41,9 +43,13 @@ class Section(component_m.Component):
         self._material['texture_0'].value = secateur_m.Secateur.background_stencil_texture
         self._material['texture_1'].value = secateur_m.Secateur.front_stencil_texture
         self._subtract_shader['m_proj'].write(self.app.scene.camera_component.m_proj)
-
+        self._material['inverse'].value = self.inverse
         # Change Default Apply Method
         self.plane.apply = self.renderer_apply
+
+        # if self.inverse:
+        #    self.app.scene.transparency_renderer.remove(self.plane)
+        #   self.app.scene.opaque_renderer.append(self.plane)
 
     def process_window_resize(self, new_win_size):
         self._material.update_projection_matrix(self.app.scene.camera_component.m_proj)
@@ -61,6 +67,8 @@ class Section(component_m.Component):
             return
 
         self._material.update(self.rely_object.transformation, self.app.scene.light)
+        self._material['inverse'].value = self.inverse
+        self._section_shader['inverse'] = self.inverse
 
         self._subtract_shader['m_view'].write(self.app.scene.camera_component.m_view)
         self._subtract_shader['m_model'].write(self.rely_object.transformation.m_model)
@@ -77,18 +85,16 @@ class Section(component_m.Component):
         # Usual Drawing
         self.app.ctx.screen.use()
         # Behaviour can be different
-        self.app.ctx.disable(flags=mgl.DEPTH_TEST)
         self._vao.render()
-        self.app.ctx.enable(flags=mgl.DEPTH_TEST)
 
     def serialize(self) -> {}:
         return {
+            'inverse': self.inverse,
             'enable': self.enable
         }
 
     def delete(self):
         self.plane.apply = plane_m.Plane.apply
-
         self.plane = None
         self._material = None
         self._vao.release()
