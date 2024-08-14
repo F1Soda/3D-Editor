@@ -1,28 +1,25 @@
-import cProfile
 import os
-import pstats
-import re
 import sys
-import time
+import argparse
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 
+import re
 import glm
-import Scripts.GUI.GUI as GUI_m
-import scene as scene_m
 import pygame as pg
 import moderngl as mgl
-import Scripts.Source.Render.library as library_object_m
+import scene as scene_m
+import Scripts.GUI.GUI as GUI_m
 import Scripts.GUI.library as library_gui_m
-import Scripts.Source.General.data_manager as data_manager_m
+import Scripts.Experemental.profiler as profiler
 import Scripts.Source.Render.gizmos as gizmos_m
+import Scripts.Source.Components.secateur as secateur_m
+import Scripts.Source.Render.library as library_object_m
+import Scripts.Source.General.data_manager as data_manager_m
 import Scripts.Source.General.input_manager as input_manager_m
 import Scripts.Source.General.object_picker as object_picker_m
-import Scripts.Source.General.object_creator as object_creator_m
-import sys
-import Scripts.Experemental.profiler as profiler
-import Scripts.Source.Components.secateur as secateur_m
 import Scripts.Experemental.frame_debugger as frame_debugger_m
+import Scripts.Source.General.object_creator as object_creator_m
 
 WIN_SIZE = (1600, 900)
 
@@ -30,7 +27,7 @@ WIN_SIZE = (1600, 900)
 class GraphicsEngine:
     win_size = glm.vec2()
 
-    def __init__(self, width=WIN_SIZE[0], height=WIN_SIZE[1]):
+    def __init__(self, file_path, width=WIN_SIZE[0], height=WIN_SIZE[1]):
 
         pg.init()
 
@@ -77,13 +74,13 @@ class GraphicsEngine:
         self.gizmos = None
 
         # Load Scene
-        self.load_scene('./Scenes/Scene0.json')
+        self.load_scene(file_path)
 
         self.draw_gui = True
 
     def update_caption(self, file_path):
         if file_path:
-            scene_name = re.search(r'(?<=/)\w+(?=\.)', file_path).group()
+            scene_name = re.search(r'(?<=[/\\])\w+(?=\.)', file_path).group()
             pg.display.set_caption(f"3D Editor — {scene_name}")
         else:
             pg.display.set_caption(f"3D Editor — untitled")
@@ -181,5 +178,9 @@ class GraphicsEngine:
 
 
 if __name__ == '__main__':
-    app = GraphicsEngine()
+    arg_parser = argparse.ArgumentParser(description='Простой 3D редактор Управление')
+    arg_parser.add_argument("-l", "--load", help="Относительный путь до файла загрузки сцены", type=str)
+    args = arg_parser.parse_args()
+
+    app = GraphicsEngine(args.load)
     app.run()

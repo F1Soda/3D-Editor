@@ -1,7 +1,7 @@
 import numpy as np
 import Scripts.Source.General.utils as utils_m
 import Scripts.Source.Render.render as render
-import Scripts.Source.General.main as main_m
+import Scripts.Source.General.editor as main_m
 import glm
 import pygame as pg
 import moderngl as mgl

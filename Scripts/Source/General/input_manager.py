@@ -1,5 +1,4 @@
 import pygame as pg
-from pympler import tracker
 
 import Scripts.Source.General.utils as utils_m
 import enum
@@ -11,10 +10,6 @@ class MouseButtonState(enum.Enum):
     Pressed = 1
     Hold = 2
     Released = 3
-
-
-tr = tracker.SummaryTracker()
-tr.diff()
 
 
 class InputManager:

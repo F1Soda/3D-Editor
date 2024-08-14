@@ -1,7 +1,7 @@
 import copy
 
 import Scripts.Source.Components.component as component_m
-import Scripts.Source.General.main as main_m
+import Scripts.Source.General.editor as main_m
 import Scripts.Source.Components.camera as camera_m
 import Scripts.Source.Components.transformation as transformation_m
 import Scripts.Source.General.input_manager as input_manager_m
