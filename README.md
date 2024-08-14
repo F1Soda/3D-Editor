@@ -1,5 +1,7 @@
 # 3D-Editor
 
+
+
 **Описание:** Простой 3д редактор с возможность отрисовки геометрии и последующего сохранения
 
 ## Особенности
@@ -37,9 +39,9 @@ python Scripts/Source/General/editor.py
 
 - **LMB**(Left Mouse Button) — выбрать объект
 - **RMB** на панели Hierarchy — Открыть контекстное меню
-  ![GIF](Other/README Files/ContextMenu.gif)
+<img src="Other/README Files/ContextMenu.gif"/>
 - **SHIFT + LMB** — выбор нескольких элементов
-  ![GIF](Other/README Files/ShiftPlusRMB.gif)
+<img src="Other/README Files/ShiftPlusRMB.gif"/>
 
 ### Другое
 
@@ -71,4 +73,4 @@ python Scripts/Source/General/editor.py
 
 #### Скриншот
 
-![ScreenShoot](Other/README Files/ScreenShoot.png)
+<img src="Other/README Files/ScreenShoot.png"/>
