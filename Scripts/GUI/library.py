@@ -9,9 +9,9 @@ textures = dict()
 
 
 def _inti_shader_programs(ctx):
-    shader_programs['BlockGUI'] = shader_program_m.ShaderProgram(ctx, 'BlockGUI', 'BlockGUI')
-    shader_programs['TextGUI'] = shader_program_m.ShaderProgram(ctx, 'TextGUI', 'TextGUI')
-    shader_programs['TextureGUI'] = shader_program_m.ShaderProgram(ctx, 'TextureGUI', 'TextureGUI')
+    shader_programs['BlockGUI'] = shader_program_m.ShaderProgram(ctx, 'GUI/BlockGUI', 'BlockGUI')
+    shader_programs['TextGUI'] = shader_program_m.ShaderProgram(ctx, 'GUI/TextGUI', 'TextGUI')
+    shader_programs['TextureGUI'] = shader_program_m.ShaderProgram(ctx, 'GUI/TextureGUI', 'TextureGUI')
 
 
 def _inti_primitives(ctx):

@@ -1,6 +1,6 @@
 {
     "index_manager_data": {
-        "global_index": 72,
+        "global_index": 49,
         "unused_indices": []
     },
     "objects": {
@@ -1388,16 +1388,16 @@
                         "vec",
                         [
                             5.0,
-                            -2.805884838104248,
+                            1.126063346862793,
                             -20.0
                         ]
                     ],
                     "rot": [
                         "vec",
                         [
-                            44527.0,
-                            44527.0,
-                            44527.0
+                            3647.0,
+                            3647.0,
+                            3647.0
                         ]
                     ],
                     "scale": [
@@ -1441,13 +1441,13 @@
                         [
                             9.0,
                             1.0,
-                            -26.70882797241211
+                            -20.81090545654297
                         ]
                     ],
                     "rot": [
                         "vec",
                         [
-                            44527.0,
+                            3647.0,
                             0.0,
                             0.0
                         ]
@@ -1491,7 +1491,7 @@
                     "pos": [
                         "vec",
                         [
-                            1.194115161895752,
+                            5.126063346862793,
                             1.0,
                             -24.0
                         ]
@@ -1500,7 +1500,7 @@
                         "vec",
                         [
                             0.0,
-                            44527.0,
+                            3647.0,
                             0.0
                         ]
                     ],
@@ -1748,16 +1748,16 @@
                         "vec",
                         [
                             -6.0,
-                            -2.805884838104248,
+                            1.126063346862793,
                             -20.0
                         ]
                     ],
                     "rot": [
                         "vec",
                         [
-                            44527.0,
-                            44527.0,
-                            44527.0
+                            3647.0,
+                            3647.0,
+                            3647.0
                         ]
                     ],
                     "scale": [
@@ -1801,13 +1801,13 @@
                         [
                             -2.0,
                             1.0,
-                            -26.70882797241211
+                            -20.81090545654297
                         ]
                     ],
                     "rot": [
                         "vec",
                         [
-                            44527.0,
+                            3647.0,
                             0.0,
                             0.0
                         ]
@@ -1851,7 +1851,7 @@
                     "pos": [
                         "vec",
                         [
-                            -9.805885314941406,
+                            -5.873936653137207,
                             1.0,
                             -24.0
                         ]
@@ -1860,7 +1860,7 @@
                         "vec",
                         [
                             0.0,
-                            44527.0,
+                            3647.0,
                             0.0
                         ]
                     ],
@@ -2100,1266 +2100,1266 @@
                 }
             }
         },
-        "48": {
-            "name": "Light",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            3.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": true,
-                    "enable": true
-                },
-                "Light": {
-                    "color": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "enable": true
-                }
-            }
-        },
         "49": {
-            "name": "point_49",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            1.0674430131912231,
-                            19.990739822387695
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": true,
-                    "enable": true
-                },
-                "Point": {
-                    "color": [
-                        "vec",
-                        [
-                            0.0,
-                            0.699999988079071,
-                            0.10000000149011612,
-                            1.0
-                        ]
-                    ],
-                    "size": 200,
-                    "save_size": false,
-                    "enable": true
-                }
-            }
+      "name": "point_49",
+      "components": {
+        "Transformation": {
+          "pos": [
+            "vec",
+            [
+              0.0,
+              1.0674430131912231,
+              19.990739822387695
+            ]
+          ],
+          "rot": [
+            "vec",
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "scale": [
+            "vec",
+            [
+              1.0,
+              1.0,
+              1.0
+            ]
+          ],
+          "moveable": true,
+          "enable": true
         },
+        "Point": {
+          "color": [
+            "vec",
+            [
+              0.0,
+              0.699999988079071,
+              0.10000000149011612,
+              1.0
+            ]
+          ],
+          "size": 200,
+          "save_size": false,
+          "enable": true
+        }
+      }
+    },
         "50": {
-            "name": "point_50",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            3.335604429244995,
-                            0.7201301455497742,
-                            20.30127716064453
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": true,
-                    "enable": true
-                },
-                "Point": {
-                    "color": [
-                        "vec",
-                        [
-                            0.0,
-                            0.699999988079071,
-                            0.10000000149011612,
-                            1.0
-                        ]
-                    ],
-                    "size": 200,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "point_50",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  3.335604429244995,
+                  0.7201301455497742,
+                  20.30127716064453
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": true,
+              "enable": true
+            },
+            "Point": {
+              "color": [
+                "vec",
+                [
+                  0.0,
+                  0.699999988079071,
+                  0.10000000149011612,
+                  1.0
+                ]
+              ],
+              "size": 200,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "51": {
-            "name": "point_51",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            2.539029598236084,
-                            1.142276406288147,
-                            24.352760314941406
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": true,
-                    "enable": true
-                },
-                "Point": {
-                    "color": [
-                        "vec",
-                        [
-                            0.0,
-                            0.699999988079071,
-                            0.10000000149011612,
-                            1.0
-                        ]
-                    ],
-                    "size": 200,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "point_51",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  2.539029598236084,
+                  1.142276406288147,
+                  24.352760314941406
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": true,
+              "enable": true
+            },
+            "Point": {
+              "color": [
+                "vec",
+                [
+                  0.0,
+                  0.699999988079071,
+                  0.10000000149011612,
+                  1.0
+                ]
+              ],
+              "size": 200,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "52": {
-            "name": "segment_52",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        50
-                    ],
-                    "p2": [
-                        "id",
-                        49
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_52",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                50
+              ],
+              "p2": [
+                "id",
+                49
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "53": {
-            "name": "plane_53",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            10.0,
-                            1.0,
-                            10.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Plane": {
-                    "color": [
-                        "vec",
-                        [
-                            0.5,
-                            0.5,
-                            0.5,
-                            0.5
-                        ]
-                    ],
-                    "p1": [
-                        "id",
-                        51
-                    ],
-                    "p2": [
-                        "id",
-                        50
-                    ],
-                    "p3": [
-                        "id",
-                        49
-                    ],
-                    "render_mode": "Transparency",
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "plane_53",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  10.0,
+                  1.0,
+                  10.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Plane": {
+              "color": [
+                "vec",
+                [
+                  0.5,
+                  0.5,
+                  0.5,
+                  0.5
+                ]
+              ],
+              "p1": [
+                "id",
+                51
+              ],
+              "p2": [
+                "id",
+                50
+              ],
+              "p3": [
+                "id",
+                49
+              ],
+              "render_mode": "Transparency",
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "54": {
-            "name": "point_54",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            -0.32421794533729553,
-                            3.1945908069610596,
-                            24.2232723236084
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": true,
-                    "enable": true
-                },
-                "Point": {
-                    "color": [
-                        "vec",
-                        [
-                            0.0,
-                            0.699999988079071,
-                            0.10000000149011612,
-                            1.0
-                        ]
-                    ],
-                    "size": 200,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "point_54",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  -0.32421794533729553,
+                  3.1945908069610596,
+                  24.2232723236084
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": true,
+              "enable": true
+            },
+            "Point": {
+              "color": [
+                "vec",
+                [
+                  0.0,
+                  0.699999988079071,
+                  0.10000000149011612,
+                  1.0
+                ]
+              ],
+              "size": 200,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "55": {
-            "name": "point_55",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            2.7301676273345947,
-                            2.852266550064087,
-                            24.212167739868164
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": true,
-                    "enable": true
-                },
-                "Point": {
-                    "color": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "size": 200,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "point_55",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  2.7301676273345947,
+                  2.852266550064087,
+                  24.212167739868164
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": true,
+              "enable": true
+            },
+            "Point": {
+              "color": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "size": 200,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "56": {
-            "name": "point_56",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            3.526742458343506,
-                            2.4301202297210693,
-                            20.16068458557129
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": true,
-                    "enable": true
-                },
-                "Point": {
-                    "color": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "size": 200,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "point_56",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  3.526742458343506,
+                  2.4301202297210693,
+                  20.16068458557129
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": true,
+              "enable": true
+            },
+            "Point": {
+              "color": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "size": 200,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "57": {
-            "name": "plane_57",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            10.0,
-                            1.0,
-                            10.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Plane": {
-                    "color": [
-                        "vec",
-                        [
-                            0.5,
-                            0.5,
-                            0.5,
-                            0.5
-                        ]
-                    ],
-                    "p1": [
-                        "id",
-                        54
-                    ],
-                    "p2": [
-                        "id",
-                        55
-                    ],
-                    "p3": [
-                        "id",
-                        56
-                    ],
-                    "render_mode": "Transparency",
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "plane_57",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  10.0,
+                  1.0,
+                  10.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Plane": {
+              "color": [
+                "vec",
+                [
+                  0.5,
+                  0.5,
+                  0.5,
+                  0.5
+                ]
+              ],
+              "p1": [
+                "id",
+                54
+              ],
+              "p2": [
+                "id",
+                55
+              ],
+              "p3": [
+                "id",
+                56
+              ],
+              "render_mode": "Transparency",
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "58": {
-            "name": "segment_58",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        18
-                    ],
-                    "p2": [
-                        "id",
-                        19
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_58",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                18
+              ],
+              "p2": [
+                "id",
+                19
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "59": {
-            "name": "point_59",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": true,
-                    "enable": true
-                },
-                "Point": {
-                    "color": [
-                        "vec",
-                        [
-                            0.0,
-                            0.699999988079071,
-                            0.10000000149011612,
-                            1.0
-                        ]
-                    ],
-                    "size": 200,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "point_59",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": true,
+              "enable": true
+            },
+            "Point": {
+              "color": [
+                "vec",
+                [
+                  0.0,
+                  0.699999988079071,
+                  0.10000000149011612,
+                  1.0
+                ]
+              ],
+              "size": 200,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "60": {
-            "name": "segment_60",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        59
-                    ],
-                    "p2": [
-                        "id",
-                        15
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_60",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                59
+              ],
+              "p2": [
+                "id",
+                15
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "61": {
-            "name": "segment_61",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        23
-                    ],
-                    "p2": [
-                        "id",
-                        19
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_61",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                23
+              ],
+              "p2": [
+                "id",
+                19
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "62": {
-            "name": "segment_62",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        23
-                    ],
-                    "p2": [
-                        "id",
-                        22
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_62",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                23
+              ],
+              "p2": [
+                "id",
+                22
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "63": {
-            "name": "segment_63",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        22
-                    ],
-                    "p2": [
-                        "id",
-                        18
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_63",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                22
+              ],
+              "p2": [
+                "id",
+                18
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "64": {
-            "name": "segment_64",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        19
-                    ],
-                    "p2": [
-                        "id",
-                        17
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_64",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                19
+              ],
+              "p2": [
+                "id",
+                17
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "65": {
-            "name": "segment_65",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        17
-                    ],
-                    "p2": [
-                        "id",
-                        16
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_65",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                17
+              ],
+              "p2": [
+                "id",
+                16
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "66": {
-            "name": "segment_66",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        18
-                    ],
-                    "p2": [
-                        "id",
-                        16
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_66",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                18
+              ],
+              "p2": [
+                "id",
+                16
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "67": {
-            "name": "segment_67",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        22
-                    ],
-                    "p2": [
-                        "id",
-                        20
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_67",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                22
+              ],
+              "p2": [
+                "id",
+                20
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "68": {
-            "name": "segment_68",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        23
-                    ],
-                    "p2": [
-                        "id",
-                        21
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_68",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                23
+              ],
+              "p2": [
+                "id",
+                21
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "69": {
-            "name": "segment_69",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        21
-                    ],
-                    "p2": [
-                        "id",
-                        20
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_69",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                21
+              ],
+              "p2": [
+                "id",
+                20
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "70": {
-            "name": "segment_70",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        17
-                    ],
-                    "p2": [
-                        "id",
-                        21
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_70",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                17
+              ],
+              "p2": [
+                "id",
+                21
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
+          }
         },
         "71": {
-            "name": "segment_71",
-            "components": {
-                "Transformation": {
-                    "pos": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "rot": [
-                        "vec",
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "scale": [
-                        "vec",
-                        [
-                            1.0,
-                            1.0,
-                            1.0
-                        ]
-                    ],
-                    "moveable": false,
-                    "enable": true
-                },
-                "Segment": {
-                    "p1": [
-                        "id",
-                        20
-                    ],
-                    "p2": [
-                        "id",
-                        16
-                    ],
-                    "color": [
-                        "vec",
-                        [
-                            0.699999988079071,
-                            0.5,
-                            0.699999988079071,
-                            1.0
-                        ]
-                    ],
-                    "size": 100,
-                    "save_size": false,
-                    "enable": true
-                }
+          "name": "segment_71",
+          "components": {
+            "Transformation": {
+              "pos": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "rot": [
+                "vec",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "scale": [
+                "vec",
+                [
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "moveable": false,
+              "enable": true
+            },
+            "Segment": {
+              "p1": [
+                "id",
+                20
+              ],
+              "p2": [
+                "id",
+                16
+              ],
+              "color": [
+                "vec",
+                [
+                  0.699999988079071,
+                  0.5,
+                  0.699999988079071,
+                  1.0
+                ]
+              ],
+              "size": 100,
+              "save_size": false,
+              "enable": true
             }
-        }
+          }
+        },
+        "48": {
+              "name": "Light",
+              "components": {
+                  "Transformation": {
+                      "pos": [
+                          "vec",
+                          [
+                              0.0,
+                              3.0,
+                              0.0
+                          ]
+                      ],
+                      "rot": [
+                          "vec",
+                          [
+                              0.0,
+                              0.0,
+                              0.0
+                          ]
+                      ],
+                      "scale": [
+                          "vec",
+                          [
+                              1.0,
+                              1.0,
+                              1.0
+                          ]
+                      ],
+                      "moveable": true,
+                      "enable": true
+                  },
+                  "Light": {
+                      "color": [
+                          "vec",
+                          [
+                              1.0,
+                              1.0,
+                              1.0
+                          ]
+                      ],
+                      "enable": true
+                  }
+              }
+          }
     }
 }

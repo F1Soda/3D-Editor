@@ -23,7 +23,7 @@ class Hierarchy(element_m.Element):
         self.unselect_element = utils_m.EventDelegate()
 
         self.position.relative.left_bottom = glm.vec2(gui.LEFT_INSPECTOR_CORNER, 0)
-        self.position.relative.right_top = glm.vec2(1, gui.DIVISION_BETWEEN_INSPECTOR_AND_HIERARCHY)
+        self.position.relative.right_top = glm.vec2(1)
 
         background = elements.Block("Background", self, self.win_size, color=(0.3, 0.1, 0.1, 0.5))
         background.position.relative.right_top = glm.vec2(1)
@@ -37,7 +37,7 @@ class Hierarchy(element_m.Element):
                                     space_between=0.1,
                                     pivot=Pivot.Center
                                     )
-        text_header.position.relative.center = glm.vec2(0.5, 0.95)
+        text_header.position.relative.center = glm.vec2(0.5, 0.975)
         text_header.update_position()
 
         def custom_right_click_handle(pos: glm.vec2):
@@ -64,7 +64,7 @@ class Hierarchy(element_m.Element):
         self.content.add_to_bottom = True
         self.content.active = True
         self.content.pivot = Pivot.Top
-        self.content.position.relative.center = glm.vec2(0.5, 0.9)
+        self.content.position.relative.center = glm.vec2(0.5, 0.95)
         self.content.position.evaluate_values_by_relative()
 
         self.sub_menu = None

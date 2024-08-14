@@ -155,7 +155,7 @@ def _init_plane(ctx):
 
     indices = [(0, 1, 2), (0, 2, 3), (0, 2, 1), (0, 3, 2)]
 
-    normals = [(0, 1, 0)] * 6 + [(0, -1, 0)] * 6
+    normals = [(0, -1, 0)] * 6 + [(0, 1, 0)] * 6
 
     mesh = render.Mesh(ctx, "plane", '3f 2f 3f', ['in_position', 'in_texCoord', 'in_normal'])
     mesh.vertices = utils_m.get_data_elements_by_indices(vertices, indices)
@@ -181,14 +181,14 @@ def _init_lit_material(ctx, tint, name):
 
 
 def _init_shaders(ctx):
-    shader_programs['unlit'] = render.ShaderProgram(ctx, 'Unlit', 'unlit')
-    shader_programs['lit'] = render.ShaderProgram(ctx, 'lit', 'unlit')
-    shader_programs['word_axis_gizmo'] = render.ShaderProgram(ctx, 'WordAxisGizmo', 'word_axis_gizmo')
-    shader_programs['point_gizmo'] = render.ShaderProgram(ctx, 'PointGizmo', 'point_gizmo')
-    shader_programs['segment_gizmo'] = render.ShaderProgram(ctx, 'SegmentGizmo', 'segment_gizmo')
-    shader_programs['object_picking'] = render.ShaderProgram(ctx, 'ObjectPicking', 'object_picking')
-    shader_programs['silhouette'] = render.ShaderProgram(ctx, 'Silhouette', 'silhouette')
-    shader_programs['section'] = render.ShaderProgram(ctx, 'Section', 'section')
+    shader_programs['unlit'] = render.ShaderProgram(ctx, 'Render/Unlit', 'unlit')
+    shader_programs['lit'] = render.ShaderProgram(ctx, 'Render/Lit', 'unlit')
+    shader_programs['word_axis_gizmo'] = render.ShaderProgram(ctx, 'Render/WordAxisGizmo', 'word_axis_gizmo')
+    shader_programs['point_gizmo'] = render.ShaderProgram(ctx, 'Render/PointGizmo', 'point_gizmo')
+    shader_programs['segment_gizmo'] = render.ShaderProgram(ctx, 'Render/SegmentGizmo', 'segment_gizmo')
+    shader_programs['object_picking'] = render.ShaderProgram(ctx, 'Render/ObjectPicking', 'object_picking')
+    shader_programs['silhouette'] = render.ShaderProgram(ctx, 'Render/Silhouette', 'silhouette')
+    shader_programs['section'] = render.ShaderProgram(ctx, 'Render/Section', 'section')
 
 
 def _init_textures(ctx):

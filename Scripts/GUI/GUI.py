@@ -83,7 +83,7 @@ class GUI:
         self.selected_elements_in_hierarchy = []
 
         self.header = header_m.Header(self, self.main_block)
-        self.inspector = inspector_m.Inspector(self, self.main_block)
+        #self.inspector = inspector_m.Inspector(self, self.main_block)
         self.hierarchy = hierarchy_m.Hierarchy(self, self.main_block)
 
         self.ask_save_file_before_exit_window = None

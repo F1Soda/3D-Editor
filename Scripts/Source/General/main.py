@@ -1,6 +1,7 @@
 import cProfile
 import os
 import pstats
+import re
 import sys
 import time
 
@@ -42,10 +43,6 @@ class GraphicsEngine:
         pg.display.gl_set_attribute(pg.GL_CONTEXT_PROFILE_MASK, pg.GL_CONTEXT_PROFILE_CORE)
         pg.display.set_mode(self.win_size, flags=pg.OPENGL | pg.DOUBLEBUF | pg.RESIZABLE)
 
-        # Mouse settings
-        # pg.event.set_grab(True)
-        # pg.mouse.set_visible(False)
-
         # Context
         self.ctx = mgl.create_context()
         self.ctx.enable(mgl.DEPTH_TEST | mgl.CULL_FACE)
@@ -84,9 +81,15 @@ class GraphicsEngine:
 
         self.draw_gui = True
 
-        pg.display.set_caption("3D Editor")
+    def update_caption(self, file_path):
+        if file_path:
+            scene_name = re.search(r'(?<=/)\w+(?=\.)', file_path).group()
+            pg.display.set_caption(f"3D Editor — {scene_name}")
+        else:
+            pg.display.set_caption(f"3D Editor — untitled")
 
     def load_scene(self, file_path=None):
+        self.update_caption(file_path)
         if self.scene:
             self.scene.delete()
             object_picker_m.ObjectPicker.release()
@@ -165,7 +168,6 @@ class GraphicsEngine:
         sys.exit()
 
     def run(self):
-
         while True:
             self.delta_time = self.clock.tick(120)
             self.update_time()
