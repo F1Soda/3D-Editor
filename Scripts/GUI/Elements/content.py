@@ -23,8 +23,10 @@ class Content(element_m.Element):
         self.position.absolute.size = glm.vec2(max(self.position.absolute.size.x, element.position.absolute.size.x),
                                                new_size_y)
         self.position.absolute.center = past_center
+
         if self.pivot == element_m.Pivot.Top:
             self.position.absolute.transform(glm.vec2(0, -element.position.absolute.size.y / 2))
+
         self.position.evaluate_values_by_absolute()
         self.background.position.evaluate_values_by_relative()
 
@@ -65,6 +67,7 @@ class Content(element_m.Element):
         for element in self.background.elements:
             element.delete()
         self.background.elements.clear()
+        self.elements_size.clear()
         if self.pivot == element_m.Pivot.Top:
             self.position.absolute.left_bottom = glm.vec2(self.position.absolute.left_bottom.x,
                                                           self.position.absolute.right_top.y)

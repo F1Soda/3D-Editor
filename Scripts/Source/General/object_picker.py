@@ -2,6 +2,7 @@ import glm
 import moderngl as mgl
 import Scripts.Source.General.index_manager as index_manager_m
 import Scripts.Source.General.input_manager as input_manager_m
+import Scripts.Source.General.utils as utils_m
 
 
 class ObjectPicker:
@@ -80,12 +81,11 @@ class ObjectPicker:
     @staticmethod
     def select_object(object_id):
         if object_id != ObjectPicker._last_picked_obj_id:
-            if ObjectPicker._last_picked_obj_id != 0:
-                renderer = ObjectPicker._app.scene.objects[ObjectPicker._last_picked_obj_id].get_component_by_name(
-                    'Renderer')
-                # renderer.material['color'].value += glm.vec4(0.2, 0.2, 0.2, 0)
-                if renderer is not None:
-                    renderer.apply()
+            # if ObjectPicker._last_picked_obj_id != 0:
+            #     renderer = ObjectPicker._app.scene.objects[ObjectPicker._last_picked_obj_id].get_component_by_name(
+            #         'Renderer')
+            #     if renderer is not None:
+            #         renderer.apply()
             ObjectPicker._last_picked_obj_id = object_id
             ObjectPicker.last_picked_obj_transformation = ObjectPicker._app.scene.objects[object_id].transformation
 
@@ -116,18 +116,19 @@ class ObjectPicker:
     def picking_pass():
         ObjectPicker._pick_fbo.use()
         ObjectPicker._app.ctx.clear(0.0, 0.0, 0.0)
+        picking_color = glm.vec4(1)
         for obj in ObjectPicker._app.scene.objects.values():
             renderer = obj.get_component_by_name('Renderer')
             if renderer:
-                pick_color = glm.vec4(index_manager_m.IndexManager.get_color_by_id(obj.id), 1)
-                renderer.picking_material['color'] = pick_color
+                utils_m.copy_vec(index_manager_m.IndexManager.get_color_by_id(obj.id), picking_color)
+                renderer.picking_material['color'] = picking_color
                 renderer.render_picking_material()
                 continue
             point_component = obj.get_component_by_name('Point')
             if point_component:
                 last_color = point_component.gizmos_point.color
-                pick_color = glm.vec4(index_manager_m.IndexManager.get_color_by_id(obj.id), 1)
-                point_component.gizmos_point.color = pick_color
+                utils_m.copy_vec(index_manager_m.IndexManager.get_color_by_id(obj.id), picking_color)
+                point_component.gizmos_point.color = picking_color
                 point_component.apply()
                 point_component.gizmos_point.color = last_color
                 continue
@@ -185,6 +186,11 @@ class ObjectPicker:
 
     @staticmethod
     def release():
+        ObjectPicker._pick_fbo.depth_attachment.release()
+        ObjectPicker._pick_fbo.color_attachments[0].release()
         ObjectPicker._pick_fbo.release()
         ObjectPicker._pick_fbo = None
         ObjectPicker._app = None
+        input_manager_m.InputManager.handle_left_click_event -= ObjectPicker.process_left_click
+        input_manager_m.InputManager.handle_left_hold_event -= ObjectPicker.process_hold_left_mouse_button
+        input_manager_m.InputManager.handle_left_release_event -= ObjectPicker.process_release_left_mouse_button

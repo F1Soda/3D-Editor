@@ -2,14 +2,21 @@ import Scripts.Source.Components.components as components_m
 import Scripts.Source.General.object as object_m
 import Scripts.Source.Render.library as library_m
 import Scripts.Source.Render.render as render
-import json
-import re
 import Scripts.Source.General.utils as utils_m
+import json
 import glm
+import re
 
 
 class DataManager:
     letters_width = []
+    empty_scene_data = {
+        "index_manager_data": {
+            "global_index": 5,
+            "unused_indices": []
+        },
+        "objects": {}
+    }
 
     @staticmethod
     def parse_letter_widths(file_path):
@@ -66,6 +73,9 @@ class DataManager:
             return True
         except json.decoder.JSONDecodeError as e:
             print("Failed to load scene:\n", e)
+        except FileNotFoundError:
+            with open(file_path, 'w') as f:
+                json.dump(DataManager.empty_scene_data, f)
 
     @staticmethod
     def parse_ref_id(key, value, component_data, rely_obj_id, component_name, scene, later_initialization_dict):
@@ -121,6 +131,9 @@ class DataManager:
                 obj.transformation.scale = component_data['scale']
                 obj.transformation.moveable = component_data['moveable']
                 should_create_component = False
+            elif component_name == "Plane":
+                component_data['render_mode'] = render.RenderMode[component_data['render_mode']]
+
             if should_create_component:
                 a = components_m.components[component_name](**component_data)
                 component = obj.add_component(a)
@@ -128,23 +141,7 @@ class DataManager:
                         isinstance(component, components_m.Segment) or
                         isinstance(component, components_m.Plane) or
                         isinstance(component, components_m.Renderer)):
-                    rendering_component = component
-
-        if rendering_component:
-            if isinstance(rendering_component, components_m.Renderer):
-                if rendering_component.material.render_mode == render.RenderMode.Opaque:
-                    scene.opaque_renderer.append(rendering_component)
-                else:
-                    scene.transparency_renderer.append(rendering_component)
-            if isinstance(rendering_component, components_m.Point):
-                scene.opaque_renderer.append(rendering_component)
-            elif isinstance(rendering_component, components_m.Segment):
-                scene.opaque_renderer.append(rendering_component)
-            elif isinstance(rendering_component, components_m.Plane):
-                scene.transparency_renderer.append(rendering_component)
+                    component.update_render_mode()
 
         if later_initialization_dict.get(obj.id):
             DataManager.later_initialization(obj, later_initialization_dict, scene)
-
-# if __name__ == '__main__':
-# DataManager.load_scene('C:/Users/golik/PycharmProjects/3dEditor/Scenes/test_save_scene_1.json')

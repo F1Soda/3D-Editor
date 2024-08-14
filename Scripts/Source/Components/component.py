@@ -20,7 +20,10 @@ class Component:
     def apply(self): ...
 
     def delete(self):
-        rely_object = None
+        self.rely_object = None
+        self.app = None
+        self.name = None
+        self.description = None
 
     def on_change(self): ...
 
@@ -29,6 +32,9 @@ class Component:
         self.rely_object = rely_object
 
     def serialize(self) -> {}:
+        ...
+
+    def process_window_resize(self, new_size):
         ...
 
     def __str__(self):

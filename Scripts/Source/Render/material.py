@@ -2,6 +2,7 @@ import moderngl
 import Scripts.Source.Render.shader_program as shader_program_m
 import glm
 import enum
+import re
 
 
 class RenderMode(enum.Enum):
@@ -20,6 +21,12 @@ class MaterialProperty:
         self.visible = visible
         self.material = material
         self.value = value
+
+    def __str__(self):
+        return f'{self.name}: {self.value}'
+
+    def __repr__(self):
+        return str(self)
 
 
 class Material:
@@ -102,11 +109,15 @@ class Material:
             if key.startswith('tex'):
                 p = self.shader_program.get(key)
                 if p:
-                    value.value.use()
-                    p = 0
+                    location = int(re.search(r'(?<=_)\d+', key).group())
+                    value.value.use(location=location)
+                    self.shader_program[key] = location
                     continue
             p = self.shader_program.get(key)
             if p:
+                if isinstance(value.value, bool):
+                    self.shader_program[key] = value.value
+                    continue
                 p.write(value.value)
             pass
 
@@ -125,3 +136,9 @@ class Material:
         for shader_property in self.properties:
             shader_property._material = None
             shader_property.value = None
+
+    def __str__(self):
+        return f"Material {self.name}. Props: {self.properties}"
+
+    def __repr__(self):
+        return str(self)

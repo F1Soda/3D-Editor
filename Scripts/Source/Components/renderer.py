@@ -1,6 +1,5 @@
 import Scripts.Source.Components.component as component_m
 import Scripts.Source.General.scene as scene_m
-import Scripts.Source.Components.light as light_m
 import Scripts.Source.Render.mesh as mesh_m
 import Scripts.Source.Render.material as material_m
 import Scripts.Source.Render.library as library_m
@@ -64,6 +63,18 @@ class Renderer(component_m.Component):
         self.vao = self.get_vao(self._material.shader_program, self.mesh)
         self.vao_picking = self.get_vao(self.picking_material.shader_program, self.mesh)
 
+    def update_render_mode(self):
+        if self.material.render_mode == material_m.RenderMode.Opaque:
+            if self in self.scene.transparency_renderer:
+                self.scene.transparency_renderer.remove(self)
+            if self not in self.scene.opaque_renderer:
+                self.scene.opaque_renderer.append(self)
+        else:
+            if self in self.scene.opaque_renderer:
+                self.scene.opaque_renderer.remove(self)
+            if self not in self.scene.transparency_renderer:
+                self.scene.transparency_renderer.append(self)
+
     @property
     def light_component(self):
         return self.scene.light
@@ -81,6 +92,9 @@ class Renderer(component_m.Component):
     def get_vao(self, shader_program, mesh) -> mgl.VertexArray:
         vao = self.ctx.vertex_array(shader_program.bin_program, [(mesh.vbo, mesh.data_format, *mesh.attributes)])
         return vao
+
+    def process_window_resize(self, new_size):
+        self.update_projection_matrix(self.camera_component.m_proj)
 
     def apply(self):
         self.material.update(self.transformation, self.light_component)

@@ -10,7 +10,4 @@ in vec2 TexCoords;
 void main()
 {
     FragColor = texture(texture_0, TexCoords) * color;
-
-
-
 }

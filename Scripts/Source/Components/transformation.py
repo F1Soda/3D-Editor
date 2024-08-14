@@ -1,6 +1,6 @@
 import Scripts.Source.Components.component as component_m
 import glm
-import copy
+import Scripts.Source.General.utils as utils_m
 
 NAME = "Transformation"
 DESCRIPTION = "Описывает положение, вращение и масштобирование объекта"
@@ -14,7 +14,7 @@ class Transformation(component_m.Component):
         self._rot = glm.vec3(rot)
         self._scale = glm.vec3(scale)
 
-        self.m_model = self.get_model_matrix()
+        self.m_model = glm.mat4()
         self.moveable = moveable
 
         self.m_t = None
@@ -34,7 +34,7 @@ class Transformation(component_m.Component):
             self._pos = value
         elif isinstance(value, tuple):
             self._pos = glm.vec3(*value)
-        self.m_model = self.get_model_matrix()
+        self.update_model_matrix()
 
     @property
     def rot(self):
@@ -46,7 +46,7 @@ class Transformation(component_m.Component):
             self._rot = value
         elif isinstance(value, tuple):
             self._rot = glm.vec3(*value)
-        self.m_model = self.get_model_matrix()
+        self.update_model_matrix()
 
     @property
     def scale(self):
@@ -58,35 +58,28 @@ class Transformation(component_m.Component):
             self._scale = value
         elif isinstance(value, tuple):
             self._scale = glm.vec3(*value)
-        self.m_model = self.get_model_matrix()
-
-    def get_model_matrix(self):
-        rot = glm.vec3([glm.radians(x) for x in self.rot])
-
-        m_model = glm.mat4()
-
-        # position
-        m_model = self.m_t = glm.translate(m_model, self.pos)
-
-        # rotation
-        m_model = glm.rotate(m_model, rot.x, glm.vec3(1, 0, 0))
-        m_model = glm.rotate(m_model, rot.y, glm.vec3(0, 1, 0))
-        m_model = self.m_tr = glm.rotate(m_model, rot.z, glm.vec3(0, 0, 1))
-
-        # scale
-        m_model = glm.scale(m_model, self._scale)
-
-        return m_model
+        self.update_model_matrix()
 
     def update_model_matrix(self):
-        self.m_model = self.get_model_matrix()
+        rot = glm.vec3([glm.radians(x) for x in self.rot])
+
+        # position
+        self.m_model = self.m_t = glm.translate(glm.mat4(), self.pos)
+
+        # rotation
+        self.m_model = glm.rotate(self.m_model, rot.x, glm.vec3(1, 0, 0))
+        self.m_model = glm.rotate(self.m_model, rot.y, glm.vec3(0, 1, 0))
+        self.m_model = self.m_tr = glm.rotate(self.m_model, rot.z, glm.vec3(0, 0, 1))
+
+        # scale
+        self.m_model = glm.scale(self.m_model, self._scale)
 
     def init(self, app, rely_object):
         super().init(app, rely_object)
-        self.m_model = self.get_model_matrix()
+        self.update_model_matrix()
 
     def on_change(self):
-        self.m_model = self.get_model_matrix()
+        self.update_model_matrix()
 
     def serialize(self) -> {}:
         return {

@@ -11,6 +11,11 @@ class Point(component_m.Component):
         super().__init__(NAME, DESCRIPTION, enable)
         self.gizmos_point = gizmos_m.Gizmos.Point(None, glm.vec3(), color, None, size, save_size)
 
+    def update_render_mode(self):
+        if self not in self.app.scene.opaque_renderer:
+            self.app.scene.opaque_renderer.append(self)
+            # self.app.scene.transparency_renderer.append(self)
+
     @property
     def color(self):
         return self.gizmos_point.color

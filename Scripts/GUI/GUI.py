@@ -1,3 +1,5 @@
+import pympler.tracker
+
 import Scripts.GUI.Elements.element as element_m
 import Scripts.GUI.Elements.block as block_m
 import Scripts.Source.General.input_manager as input_manager_m
@@ -7,6 +9,7 @@ import Scripts.Source.General.data_manager as data_manager_m
 import Scripts.GUI.header as header_m
 import Scripts.GUI.inspector as inspector_m
 import Scripts.GUI.hierarchy as hierarchy_m
+import Scripts.Experemental.profiler as profiler_m
 import glm
 import easygui
 
@@ -80,7 +83,7 @@ class GUI:
         self.selected_elements_in_hierarchy = []
 
         self.header = header_m.Header(self, self.main_block)
-        self.inspector = inspector_m.Inspector(self, self.main_block)
+        #self.inspector = inspector_m.Inspector(self, self.main_block)
         self.hierarchy = hierarchy_m.Hierarchy(self, self.main_block)
 
         self.ask_save_file_before_exit_window = None
@@ -97,6 +100,7 @@ class GUI:
     def process_window_resize(self, new_size: glm.vec2):
         self.win_size = new_size
         self.main_block.process_window_resize(new_size)
+        self.update_data_in_hierarchy()
 
     def render(self):
         self.main_block.render()

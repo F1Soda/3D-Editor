@@ -1,6 +1,7 @@
 import Scripts.Source.Components.components as components
 import Scripts.Source.General.object as object_m
 import Scripts.Source.Render.library as library_m
+import Scripts.Source.Render.render as render
 import glm
 
 
@@ -20,6 +21,9 @@ class ObjectCreator:
         ObjectCreator.camera_component = components.Camera()
         cam.add_component(ObjectCreator.camera_component)
         cam.add_component(components.FreeFlyMove())
+        temp = cam.components[1]
+        cam.components[1] = cam.components[2]
+        cam.components[2] = temp
         cam.transformation.pos = (-2, 3, 0)
         cam.transformation.rot = (-30, 45, 0)
 
@@ -40,7 +44,10 @@ class ObjectCreator:
             cube.name = f"cube_{cube.id}"
         cube_renderer = components.Renderer(library_m.meshes['cube'], library_m.materials[color])
         cube.add_component(cube_renderer)
-        ObjectCreator.rely_scene.opaque_renderer.append(cube_renderer)
+        if library_m.materials[color].render_mode == render.RenderMode.Opaque:
+            ObjectCreator.rely_scene.opaque_renderer.append(cube_renderer)
+        else:
+            ObjectCreator.rely_scene.transparency_renderer.append(cube_renderer)
         return cube
 
     @staticmethod
@@ -51,7 +58,10 @@ class ObjectCreator:
         tetrahedron_renderer = components.Renderer(library_m.meshes['tetrahedron'], library_m.materials[color])
         tetrahedron.add_component(tetrahedron_renderer)
         if add_to_sequence_render:
-            ObjectCreator.rely_scene.opaque_renderer.append(tetrahedron_renderer)
+            if library_m.materials[color].render_mode == render.RenderMode.Opaque:
+                ObjectCreator.rely_scene.opaque_renderer.append(tetrahedron_renderer)
+            else:
+                ObjectCreator.rely_scene.transparency_renderer.append(tetrahedron_renderer)
         return tetrahedron
 
     @staticmethod
@@ -61,7 +71,10 @@ class ObjectCreator:
             octahedron.name = f"octahedron_{octahedron.id}"
         octahedron_renderer = components.Renderer(library_m.meshes['octahedron'], library_m.materials[color])
         octahedron.add_component(octahedron_renderer)
-        ObjectCreator.rely_scene.opaque_renderer.append(octahedron_renderer)
+        if library_m.materials[color].render_mode == render.RenderMode.Opaque:
+            ObjectCreator.rely_scene.opaque_renderer.append(octahedron_renderer)
+        else:
+            ObjectCreator.rely_scene.transparency_renderer.append(octahedron_renderer)
         return octahedron
 
     @staticmethod
@@ -102,7 +115,7 @@ class ObjectCreator:
         plane = object_m.Object(ObjectCreator.rely_scene, name, [])
         if name == "":
             plane.name = f"plane_{plane.id}"
-        plane_component = components.Plane(color, p1, p2, p3, False)
+        plane_component = components.Plane(color, p1, p2, p3, save_size=False)
         plane.add_component(plane_component)
 
         plane.transformation.moveable = False

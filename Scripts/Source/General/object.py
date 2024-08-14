@@ -35,6 +35,10 @@ class Object:
         component.apply()
         return component
 
+    def process_window_resize(self, new_size):
+        for component in self.components:
+            component.process_window_resize(new_size)
+
     def get_component_by_name(self, name: str) -> component_m.Component | None:
         for component in self.components:
             if component.name == name:

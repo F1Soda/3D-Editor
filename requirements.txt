@@ -2,3 +2,4 @@ moderngl
 numpy
 pygame
 pyglm
+easygui

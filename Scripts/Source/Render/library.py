@@ -1,6 +1,7 @@
 import numpy as np
 import Scripts.Source.General.utils as utils_m
 import Scripts.Source.Render.render as render
+import Scripts.Source.General.editor as main_m
 import glm
 import pygame as pg
 import moderngl as mgl
@@ -154,7 +155,7 @@ def _init_plane(ctx):
 
     indices = [(0, 1, 2), (0, 2, 3), (0, 2, 1), (0, 3, 2)]
 
-    normals = [(0, 1, 0)] * 6 + [(0, -1, 0)] * 6
+    normals = [(0, -1, 0)] * 6 + [(0, 1, 0)] * 6
 
     mesh = render.Mesh(ctx, "plane", '3f 2f 3f', ['in_position', 'in_texCoord', 'in_normal'])
     mesh.vertices = utils_m.get_data_elements_by_indices(vertices, indices)
@@ -167,7 +168,7 @@ def _init_unlit_material(ctx, color, name, render_mode=render.RenderMode.Opaque)
     return render.Material(ctx, name, shader_programs['unlit'], [('color', glm.vec4(color)),
                                                                  ('tilling', glm.vec2(1)),
                                                                  ('offset', glm.vec2(0)),
-                                                                 ('texture1', textures['white'])], render_mode)
+                                                                 ('texture_0', textures['white'])], render_mode)
 
 
 def _init_lit_material(ctx, tint, name):
@@ -175,17 +176,19 @@ def _init_lit_material(ctx, tint, name):
         ('tint', glm.vec4(tint)),
         ('tilling', glm.vec2(1)),
         ('offset', glm.vec2(0)),
-        ('texture1', textures['white'])
+        ('texture_0', textures['white'])
     ])
 
 
 def _init_shaders(ctx):
-    shader_programs['unlit'] = render.ShaderProgram(ctx, 'unlit', 'unlit')
-    shader_programs['lit'] = render.ShaderProgram(ctx, 'lit', 'unlit')
-    shader_programs['word_axis_gizmo'] = render.ShaderProgram(ctx, 'WordAxisGizmo', 'word_axis_gizmo')
-    shader_programs['point_gizmo'] = render.ShaderProgram(ctx, 'PointGizmo', 'point_gizmo')
-    shader_programs['segment_gizmo'] = render.ShaderProgram(ctx, 'SegmentGizmo', 'segment_gizmo')
-    shader_programs['object_picking'] = render.ShaderProgram(ctx, 'ObjectPicking', 'object_picking')
+    shader_programs['unlit'] = render.ShaderProgram(ctx, 'Render/Unlit', 'unlit')
+    shader_programs['lit'] = render.ShaderProgram(ctx, 'Render/Lit', 'unlit')
+    shader_programs['word_axis_gizmo'] = render.ShaderProgram(ctx, 'Render/WordAxisGizmo', 'word_axis_gizmo')
+    shader_programs['point_gizmo'] = render.ShaderProgram(ctx, 'Render/PointGizmo', 'point_gizmo')
+    shader_programs['segment_gizmo'] = render.ShaderProgram(ctx, 'Render/SegmentGizmo', 'segment_gizmo')
+    shader_programs['object_picking'] = render.ShaderProgram(ctx, 'Render/ObjectPicking', 'object_picking')
+    shader_programs['silhouette'] = render.ShaderProgram(ctx, 'Render/Silhouette', 'silhouette')
+    shader_programs['section'] = render.ShaderProgram(ctx, 'Render/Section', 'section')
 
 
 def _init_textures(ctx):
@@ -261,15 +264,23 @@ def init(ctx):
     materials['blue_lit'] = _init_lit_material(ctx, (0, 0, 1, 1), 'blue_lit')
     materials['gray_lit'] = _init_lit_material(ctx, (0.5, 0.5, 0.5, 1), 'gray_lit')
 
-    # materials['transparency_gray_lit'] = _init_lit_material(ctx, (0.5, 0.5, 0.5, 0.5), 'transparency_gray_lit')
-    # materials['transparency_gray_lit'].render_mode = render.RenderMode.Transparency
+    # Section (lit but for Section component)
+    materials['section'] = render.Material(ctx, 'section', shader_programs['section'], [
+        ('tint', glm.vec4(0.1, 1, 0.5, 1)),
+        ('tilling', glm.vec2(1)),
+        ('offset', glm.vec2(0)),
+        ('texture_0', textures['white']),
+        ('texture_1', textures['white']),
+        ('winSize', glm.vec2(main_m.WIN_SIZE[0], main_m.WIN_SIZE[1])),
+        ('inverse', False)
+    ])
 
     # Special
     materials['grid'] = render.Material(ctx, "Grid", shader_programs['unlit'], [
         ('color', glm.vec4(1)),
         ('tilling', glm.vec2(1)),
         ('offset', glm.vec2(0)),
-        ('texture1', textures['grid'])
+        ('texture_0', textures['grid'])
     ], render.RenderMode.Transparency)
     materials['object_picking'] = render.Material(ctx, "Object Picking", shader_programs['object_picking'],
                                                   [('color', glm.vec4(0))])

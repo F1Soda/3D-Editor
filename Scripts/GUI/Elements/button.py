@@ -45,7 +45,6 @@ class Button(element_m.Element):
 
     def render(self):
         self.background.render()
-        self.text.render()
 
     @property
     def color(self):
