@@ -11,6 +11,7 @@
 - Сечение плоскости объектами
 - Свободная камера
 - Система компонентов
+- Перемещение источника света
 
 ## Использование
 
@@ -38,6 +39,8 @@ python Scripts/Source/General/editor.py
 ### Интерфейс
 
 - **LMB**(Left Mouse Button) — выбрать объект
+- **LMB** на ось перемешения — Переместить выбранный объект
+- ![GIF](Other/README Files/AxisUsage.gif)
 - **RMB** на панели Hierarchy — Открыть контекстное меню
 <img src="Other/README Files/ContextMenu.gif"/>
 - **SHIFT + LMB** — выбор нескольких элементов

@@ -42,10 +42,16 @@ class Hierarchy(element_m.Element):
 
         def custom_right_click_handle(pos: glm.vec2):
             self.sub_menu.active = True
-            self.sub_menu.position.absolute.center = glm.vec2(
-                pos.x - self.sub_menu.position.absolute.size.x / 2,
-                pos.y + self.sub_menu.position.absolute.size.y / 2
-            )
+            if pos.y/self.gui.app.win_size.y > 0.7:
+                self.sub_menu.position.absolute.center = glm.vec2(
+                    pos.x - self.sub_menu.position.absolute.size.x / 2,
+                    pos.y - self.sub_menu.position.absolute.size.y / 2
+                )
+            else:
+                self.sub_menu.position.absolute.center = glm.vec2(
+                    pos.x - self.sub_menu.position.absolute.size.x / 2,
+                    pos.y + self.sub_menu.position.absolute.size.y / 2
+                )
             self.sub_menu.position.evaluate_values_by_absolute()
             self.sub_menu.update_position()
             self.gui.active_sub_menu = self.sub_menu
