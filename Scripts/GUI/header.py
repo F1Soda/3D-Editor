@@ -144,23 +144,30 @@ class Header(element_m.Element):
         load_button.position.relative.right_top = copy.copy(rrt)
         load_button.position.evaluate_values_by_relative()
 
-        rrt = glm.vec2(0.995, rrt.y)
-        rlb = glm.vec2(rrt.x - 0.035, 0.1)
 
         def render_mode_button_action(button, gui, pos):
-            button.button_text = "W" if button.button_text == "S" else "S"
-            gui.app.scene.change_render_mode()
+            if button.button_text == "Lines: Off":
+                button.button_text = "Lines: On"
+            elif button.button_text == "Lines: On":
+                button.button_text = "Lines: On(Dashed)"
+            elif button.button_text == "Lines: On(Dashed)":
+                button.button_text = "Lines: Both"
+            elif button.button_text == "Lines: Both":
+                button.button_text = "Lines: Off"
+
+            button.update_position()
+            gui.app.scene.change_hidden_line_mode()
 
         render_mode_button = elements.Button("Render Mode Button", background, self.win_size, self.gui,
-                                             "S",
+                                             "Lines: Off",
                                              action=render_mode_button_action,
-                                             color=glm.vec4(0.7, 0.7, 0, 1),
+                                             color=glm.vec4(0.1, 0.2, 0.6, 1),
                                              text_color=glm.vec4(1, 1, 1, 1),
                                              text_size=2
                                              )
 
-        render_mode_button.position.relative.left_bottom = copy.copy(rlb)
-        render_mode_button.position.relative.right_top = copy.copy(rrt)
+        render_mode_button.position.relative.size = glm.vec2(0.27, 0.8)
+        render_mode_button.position.relative.center = glm.vec2(0.25, 0.5)
         render_mode_button.position.evaluate_values_by_relative()
 
         def grid_off_on_action(button, gui, pos):
@@ -177,7 +184,7 @@ class Header(element_m.Element):
                                              )
 
         grid_on_off_button.position.relative.size = glm.vec2(0.15, 0.8)
-        grid_on_off_button.position.relative.center = glm.vec2(0.87, 0.5)
+        grid_on_off_button.position.relative.center = glm.vec2(0.92, 0.5)
         grid_on_off_button.position.evaluate_values_by_relative()
 
         self.update_position()

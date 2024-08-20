@@ -42,7 +42,7 @@ class ObjectCreator:
         cube = object_m.Object(ObjectCreator.rely_scene, name, [])
         if name == "":
             cube.name = f"cube_{cube.id}"
-        cube_renderer = components.Renderer(library_m.meshes['cube'], library_m.materials[color])
+        cube_renderer = components.Renderer(library_m.meshes['cube'], library_m.materials[color], True)
         cube.add_component(cube_renderer)
         if library_m.materials[color].render_mode == render.RenderMode.Opaque:
             ObjectCreator.rely_scene.opaque_renderer.append(cube_renderer)
@@ -55,7 +55,7 @@ class ObjectCreator:
         tetrahedron = object_m.Object(ObjectCreator.rely_scene, name, [])
         if name == "":
             tetrahedron.name = f"tetrahedron_{tetrahedron.id}"
-        tetrahedron_renderer = components.Renderer(library_m.meshes['tetrahedron'], library_m.materials[color])
+        tetrahedron_renderer = components.Renderer(library_m.meshes['tetrahedron'], library_m.materials[color], True)
         tetrahedron.add_component(tetrahedron_renderer)
         if add_to_sequence_render:
             if library_m.materials[color].render_mode == render.RenderMode.Opaque:
@@ -69,7 +69,7 @@ class ObjectCreator:
         octahedron = object_m.Object(ObjectCreator.rely_scene, name, [])
         if name == "":
             octahedron.name = f"octahedron_{octahedron.id}"
-        octahedron_renderer = components.Renderer(library_m.meshes['octahedron'], library_m.materials[color])
+        octahedron_renderer = components.Renderer(library_m.meshes['octahedron'], library_m.materials[color], True)
         octahedron.add_component(octahedron_renderer)
         if library_m.materials[color].render_mode == render.RenderMode.Opaque:
             ObjectCreator.rely_scene.opaque_renderer.append(octahedron_renderer)

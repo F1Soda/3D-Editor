@@ -15,14 +15,22 @@ class Mesh:
         # self.indices = None
         self.normals = None
         self.tex_coord = None
+        self.hidden_vertices = None
         # self.tex_coord_indices = None
         self._vbo = None
+        self._hidden_vbo = None
 
     @property
     def vbo(self):
         if self._vbo is None:
             self._vbo = self.get_vbo()
         return self._vbo
+
+    @property
+    def hidden_vbo(self):
+        if self._hidden_vbo is None:
+            self._hidden_vbo = self.ctx.buffer(self.hidden_vertices)
+        return self._hidden_vbo
 
     def reconstruct_vbo(self):
         self._vbo = self.get_vbo()

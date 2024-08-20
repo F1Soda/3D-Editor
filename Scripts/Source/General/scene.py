@@ -1,3 +1,5 @@
+import enum
+
 import glm
 
 import Scripts.Source.General.object_creator as object_creator_m
@@ -23,14 +25,19 @@ class Scene:
         self.opaque_renderer = []
         self.transparency_renderer = []
         self.test_saving_object = None
+        self.render_hidden_lines = components.renderer_m.HiddenLineState.Off
 
         self.gui = gui
 
-    def change_render_mode(self):
-        for obj in self.objects.values():
-            renderer = obj.get_component_by_name("Renderer")
-            if renderer:
-                renderer.change_render_mode()
+    def change_hidden_line_mode(self):
+        if self.render_hidden_lines == components.renderer_m.HiddenLineState.Off:
+            self.render_hidden_lines = components.renderer_m.HiddenLineState.Line
+        elif self.render_hidden_lines == components.renderer_m.HiddenLineState.Line:
+            self.render_hidden_lines = components.renderer_m.HiddenLineState.Dash
+        elif self.render_hidden_lines == components.renderer_m.HiddenLineState.Dash:
+            self.render_hidden_lines = components.renderer_m.HiddenLineState.Both
+        elif self.render_hidden_lines == components.renderer_m.HiddenLineState.Both:
+            self.render_hidden_lines = components.renderer_m.HiddenLineState.Off
 
     def _default_load(self):
 

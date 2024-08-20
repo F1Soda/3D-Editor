@@ -11,20 +11,23 @@ NAME = 'Renderer'
 DESCRIPTION = 'Отвечает за отрисовку'
 
 
-class RenderMode(enum.Enum):
-    Solid = 0,
-    Wireframe = 1
+class HiddenLineState(enum.Enum):
+    Off = 0,
+    Line = 1,
+    Dash = 2,
+    Both = 3
 
 
 class Renderer(component_m.Component):
 
-    def __init__(self, mesh: mesh_m.Mesh, material: material_m.Material, transparency=False, enable=True):
+    def __init__(self, mesh: mesh_m.Mesh, material: material_m.Material, enable_hidden_line=False, enable=True):
         super().__init__(NAME, DESCRIPTION, enable)
 
         # Settings
-        self.rendering_mode = RenderMode.Solid
         self.default_line_width = 3.0
         self.default_point_size = 4.0
+        self._init_hidden_line_vao = enable_hidden_line
+        self.hidden_line_shader = library_m.shader_programs['hidden_line']
 
         # Other
         self.mesh = mesh
@@ -38,13 +41,21 @@ class Renderer(component_m.Component):
         self.ctx = None
         self.vao = None
         self.vao_picking = None
+        self.vao_hidden_line = None
+
+    def _enable_hidden_line(self):
+        self.hidden_line_shader['resolution'].write(glm.vec2(self.app.win_size))
+        self.hidden_line_shader['dashSize'] = 10
+        self.hidden_line_shader['gapSize'] = 10
+        self.vao_hidden_line = self.ctx.vertex_array(self.hidden_line_shader.bin_program,
+                                                     [(self.mesh.hidden_vbo, '3f', 'in_position')])
 
     def init(self, app, rely_object):
         super().init(app, rely_object)
         # Scene
         self.scene = self.rely_object.scene  # type: scene_m.Scene
 
-        self.ctx = app.ctx
+        self.ctx = app.ctx  # type: mgl.Context
 
         # Camera
         self.camera_transform = self.scene.camera.transformation
@@ -63,6 +74,9 @@ class Renderer(component_m.Component):
         self.vao = self.get_vao(self._material.shader_program, self.mesh)
         self.vao_picking = self.get_vao(self.picking_material.shader_program, self.mesh)
 
+        if self._init_hidden_line_vao:
+            self._enable_hidden_line()
+
     def update_render_mode(self):
         if self.material.render_mode == material_m.RenderMode.Opaque:
             if self in self.scene.transparency_renderer:
@@ -79,9 +93,6 @@ class Renderer(component_m.Component):
     def light_component(self):
         return self.scene.light
 
-    def change_render_mode(self):
-        self.rendering_mode = RenderMode.Wireframe if self.rendering_mode == RenderMode.Solid else RenderMode.Solid
-
     def update_projection_matrix(self, m_proj):
         self.material.update_projection_matrix(m_proj)
         self.picking_material.update_projection_matrix(m_proj)
@@ -95,20 +106,36 @@ class Renderer(component_m.Component):
 
     def process_window_resize(self, new_size):
         self.update_projection_matrix(self.camera_component.m_proj)
+        self.hidden_line_shader['resolution'].write(glm.vec2(self.app.win_size))
 
     def apply(self):
         self.material.update(self.transformation, self.light_component)
-        if self.rendering_mode == RenderMode.Solid:
-            if self.material.render_mode == material_m.RenderMode.Opaque:
+        self.hidden_line_shader['m_model'].write(self.transformation.m_model)
+        self.hidden_line_shader['m_view'].write(self.camera_component.m_view)
+        self.hidden_line_shader['m_proj'].write(self.camera_component.m_proj)
+
+        if self.material.render_mode == material_m.RenderMode.Opaque:
+            if self.scene.render_hidden_lines != HiddenLineState.Off and self.vao_hidden_line:
+                self.hidden_line_shader[
+                    'dashed'] = True if self.scene.render_hidden_lines == HiddenLineState.Dash else False
+                self.ctx.screen.color_mask = False, False, False, False
                 self.vao.render()
-            elif self.material.render_mode == material_m.RenderMode.Transparency:
-                self.ctx.enable(mgl.BLEND)
-                self.vao.render()
-                self.ctx.disable(mgl.BLEND)
-        else:
-            self.ctx.line_width = self.default_line_width
-            self.ctx.point_size = self.default_point_size
-            self.vao.render(mgl.LINES)
+                self.ctx.line_width = 3.0
+                if self.scene.render_hidden_lines == HiddenLineState.Both:
+                    self.ctx.depth_func = '1'
+                else:
+                    self.ctx.depth_func = '>'
+                self.ctx.screen.depth_mask = False
+                self.ctx.screen.color_mask = True, True, True, True
+                self.vao_hidden_line.render(mgl.LINES)
+
+                self.ctx.screen.depth_mask = True
+                self.ctx.depth_func = '<'
+            self.vao.render()
+        elif self.material.render_mode == material_m.RenderMode.Transparency:
+            self.ctx.enable(mgl.BLEND)
+            self.vao.render()
+            self.ctx.disable(mgl.BLEND)
 
     def render_picking_material(self):
         self.picking_material.update(self.transformation, None)
@@ -132,6 +159,9 @@ class Renderer(component_m.Component):
         self.scene = None
         self.ctx = None
         self.vao = None
+        if self.vao_hidden_line:
+            self.vao_hidden_line.release()
+        self.vao_hidden_line = None
         self._material = None
         self.mesh = None
 
@@ -139,5 +169,6 @@ class Renderer(component_m.Component):
         return {
             'mesh': self.mesh.name,
             'material': self.material.name,
-            'enable': self.enable
+            'enable': self.enable,
+            'enable_hidden_line': self._init_hidden_line_vao
         }

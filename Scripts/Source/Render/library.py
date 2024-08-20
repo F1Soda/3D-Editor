@@ -24,6 +24,13 @@ def _init_cube(ctx):
                (3, 7, 4), (3, 2, 7),
                (0, 6, 1), (0, 5, 6)]
 
+    outline_indices = [(0, 1), (1, 2), (2, 3), (3, 0),
+                       (0, 5), (5, 4), (4, 3),
+                       (4, 7), (7, 2),
+                       (5, 6), (6, 1),
+                       (6, 7)
+                       ]
+
     tex_coord = [(0, 0), (1, 0), (1, 1), (0, 1)]
     tex_coord_indices = [(0, 2, 3), (0, 1, 2),
                          (0, 2, 3), (0, 1, 2),
@@ -42,7 +49,7 @@ def _init_cube(ctx):
     mesh.vertices = utils_m.get_data_elements_by_indices(vertices, indices)
     mesh.tex_coord = utils_m.get_data_elements_by_indices(tex_coord, tex_coord_indices)
     mesh.normals = np.array(normals, dtype='f4').reshape(36, 3)
-
+    mesh.hidden_vertices = utils_m.get_data_elements_by_indices(vertices, outline_indices)
     return mesh
 
 
@@ -78,6 +85,12 @@ def _init_tetrahedron(ctx):
         (1, 2, 3)  # Face 4
     ]
 
+    outline_indices = [
+        (0, 1), (1, 2), (2, 0),
+        (1, 3), (3, 0),
+        (2, 3)
+    ]
+
     normals = [
         (0, -1, 0) * 3,  # Normal for Face 1
         (-vertices[1].x, -vertices[1].y, -vertices[1].z) * 3,
@@ -88,7 +101,7 @@ def _init_tetrahedron(ctx):
     mesh.vertices = utils_m.get_data_elements_by_indices(vertices, indices)
     mesh.tex_coord = utils_m.get_data_elements_by_indices(tex_coord, tex_coord_indices)
     mesh.normals = np.array(normals, dtype='f4').reshape(12, 3)
-
+    mesh.hidden_vertices = utils_m.get_data_elements_by_indices(vertices, outline_indices)
     return mesh
 
 
@@ -140,11 +153,18 @@ def _init_octahedron(ctx):
         (0, -temp_y, 1 / 3) * 3,  # Normal for Face 3
         (-1 / 3, -temp_y, 0) * 3  # Normal for Face 4
     ]
+
+    outline_indices = [
+        (0, 1), (1, 2), (2, 3), (3, 0),
+        (0, 4), (1, 4), (2, 4), (3, 4),
+        (0, 5), (1, 5), (2, 5), (3, 5)
+    ]
+
     mesh = render.Mesh(ctx, "octahedron", '3f 2f 3f', ['in_position', 'in_texCoord', 'in_normal'])
     mesh.vertices = utils_m.get_data_elements_by_indices(vertices, indices)
     mesh.tex_coord = utils_m.get_data_elements_by_indices(tex_coord, tex_coord_indices)
     mesh.normals = np.array(normals, dtype='f4').reshape(24, 3)
-
+    mesh.hidden_vertices = utils_m.get_data_elements_by_indices(vertices, outline_indices)
     return mesh
 
 
@@ -189,6 +209,7 @@ def _init_shaders(ctx):
     shader_programs['object_picking'] = render.ShaderProgram(ctx, 'Render/ObjectPicking', 'object_picking')
     shader_programs['silhouette'] = render.ShaderProgram(ctx, 'Render/Silhouette', 'silhouette')
     shader_programs['section'] = render.ShaderProgram(ctx, 'Render/Section', 'section')
+    shader_programs['hidden_line'] = render.ShaderProgram(ctx, "Render/HiddenLine", "hidden_line")
 
 
 def _init_textures(ctx):

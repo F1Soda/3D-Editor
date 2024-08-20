@@ -120,16 +120,6 @@ class GraphicsEngine:
     def update_time(self):
         self.time = pg.time.get_ticks() * 0.001
 
-    def update_title(self):
-        pg.display.set_caption(
-            f'FPS: {round(self.clock.get_fps())} '
-            f'Cam Pos(x: {round(self.scene.camera.transformation.pos.x, 1)}, '
-            f'y: {round(self.scene.camera.transformation.pos.y, 1)}, '
-            f'z: {round(self.scene.camera.transformation.pos.z, 1)}) '
-            f'Rot(x: {round(self.scene.camera.transformation.rot.x, 1)}, '
-            f'y: {round(self.scene.camera.transformation.rot.y, 1)}, '
-            f'z: {round(self.scene.camera.transformation.rot.z, 1)})')
-
     def render(self):
         self.ctx.screen.use()
         self.ctx.clear(color=(0.08, 0.16, 0.18, 1))
