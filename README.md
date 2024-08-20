@@ -40,7 +40,7 @@ python Scripts/Source/General/editor.py
 
 - **LMB**(Left Mouse Button) — выбрать объект
 - **LMB** на ось перемешения — Переместить выбранный объект
-<img src="Other/README Files/AxisUsage"/>
+<img src="Other/README Files/AxisUsage.gif"/>
 - **RMB** на панели Hierarchy — Открыть контекстное меню
 <img src="Other/README Files/ContextMenu.gif"/>
 - **SHIFT + LMB** — выбор нескольких элементов
